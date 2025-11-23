@@ -1,12 +1,14 @@
 export type MilestoneStatus = 'locked' | 'active' | 'in_review' | 'completed' | 'disputed';
+export type ProjectStatus = 'draft' | 'queue' | 'active' | 'completed';
 
 export interface Milestone {
     id: string;
+    project_id: string;
     title: string;
-    description: string;
+    description?: string;
     percentage: number;
-    amount: number;
-    deadline: string; // ISO date string
+    amount?: number;
+    deadline: string;
     status: MilestoneStatus;
     proof?: {
         description: string;
@@ -14,29 +16,34 @@ export interface Milestone {
         files: string[];
         submittedAt: string;
     };
-    votes?: {
-        approve: number;
-        dispute: number;
-    };
 }
 
 export interface Project {
     id: string;
+    created_at: string;
     title: string;
     tagline: string;
     description: string;
     category: string;
-    creator: {
-        name: string;
-        avatarUrl?: string;
-        walletAddress: string;
-    };
-    stats: {
-        backers: number;
-        raised: number;
-        goal: number;
-        daysLeft: number;
-    };
-    milestones: Milestone[];
-    videoUrl?: string;
+    goal: number;
+    raised: number;
+    backers_count: number;
+    video_url?: string;
+    image_url?: string;
+    creator_wallet: string;
+    status: ProjectStatus;
+    deadline?: string;
+
+    // Social Links (Flat)
+    twitter_link?: string;
+    github_link?: string;
+    website_link?: string;
+
+    // Creator Profile (Flat)
+    creator_name?: string;
+    creator_avatar?: string;
+    creator_bio?: string;
+
+    milestones?: Milestone[];
 }
+

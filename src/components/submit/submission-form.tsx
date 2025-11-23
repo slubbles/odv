@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, useFieldArray } from "react-hook-form"
-import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -26,11 +25,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { projectSchema, type ProjectFormValues } from "@/lib/validations/project"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { ClientOnlyWalletButton } from "@/components/wallet/client-only-wallet-button"
+import { supabase } from "@/lib/supabase/client"
+import { toast } from "sonner"
 import { Loader2, Plus, Trash2, CheckCircle2, Github, Twitter, Globe, UploadCloud } from "lucide-react"
 import { useState } from "react"
 
 export function SubmissionForm() {
-    const { connected } = useWallet()
+    const { connected, publicKey } = useWallet()
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     const form = useForm<ProjectFormValues>({
@@ -63,16 +64,64 @@ export function SubmissionForm() {
     const [isSuccess, setIsSuccess] = useState(false)
 
     async function onSubmit(data: ProjectFormValues) {
-        if (!connected) return
+        if (!connected || !publicKey) {
+            toast.error("Please connect your wallet first")
+            return
+        }
 
         setIsSubmitting(true)
 
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        try {
+            // 1. Insert Project
+            const { data: projectData, error: projectError } = await supabase
+                .from('projects')
+                .insert({
+                    title: data.title,
+                    tagline: data.tagline,
+                    description: data.description,
+                    category: data.category,
+                    goal: data.goal,
+                    video_url: data.videoUrl || null,
+                    image_url: data.imageUrl || null,
+                    twitter_link: data.links.twitter || null,
+                    github_link: data.links.github || null,
+                    website_link: data.links.website || null,
+                    creator_wallet: publicKey.toBase58(),
+                    status: 'queue'
+                })
+                .select()
+                .single()
 
-        console.log("Form submitted:", data)
-        setIsSuccess(true)
-        setIsSubmitting(false)
+            if (projectError) throw projectError
+
+            // 2. Insert Milestones
+            if (data.milestones.length > 0) {
+                const milestonesData = data.milestones.map(m => ({
+                    project_id: projectData.id,
+                    title: m.title,
+                    percentage: m.percentage,
+                    amount: (data.goal * m.percentage) / 100, // Calculate amount from percentage
+                    deadline: m.deadline,
+                    status: 'locked'
+                }))
+
+                const { error: milestonesError } = await supabase
+                    .from('milestones')
+                    .insert(milestonesData)
+
+                if (milestonesError) throw milestonesError
+            }
+
+            console.log("Project submitted:", projectData)
+            setIsSuccess(true)
+            toast.success("Project submitted successfully!")
+        } catch (error: unknown) {
+            console.error("Submission error:", error)
+            const message = error instanceof Error ? error.message : "Unknown error"
+            toast.error("Failed to submit project: " + message)
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     if (isSuccess) {

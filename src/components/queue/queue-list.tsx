@@ -1,81 +1,111 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock } from "lucide-react";
+"use client"
 
-// Mock data for queue
-const queueProjects = [
-    {
-        id: 1,
-        title: "PixelVault",
-        tagline: "Decentralized cloud storage for photographers.",
-        category: "Web3",
-        creator: "Alex M.",
-        position: 1,
-        estimatedDate: "Tomorrow",
-    },
-    {
-        id: 2,
-        title: "FitQuest",
-        tagline: "Gamified fitness tracker RPG.",
-        category: "Mobile",
-        creator: "Studio 42",
-        position: 2,
-        estimatedDate: "Nov 25",
-    },
-    {
-        id: 3,
-        title: "GreenPlate",
-        tagline: "Sustainable meal planning AI.",
-        category: "SaaS",
-        creator: "EcoLabs",
-        position: 3,
-        estimatedDate: "Nov 26",
-    },
-    {
-        id: 4,
-        title: "CodeWhisper",
-        tagline: "VS Code extension for voice coding.",
-        category: "DevTools",
-        creator: "Sarah J.",
-        position: 4,
-        estimatedDate: "Nov 27",
-    },
-];
+import { useEffect, useState } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { ArrowRight, Loader2 } from "lucide-react"
+import { supabase } from "@/lib/supabase/client"
+import { Project } from "@/lib/types/project"
 
 export function QueueList() {
-    return (
-        <div className="grid gap-4">
-            {queueProjects.map((project) => (
-                <Card key={project.id} className="overflow-hidden hover:shadow-md transition-shadow">
-                    <CardContent className="p-0 flex items-center">
-                        <div className="bg-muted w-16 h-full min-h-[80px] flex items-center justify-center text-xl font-bold text-muted-foreground border-r">
-                            #{project.position}
-                        </div>
-                        <div className="p-4 flex-1 flex items-center justify-between flex-wrap gap-4">
-                            <div>
-                                <div className="flex items-center gap-2 mb-1">
-                                    <h3 className="font-bold text-lg">{project.title}</h3>
-                                    <Badge variant="secondary" className="text-xs">
-                                        {project.category}
-                                    </Badge>
-                                </div>
-                                <p className="text-sm text-muted-foreground">{project.tagline}</p>
-                            </div>
+    const [projects, setProjects] = useState<Project[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
 
-                            <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                                <div className="flex items-center gap-2">
-                                    <Calendar className="w-4 h-4" />
-                                    <span>{project.estimatedDate}</span>
+    useEffect(() => {
+        async function fetchQueueProjects() {
+            try {
+                const { data, error } = await supabase
+                    .from('projects')
+                    .select('*')
+                    .eq('status', 'queue')
+                    .order('created_at', { ascending: true })
+
+                if (error) throw error
+
+                setProjects(data || [])
+            } catch (err) {
+                console.error("Failed to fetch queue projects:", err)
+                setError(err instanceof Error ? err.message : "Failed to load projects")
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchQueueProjects()
+    }, [])
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+            </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <Card>
+                <CardContent className="pt-6">
+                    <p className="text-center text-destructive">Error: {error}</p>
+                </CardContent>
+            </Card>
+        )
+    }
+
+    if (projects.length === 0) {
+        return (
+            <Card>
+                <CardContent className="pt-6">
+                    <p className="text-center text-muted-foreground">No projects in queue yet.</p>
+                </CardContent>
+            </Card>
+        )
+    }
+
+    return (
+        <div className="space-y-4">
+            {projects.map((project, index) => (
+                <Card key={project.id} className="overflow-hidden transition-all hover:shadow-md">
+                    <CardHeader className="pb-4">
+                        <div className="flex items-start justify-between">
+                            <div className="space-y-1 flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <Badge variant="outline" className="font-mono">
+                                        #{index + 1}
+                                    </Badge>
+                                    <Badge>{project.category}</Badge>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <Clock className="w-4 h-4" />
-                                    <span>Est. Wait: {project.position} days</span>
+                                <CardTitle className="text-xl">{project.title}</CardTitle>
+                                <CardDescription className="line-clamp-2">
+                                    {project.tagline}
+                                </CardDescription>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <Avatar className="h-8 w-8">
+                                    <AvatarImage src={project.creator_avatar} />
+                                    <AvatarFallback>{project.creator_name?.[0] || "?"}</AvatarFallback>
+                                </Avatar>
+                                <div className="text-sm">
+                                    <p className="font-medium">{project.creator_name || project.creator_wallet.slice(0, 8)}</p>
+                                    <p className="text-muted-foreground">
+                                        Goal: ${project.goal.toLocaleString()}
+                                    </p>
                                 </div>
                             </div>
+                            <Button variant="outline" size="sm">
+                                View Details <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
                         </div>
                     </CardContent>
                 </Card>
             ))}
         </div>
-    );
+    )
 }
