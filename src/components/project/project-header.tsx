@@ -8,6 +8,13 @@ import { Project } from "@/lib/types/project";
 import { Clock, Users } from "lucide-react";
 import { PaymentModal } from "@/components/payment/payment-modal";
 import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ProjectHeaderProps {
     project: Project;
@@ -74,7 +81,16 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
                             </div>
                             <span className="font-bold text-primary">{Math.round(progress)}%</span>
                         </div>
-                        <Progress value={progress} className="h-2" />
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Progress value={progress} className="h-2 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{Math.round(progress)}% funded</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
 
                         <div className="grid grid-cols-2 gap-4 pt-2">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -83,13 +99,21 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
                             </div>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Clock className="w-4 h-4" />
-                                <span>{daysLeft !== null ? (daysLeft > 0 ? `${daysLeft} Days Left` : "Ended") : "Loading..."}</span>
+                                <span>
+                                    {daysLeft !== null ? (
+                                        daysLeft > 0 ? `${daysLeft} Days Left` : "Ended"
+                                    ) : (
+                                        <Skeleton className="h-4 w-20 inline-block" />
+                                    )}
+                                </span>
                             </div>
                         </div>
                     </div>
 
                     <PaymentModal
                         projectTitle={project.title}
+                        projectId={project.id}
+                        creatorWallet={project.creator_wallet}
                         trigger={
                             <Button size="lg" className="w-full text-lg h-12">
                                 Back for $1 USDC

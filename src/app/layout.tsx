@@ -1,23 +1,64 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import { WalletContextProvider } from "@/components/providers/WalletContextProvider";
 import { Navbar } from "@/components/navbar";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/sonner";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+// SEPARATE viewport export (Next.js 15 requirement)
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
 
 export const metadata: Metadata = {
-  title: "OneDollarVentures",
-  description: "Back innovative projects for just $1",
+  title: {
+    default: 'OneDollarVentures - Back Projects with $1',
+    template: '%s | OneDollarVentures'
+  },
+  description: 'Support the next big thing with just $1. Get unique NFTs, early access, and join the journey on Solana.',
+  keywords: ['crowdfunding', 'solana', 'web3', 'nft', 'crypto', 'startup funding'],
+  authors: [{ name: 'OneDollarVentures' }],
+  creator: 'OneDollarVentures',
+  publisher: 'OneDollarVentures',
+
+  // Open Graph
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://onedollarventures.com',
+    siteName: 'OneDollarVentures',
+    title: 'OneDollarVentures - Back Projects with $1',
+    description: 'Support the next big thing with just $1. Get unique NFTs, early access, and join the journey on Solana.',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'OneDollarVentures',
+      },
+    ],
+  },
+
+  // Twitter Card
+  twitter: {
+    card: 'summary_large_image',
+    title: 'OneDollarVentures - Back Projects with $1',
+    description: 'Support the next big thing with just $1. Get unique NFTs, early access, and join the journey on Solana.',
+    images: ['/og-image.png'],
+    creator: '@onedollarventures',
+  },
+
+  // Icons
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
+
+  // Manifest
+  manifest: '/site.webmanifest',
 };
 
 export default function RootLayout({
@@ -28,11 +69,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className="antialiased"
       >
         <WalletContextProvider>
-          <Navbar />
-          {children}
+          <TooltipProvider>
+            <Navbar />
+            {children}
+            <Toaster />
+          </TooltipProvider>
         </WalletContextProvider>
       </body>
     </html >

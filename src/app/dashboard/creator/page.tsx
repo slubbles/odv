@@ -4,17 +4,23 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Loader2 } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Plus, Loader2, Search } from "lucide-react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase/client"
-import { Project } from "@/lib/types/project"
+import { Project, ProjectStatus } from "@/lib/types/project"
+import { ProjectActions } from "@/components/dashboard/project-actions"
 import Link from "next/link"
 
 export default function CreatorDashboardPage() {
     const { publicKey, connected } = useWallet()
     const [projects, setProjects] = useState<Project[]>([])
+    const [filteredProjects, setFilteredProjects] = useState<Project[]>([])
     const [loading, setLoading] = useState(true)
+    const [statusFilter, setStatusFilter] = useState<ProjectStatus | 'all'>('all')
+    const [searchQuery, setSearchQuery] = useState('')
 
     useEffect(() => {
         async function fetchMyProjects() {
@@ -32,6 +38,7 @@ export default function CreatorDashboardPage() {
 
                 if (error) throw error
                 setProjects(data || [])
+                setFilteredProjects(data || [])
             } catch (error) {
                 console.error("Error fetching my projects:", error)
             } finally {
@@ -41,6 +48,26 @@ export default function CreatorDashboardPage() {
 
         fetchMyProjects()
     }, [connected, publicKey])
+
+    // Apply filters
+    useEffect(() => {
+        let filtered = projects
+
+        // Status filter
+        if (statusFilter !== 'all') {
+            filtered = filtered.filter(p => p.status === statusFilter)
+        }
+
+        // Search filter
+        if (searchQuery) {
+            filtered = filtered.filter(p =>
+                p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                p.tagline.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+        }
+
+        setFilteredProjects(filtered)
+    }, [projects, statusFilter, searchQuery])
 
     if (!connected) {
         return (
@@ -75,13 +102,42 @@ export default function CreatorDashboardPage() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Projects</CardTitle>
-                    <CardDescription>A list of your projects and their current status.</CardDescription>
+                    <div className="flex flex-col md:flex-row justify-between gap-4">
+                        <div>
+                            <CardTitle>Projects</CardTitle>
+                            <CardDescription>A list of your projects and their current status.</CardDescription>
+                        </div>
+                        <div className="flex gap-2">
+                            <div className="relative flex-1 md:w-[300px]">
+                                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    placeholder="Search projects..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="pl-9"
+                                />
+                            </div>
+                            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as ProjectStatus | 'all')}>
+                                <SelectTrigger className="w-[150px]">
+                                    <SelectValue placeholder="Filter by status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All</SelectItem>
+                                    <SelectItem value="draft">Draft</SelectItem>
+                                    <SelectItem value="queue">Queue</SelectItem>
+                                    <SelectItem value="active">Active</SelectItem>
+                                    <SelectItem value="completed">Completed</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
                 </CardHeader>
                 <CardContent>
-                    {projects.length === 0 ? (
+                    {filteredProjects.length === 0 ? (
                         <div className="text-center py-8 text-muted-foreground">
-                            You haven&apos;t created any projects yet.
+                            {searchQuery || statusFilter !== 'all'
+                                ? 'No projects match your filters.'
+                                : "You haven't created any projects yet."}
                         </div>
                     ) : (
                         <Table>
@@ -92,10 +148,11 @@ export default function CreatorDashboardPage() {
                                     <TableHead>Raised</TableHead>
                                     <TableHead>Backers</TableHead>
                                     <TableHead className="text-right">Goal</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {projects.map((project) => (
+                                {filteredProjects.map((project) => (
                                     <TableRow key={project.id}>
                                         <TableCell className="font-medium">{project.title}</TableCell>
                                         <TableCell>
@@ -106,6 +163,9 @@ export default function CreatorDashboardPage() {
                                         <TableCell>${(project.raised || 0).toLocaleString()}</TableCell>
                                         <TableCell>{project.backers_count || 0}</TableCell>
                                         <TableCell className="text-right">${project.goal.toLocaleString()}</TableCell>
+                                        <TableCell className="text-right">
+                                            <ProjectActions project={project} />
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
