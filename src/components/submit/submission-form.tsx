@@ -27,8 +27,14 @@ import { useWallet } from "@solana/wallet-adapter-react"
 import { ClientOnlyWalletButton } from "@/components/wallet/client-only-wallet-button"
 import { supabase } from "@/lib/supabase/client"
 import { toast } from "sonner"
-import { Loader2, Plus, Trash2, CheckCircle2, Github, Twitter, Globe, UploadCloud } from "lucide-react"
+import { Loader2, Plus, Trash2, CheckCircle2, Github, Twitter, Globe, UploadCloud, Info } from "lucide-react"
 import { useState } from "react"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export function SubmissionForm() {
     const { connected, publicKey } = useWallet()
@@ -83,9 +89,9 @@ export function SubmissionForm() {
                     goal: data.goal,
                     video_url: data.videoUrl || null,
                     image_url: data.imageUrl || null,
-                    twitter_link: data.links.twitter || null,
-                    github_link: data.links.github || null,
-                    website_link: data.links.website || null,
+                    twitter_link: data.links?.twitter || null,
+                    github_link: data.links?.github || null,
+                    website_link: data.links?.website || null,
                     creator_wallet: publicKey.toBase58(),
                     status: 'queue'
                 })
@@ -369,7 +375,19 @@ export function SubmissionForm() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Milestones</CardTitle>
+                        <div className="flex items-center gap-2">
+                            <CardTitle>Milestones</CardTitle>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <Info className="w-4 h-4 text-muted-foreground" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Break down your project into key deliverables.</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </div>
                         <CardDescription>
                             Break down your roadmap. Funds are released as you complete these.
                         </CardDescription>

@@ -49,7 +49,7 @@ export default function DashboardPage() {
                 <p className="text-muted-foreground">Track your investments and backed projects.</p>
             </div>
 
-            <StatsOverview {...stats} />
+            <StatsOverview />
 
             <div>
                 <h2 className="text-xl font-semibold mb-4">Backed Projects</h2>

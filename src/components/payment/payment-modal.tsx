@@ -13,47 +13,63 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Loader2, ArrowRight } from "lucide-react";
 import { useState } from "react";
-import { createBackingTransaction } from "@/lib/solana/transaction";
-import { mintBackerNFT } from "@/lib/solana/nft";
+import { createFundCampaignTransaction } from "@/lib/solana/transaction";
+import { isCampaignInitialized } from "@/lib/solana/campaign";
 import { SuccessAnimation } from "./success-animation";
-// import { useToast } from "@/hooks/use-toast"; // Removed: File does not exist
+import { PublicKey } from "@solana/web3.js";
 
 interface PaymentModalProps {
     projectTitle: string;
+    projectId: string;
+    creatorWallet: string;
     trigger?: React.ReactNode;
 }
 
-export function PaymentModal({ projectTitle, trigger }: PaymentModalProps) {
+export function PaymentModal({ projectTitle, projectId, creatorWallet, trigger }: PaymentModalProps) {
     const { connection } = useConnection();
     const wallet = useWallet();
     const [isOpen, setIsOpen] = useState(false);
-    const [status, setStatus] = useState<'idle' | 'processing' | 'minting' | 'success'>('idle');
-    // const { toast } = useToast(); // Commented out until hook is verified
+    const [status, setStatus] = useState<'idle' | 'checking' | 'processing' | 'minting' | 'success'>('idle');
+    const [error, setError] = useState<string | null>(null);
 
     const handlePayment = async () => {
         if (!wallet.publicKey || !wallet.signTransaction) return;
 
         try {
+            setError(null);
+            setStatus('checking');
+
+            // Parse creator wallet
+            const creatorPubkey = new PublicKey(creatorWallet);
+
+            // Check if campaign is initialized
+            const campaignExists = await isCampaignInitialized(connection, creatorPubkey);
+
+            if (!campaignExists) {
+                setError("Campaign not initialized. Please contact the project creator.");
+                setStatus('idle');
+                return;
+            }
+
             setStatus('processing');
 
-            // 1. Create Transaction
-            const transaction = await createBackingTransaction(
+            // Create fund transaction
+            const transaction = await createFundCampaignTransaction(
                 connection,
-                wallet.publicKey
+                wallet.publicKey,
+                creatorPubkey,
+                1 // 1 USDC
             );
 
-            // 2. Sign & Send
+            // Sign & Send
             const signature = await wallet.sendTransaction(transaction, connection);
 
-            // 3. Confirm
+            // Confirm
             await connection.confirmTransaction(signature, 'confirmed');
 
             setStatus('minting');
 
-            // 4. Mint NFT (Mock/Real)
-            // await mintBackerNFT(connection, wallet, projectTitle, 123); // Uncomment when Metaplex is fully setup
-
-            // Simulate minting delay
+            // Mint NFT (Mock for now)
             await new Promise(resolve => setTimeout(resolve, 2000));
 
             setStatus('success');
@@ -61,7 +77,9 @@ export function PaymentModal({ projectTitle, trigger }: PaymentModalProps) {
         } catch (error) {
             console.error("Payment failed:", error);
             setStatus('idle');
-            alert("Transaction failed. Please check your balance (Devnet USDC) and try again.");
+            const errorMessage = error instanceof Error ? error.message : "Transaction failed";
+            setError(errorMessage);
+            alert(`Transaction failed: ${errorMessage}`);
         }
     };
 
@@ -97,30 +115,43 @@ export function PaymentModal({ projectTitle, trigger }: PaymentModalProps) {
                             {!wallet.connected ? (
                                 <WalletMultiButton className="!w-full !justify-center" />
                             ) : (
-                                <Button
-                                    size="lg"
-                                    className="w-full"
-                                    onClick={handlePayment}
-                                    disabled={status !== 'idle'}
-                                >
-                                    {status === 'processing' && (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Confirming Transaction...
-                                        </>
+                                <>
+                                    {error && (
+                                        <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md text-sm text-destructive">
+                                            {error}
+                                        </div>
                                     )}
-                                    {status === 'minting' && (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Minting NFT...
-                                        </>
-                                    )}
-                                    {status === 'idle' && (
-                                        <>
-                                            Confirm Payment <ArrowRight className="ml-2 h-4 w-4" />
-                                        </>
-                                    )}
-                                </Button>
+                                    <Button
+                                        size="lg"
+                                        className="w-full"
+                                        onClick={handlePayment}
+                                        disabled={status !== 'idle'}
+                                    >
+                                        {status === 'checking' && (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Checking Campaign...
+                                            </>
+                                        )}
+                                        {status === 'processing' && (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Confirming Transaction...
+                                            </>
+                                        )}
+                                        {status === 'minting' && (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Minting NFT...
+                                            </>
+                                        )}
+                                        {status === 'idle' && (
+                                            <>
+                                                Confirm Payment <ArrowRight className="ml-2 h-4 w-4" />
+                                            </>
+                                        )}
+                                    </Button>
+                                </>
                             )}
                         </div>
                     </>

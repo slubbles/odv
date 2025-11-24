@@ -9,14 +9,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 
-export default function CreatorProfilePage({ params }: { params: { id: string } }) {
+export default async function CreatorProfilePage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const creatorWallet = id;
+
+    return <CreatorProfile creatorWallet={creatorWallet} />;
+}
+
+function CreatorProfile({ creatorWallet }: { creatorWallet: string }) {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
-    const creatorWallet = params.id;
 
     useEffect(() => {
         fetchCreatorProjects();
-    }, [params.id]);
+    }, [creatorWallet]);
 
     async function fetchCreatorProjects() {
         try {

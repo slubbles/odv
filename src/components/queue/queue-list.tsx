@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight, Loader2 } from "lucide-react"
 import { supabase } from "@/lib/supabase/client"
 import { Project } from "@/lib/types/project"
+import { Skeleton } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export function QueueList() {
     const [projects, setProjects] = useState<Project[]>([])
@@ -39,29 +41,66 @@ export function QueueList() {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+            <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                    <Card key={i} className="overflow-hidden">
+                        <CardHeader className="pb-4">
+                            <div className="flex items-start justify-between">
+                                <div className="space-y-1 flex-1">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <Skeleton className="h-5 w-8" />
+                                        <Skeleton className="h-5 w-16" />
+                                    </div>
+                                    <Skeleton className="h-6 w-48" />
+                                    <Skeleton className="h-4 w-full" />
+                                </div>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <Skeleton className="h-8 w-8 rounded-full" />
+                                    <div className="space-y-1">
+                                        <Skeleton className="h-4 w-24" />
+                                        <Skeleton className="h-3 w-16" />
+                                    </div>
+                                </div>
+                                <Skeleton className="h-9 w-24" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
         )
     }
 
     if (error) {
         return (
-            <Card>
-                <CardContent className="pt-6">
-                    <p className="text-center text-destructive">Error: {error}</p>
-                </CardContent>
-            </Card>
+            <EmptyState
+                icon={Loader2}
+                title="Error loading queue"
+                description={error}
+                action={
+                    <Button variant="outline" onClick={() => window.location.reload()}>
+                        Try Again
+                    </Button>
+                }
+            />
         )
     }
 
     if (projects.length === 0) {
         return (
-            <Card>
-                <CardContent className="pt-6">
-                    <p className="text-center text-muted-foreground">No projects in queue yet.</p>
-                </CardContent>
-            </Card>
+            <EmptyState
+                icon={ArrowRight}
+                title="Queue is empty"
+                description="Be the first to join the queue and get featured!"
+                action={
+                    <Button asChild>
+                        <a href="/submit">Submit Project</a>
+                    </Button>
+                }
+            />
         )
     }
 
