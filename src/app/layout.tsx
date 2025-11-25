@@ -5,6 +5,7 @@ import { WalletContextProvider } from "@/components/providers/WalletContextProvi
 import { Navbar } from "@/components/navbar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/react";
 
 // SEPARATE viewport export (Next.js 15 requirement)
 export const viewport: Viewport = {
@@ -78,6 +79,7 @@ export default function RootLayout({
             <Toaster />
           </TooltipProvider>
         </WalletContextProvider>
+        <Analytics />
       </body>
     </html >
   );
