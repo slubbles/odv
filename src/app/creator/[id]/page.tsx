@@ -1,144 +1,142 @@
-'use client';
+import { Header } from "@/components/header"
+import { ProjectCard } from "@/components/project-card"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { MapPin, LinkIcon, Calendar, TrendingUp, Users, Award } from "lucide-react"
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase/client";
-import { Project } from "@/lib/types/project";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2 } from "lucide-react";
-import Link from "next/link";
+const creatorProjects = [
+  {
+    id: "1",
+    title: "AI-Powered Recipe Discovery",
+    description: "Transform how people discover and cook meals with AI.",
+    creator: { name: "Sarah Chen", avatar: "/the-creator.png" },
+    category: "Technology",
+    image: "/ai-recipe-app-interface.jpg",
+    raised: 8450,
+    goal: 10000,
+    backers: 423,
+    daysLeft: 12,
+  },
+  {
+    id: "2",
+    title: "Smart Home Automation Hub",
+    description: "Connect all your devices in one seamless platform.",
+    creator: { name: "Sarah Chen", avatar: "/the-creator.png" },
+    category: "Technology",
+    image: "/smart-home-concept.png",
+    raised: 15200,
+    goal: 15000,
+    backers: 678,
+    daysLeft: 0,
+  },
+]
 
-export default async function CreatorProfilePage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = await params;
-    const creatorWallet = id;
+export default function CreatorProfilePage() {
+  return (
+    <div className="min-h-screen">
+      <Header />
 
-    return <CreatorProfile creatorWallet={creatorWallet} />;
-}
+      {/* Hero Section */}
+      <div className="border-b border-border">
+        <div className="container py-12">
+          <div className="flex flex-col md:flex-row gap-8 items-start">
+            <img src="/the-creator.png" alt="Sarah Chen" className="h-32 w-32 rounded-full border-4 border-accent/30" />
 
-function CreatorProfile({ creatorWallet }: { creatorWallet: string }) {
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        fetchCreatorProjects();
-    }, [creatorWallet]);
-
-    async function fetchCreatorProjects() {
-        try {
-            const { data, error } = await supabase
-                .from('projects')
-                .select('*')
-                .eq('creator_wallet', creatorWallet)
-                .in('status', ['active', 'completed', 'queue'])
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-            setProjects(data || []);
-        } catch (error) {
-            console.error("Error fetching creator projects:", error);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    if (loading) {
-        return (
-            <div className="flex justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-            </div>
-        );
-    }
-
-    // Get creator info from first project (denormalized data)
-    const creatorName = projects[0]?.creator_name || creatorWallet.slice(0, 8);
-    const creatorAvatar = projects[0]?.creator_avatar;
-    const creatorBio = projects[0]?.creator_bio || "No bio available";
-
-    return (
-        <div className="space-y-8">
-            {/* Profile Header */}
-            <Card>
-                <CardContent className="pt-6">
-                    <div className="flex items-start gap-6">
-                        <Avatar className="h-24 w-24">
-                            <AvatarImage src={creatorAvatar} />
-                            <AvatarFallback className="text-2xl">
-                                {creatorName[0]?.toUpperCase() || "?"}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 space-y-2">
-                            <h1 className="text-3xl font-bold">{creatorName}</h1>
-                            <p className="text-sm text-muted-foreground font-mono">
-                                {creatorWallet}
-                            </p>
-                            <p className="text-muted-foreground">{creatorBio}</p>
-                            <div className="flex gap-4 pt-2">
-                                <div>
-                                    <div className="text-2xl font-bold">{projects.length}</div>
-                                    <div className="text-sm text-muted-foreground">Projects</div>
-                                </div>
-                                <div>
-                                    <div className="text-2xl font-bold">
-                                        ${projects.reduce((sum, p) => sum + (p.raised || 0), 0).toLocaleString()}
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">Total Raised</div>
-                                </div>
-                            </div>
-                        </div>
+            <div className="flex-1">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h1 className="text-4xl font-bold mb-2">Sarah Chen</h1>
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      <span>San Francisco, CA</span>
                     </div>
-                </CardContent>
-            </Card>
-
-            {/* Projects List */}
-            <div>
-                <h2 className="text-2xl font-bold mb-4">Projects</h2>
-                {projects.length === 0 ? (
-                    <Card>
-                        <CardContent className="py-12 text-center text-muted-foreground">
-                            This creator hasn&apos;t published any projects yet.
-                        </CardContent>
-                    </Card>
-                ) : (
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {projects.map((project) => (
-                            <Link key={project.id} href={`/projects/${project.id}`}>
-                                <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
-                                    <CardHeader>
-                                        <div className="flex items-start justify-between mb-2">
-                                            <Badge variant={project.status === 'active' ? 'default' : 'secondary'}>
-                                                {project.status}
-                                            </Badge>
-                                            <Badge variant="outline">{project.category}</Badge>
-                                        </div>
-                                        <CardTitle className="line-clamp-1">{project.title}</CardTitle>
-                                        <CardDescription className="line-clamp-2">
-                                            {project.tagline}
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="space-y-2">
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-muted-foreground">Raised</span>
-                                            <span className="font-medium">
-                                                ${(project.raised || 0).toLocaleString()}
-                                            </span>
-                                        </div>
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-muted-foreground">Goal</span>
-                                            <span className="font-medium">
-                                                ${project.goal.toLocaleString()}
-                                            </span>
-                                        </div>
-                                        <div className="text-xs text-muted-foreground">
-                                            {project.backers_count || 0} backers
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                        ))}
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      <span>Joined Jan 2024</span>
                     </div>
-                )}
+                    <div className="flex items-center gap-2">
+                      <LinkIcon className="h-4 w-4" />
+                      <a href="#" className="text-accent hover:underline">
+                        sarahchen.com
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <Button variant="outline">Follow</Button>
+              </div>
+
+              <p className="text-muted-foreground leading-relaxed mb-6">
+                Solo founder. Ships fast. Two exits under my belt. Building AI tools that don't suck. If you believe in
+                solving real problems without the VC circus, I'm your person.
+              </p>
+
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="secondary">AI & ML</Badge>
+                <Badge variant="secondary">Mobile Apps</Badge>
+                <Badge variant="secondary">User Experience</Badge>
+                <Badge variant="secondary">Food Tech</Badge>
+              </div>
             </div>
+          </div>
         </div>
-    );
+      </div>
+
+      {/* Stats Section */}
+      <div className="container py-12">
+        <div className="grid md:grid-cols-4 gap-6 mb-12">
+          <Card className="border-accent/30">
+            <CardContent className="p-6 text-center">
+              <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center mx-auto mb-3">
+                <TrendingUp className="h-6 w-6 text-accent" />
+              </div>
+              <p className="text-2xl font-bold mb-1">2</p>
+              <p className="text-sm text-muted-foreground">Projects Launched</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-accent/30">
+            <CardContent className="p-6 text-center">
+              <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center mx-auto mb-3">
+                <Users className="h-6 w-6 text-accent" />
+              </div>
+              <p className="text-2xl font-bold mb-1">1,101</p>
+              <p className="text-sm text-muted-foreground">People Believed</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-accent/30">
+            <CardContent className="p-6 text-center">
+              <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center mx-auto mb-3">
+                <Award className="h-6 w-6 text-accent" />
+              </div>
+              <p className="text-2xl font-bold mb-1">$23.7K</p>
+              <p className="text-sm text-muted-foreground">Dollars Raised</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-accent/30">
+            <CardContent className="p-6 text-center">
+              <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center mx-auto mb-3">
+                <TrendingUp className="h-6 w-6 text-accent" />
+              </div>
+              <p className="text-2xl font-bold mb-1">100%</p>
+              <p className="text-sm text-muted-foreground">Delivered</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Projects */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-6">What They Built</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {creatorProjects.map((project) => (
+              <ProjectCard key={project.id} {...project} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }

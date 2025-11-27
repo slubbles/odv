@@ -1,31 +1,39 @@
-import type { Metadata, Viewport } from "next";
-import "./globals.css";
-import "@solana/wallet-adapter-react-ui/styles.css";
-import { WalletContextProvider } from "@/components/providers/WalletContextProvider";
-import { Navbar } from "@/components/navbar";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { Toaster } from "@/components/ui/sonner";
-import { Analytics } from "@vercel/analytics/react";
+import type React from "react"
+import type { Metadata, Viewport } from "next"
+import { Inter, Poppins } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
+import "./globals.css"
+import "@solana/wallet-adapter-react-ui/styles.css"
+import { WalletContextProvider } from "@/components/providers/WalletContextProvider"
+import { SkipNav } from "@/components/skip-nav"
+import { BottomNav } from "@/components/bottom-nav"
+import { Toaster } from "sonner"
 
-// SEPARATE viewport export (Next.js 15 requirement)
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  variable: "--font-poppins",
+})
+
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-};
+}
 
 export const metadata: Metadata = {
   title: {
-    default: 'OneDollarVentures - Back Projects with $1',
-    template: '%s | OneDollarVentures'
+    default: "OneDollarVentures - Back Projects with $1",
+    template: "%s | OneDollarVentures"
   },
-  description: 'Support the next big thing with just $1. Get unique NFTs, early access, and join the journey on Solana.',
+  description: "Support the next big thing with just $1. Get unique NFTs, early access, and join the journey on Solana.",
   keywords: ['crowdfunding', 'solana', 'web3', 'nft', 'crypto', 'startup funding'],
   authors: [{ name: 'OneDollarVentures' }],
   creator: 'OneDollarVentures',
   publisher: 'OneDollarVentures',
-
-  // Open Graph
+  generator: "v0.app",
+  
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -33,17 +41,9 @@ export const metadata: Metadata = {
     siteName: 'OneDollarVentures',
     title: 'OneDollarVentures - Back Projects with $1',
     description: 'Support the next big thing with just $1. Get unique NFTs, early access, and join the journey on Solana.',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'OneDollarVentures',
-      },
-    ],
+    images: ['/og-image.png'],
   },
-
-  // Twitter Card
+  
   twitter: {
     card: 'summary_large_image',
     title: 'OneDollarVentures - Back Projects with $1',
@@ -51,36 +51,44 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
     creator: '@onedollarventures',
   },
-
-  // Icons
+  
   icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
+    icon: [
+      {
+        url: "/icon-light-32x32.png",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/icon-dark-32x32.png",
+        media: "(prefers-color-scheme: dark)",
+      },
+      {
+        url: "/icon.svg",
+        type: "image/svg+xml",
+      },
+    ],
+    apple: "/apple-icon.png",
   },
-
-  // Manifest
+  
   manifest: '/site.webmanifest',
-};
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body
-        className="antialiased"
-      >
+    <html lang="en" className="dark">
+      <body className={`${inter.variable} ${poppins.variable} font-sans antialiased`}>
         <WalletContextProvider>
-          <TooltipProvider>
-            <Navbar />
-            {children}
-            <Toaster />
-          </TooltipProvider>
+          <SkipNav />
+          {children}
+          <BottomNav />
+          <Toaster />
+          <Analytics />
         </WalletContextProvider>
-        <Analytics />
       </body>
-    </html >
-  );
+    </html>
+  )
 }

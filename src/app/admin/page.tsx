@@ -1,193 +1,252 @@
-'use client';
+import { Header } from "@/components/header"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CheckCircle2, XCircle, Clock, TrendingUp, Users, Shield } from "lucide-react"
+import { Footer } from "@/components/footer"
 
-import { useEffect, useState } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { supabase } from "@/lib/supabase/client";
-import { Project } from "@/lib/types/project";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Loader2, CheckCircle, XCircle, ShieldAlert } from "lucide-react";
-import { toast } from "sonner";
-import { ClientOnlyWalletButton } from "@/components/wallet/client-only-wallet-button";
+const pendingProjects = [
+  {
+    id: "1",
+    title: "Blockchain Gaming Platform",
+    creator: "David Park",
+    category: "Gaming",
+    votes: 67,
+    submittedDate: "2 days ago",
+    status: "pending",
+  },
+  {
+    id: "2",
+    title: "AI Music Composition Tool",
+    creator: "Marcus Williams",
+    category: "Technology",
+    votes: 54,
+    submittedDate: "5 days ago",
+    status: "pending",
+  },
+]
 
-// Mock Admin Wallet - Replace with your actual wallet address for testing
-const ADMIN_WALLET = "7Xw... (Replace with your wallet)";
+const approvedProjects = [
+  {
+    id: "3",
+    title: "Sustainable Fashion Marketplace",
+    creator: "Maya Rodriguez",
+    category: "Social Impact",
+    votes: 89,
+    approvedDate: "1 week ago",
+    status: "approved",
+  },
+]
+
+const rejectedProjects = [
+  {
+    id: "4",
+    title: "Crypto Investment App",
+    creator: "John Doe",
+    category: "Finance",
+    votes: 12,
+    rejectedDate: "3 days ago",
+    reason: "Violates terms of service",
+    status: "rejected",
+  },
+]
 
 export default function AdminPage() {
-    const { publicKey, connected } = useWallet();
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [isAdmin, setIsAdmin] = useState(false);
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Header />
 
-    useEffect(() => {
-        if (connected && publicKey) {
-            // In a real app, you'd check this against an env var or database
-            // For now, we'll just allow access if connected (for demo purposes) 
-            // OR you can uncomment the line below to enforce a specific wallet
-            // setIsAdmin(publicKey.toBase58() === ADMIN_WALLET);
-            setIsAdmin(true);
-            fetchQueue();
-        } else {
-            setIsAdmin(false);
-            setLoading(false);
-        }
-    }, [connected, publicKey]);
-
-    async function fetchQueue() {
-        try {
-            const { data, error } = await supabase
-                .from('projects')
-                .select('*')
-                .eq('status', 'queue')
-                .order('created_at', { ascending: true });
-
-            if (error) throw error;
-            setProjects(data || []);
-        } catch (error) {
-            console.error("Error fetching queue:", error);
-            toast.error("Failed to fetch queue");
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    async function handleApprove(projectId: string) {
-        try {
-            const { error } = await supabase
-                .from('projects')
-                .update({ status: 'active' })
-                .eq('id', projectId);
-
-            if (error) throw error;
-
-            toast.success("Project approved!");
-            fetchQueue(); // Refresh list
-        } catch (error) {
-            console.error("Error approving project:", error);
-            toast.error("Failed to approve project");
-        }
-    }
-
-    async function handleReject(projectId: string) {
-        if (!confirm("Are you sure you want to reject this project?")) return;
-
-        try {
-            const { error } = await supabase
-                .from('projects')
-                .update({ status: 'rejected' }) // Ensure 'rejected' is handled in your app logic
-                .eq('id', projectId);
-
-            if (error) throw error;
-
-            toast.success("Project rejected");
-            fetchQueue(); // Refresh list
-        } catch (error) {
-            console.error("Error rejecting project:", error);
-            toast.error("Failed to reject project");
-        }
-    }
-
-    if (!connected) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-                <ShieldAlert className="w-16 h-16 text-muted-foreground" />
-                <h1 className="text-2xl font-bold">Admin Access Required</h1>
-                <p className="text-muted-foreground">Please connect an admin wallet to continue.</p>
-                <ClientOnlyWalletButton />
-            </div>
-        );
-    }
-
-    if (!isAdmin) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-                <XCircle className="w-16 h-16 text-destructive" />
-                <h1 className="text-2xl font-bold">Access Denied</h1>
-                <p className="text-muted-foreground">Your wallet is not authorized to view this page.</p>
-            </div>
-        );
-    }
-
-    if (loading) {
-        return (
-            <div className="flex justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-            </div>
-        );
-    }
-
-    return (
-        <div className="space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
-                <p className="text-muted-foreground">Manage project submissions and platform settings.</p>
-            </div>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle>Submission Queue</CardTitle>
-                    <CardDescription>Projects waiting for approval.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    {projects.length === 0 ? (
-                        <div className="text-center py-8 text-muted-foreground">
-                            No projects in the queue.
-                        </div>
-                    ) : (
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Project</TableHead>
-                                    <TableHead>Category</TableHead>
-                                    <TableHead>Creator</TableHead>
-                                    <TableHead>Submitted</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {projects.map((project) => (
-                                    <TableRow key={project.id}>
-                                        <TableCell>
-                                            <div className="font-medium">{project.title}</div>
-                                            <div className="text-xs text-muted-foreground truncate max-w-[200px]">
-                                                {project.tagline}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge variant="outline">{project.category}</Badge>
-                                        </TableCell>
-                                        <TableCell className="font-mono text-xs">
-                                            {project.creator_wallet.slice(0, 4)}...{project.creator_wallet.slice(-4)}
-                                        </TableCell>
-                                        <TableCell className="text-sm text-muted-foreground">
-                                            {new Date(project.created_at).toLocaleDateString()}
-                                        </TableCell>
-                                        <TableCell className="text-right space-x-2">
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                className="text-destructive hover:bg-destructive/10"
-                                                onClick={() => handleReject(project.id)}
-                                            >
-                                                Reject
-                                            </Button>
-                                            <Button
-                                                size="sm"
-                                                className="bg-green-600 hover:bg-green-700"
-                                                onClick={() => handleApprove(project.id)}
-                                            >
-                                                Approve
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    )}
-                </CardContent>
-            </Card>
+      <div className="container mx-auto py-12 flex-1">
+        {/* Header */}
+        <div className="mb-12">
+          <div className="flex items-center gap-3 mb-4">
+            <Shield className="h-8 w-8 text-accent" />
+            <Badge className="bg-accent/20 text-accent-foreground border-accent/30">Admin Panel</Badge>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Gatekeeper</h1>
+          <p className="text-xl text-muted-foreground">The community votes. You decide who ships.</p>
         </div>
-    );
+
+        {/* Stats */}
+        <div className="grid md:grid-cols-4 gap-6 mb-12">
+          <Card className="border-accent/30">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
+                  <Clock className="h-6 w-6 text-accent" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">12</p>
+                  <p className="text-sm text-muted-foreground">Waiting</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-accent/30">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-green-500/20 flex items-center justify-center">
+                  <CheckCircle2 className="h-6 w-6 text-green-500" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">156</p>
+                  <p className="text-sm text-muted-foreground">Let Through</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-accent/30">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-red-500/20 flex items-center justify-center">
+                  <XCircle className="h-6 w-6 text-red-500" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">23</p>
+                  <p className="text-sm text-muted-foreground">Blocked</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-accent/30">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-accent" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">87%</p>
+                  <p className="text-sm text-muted-foreground">Approval Rate</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tabs */}
+        <Tabs defaultValue="pending" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 max-w-md">
+            <TabsTrigger value="pending">Pending</TabsTrigger>
+            <TabsTrigger value="approved">Approved</TabsTrigger>
+            <TabsTrigger value="rejected">Rejected</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="pending" className="space-y-6">
+            {pendingProjects.map((project) => (
+              <Card key={project.id} className="hover:border-accent/50 transition-all">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-xl font-bold">{project.title}</h3>
+                        <Badge variant="secondary">{project.category}</Badge>
+                        <Badge className="bg-yellow-500/20 text-yellow-500 border-yellow-500/30">
+                          <Clock className="h-3 w-3 mr-1" />
+                          Pending
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">by {project.creator}</p>
+                      <div className="flex items-center gap-6 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4 text-accent" />
+                          <span className="font-semibold">{project.votes} community votes</span>
+                        </div>
+                        <span className="text-muted-foreground">Submitted {project.submittedDate}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3 pt-4 border-t">
+                    <Button variant="outline" className="flex-1 bg-transparent">
+                      View Full Details
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="border-red-500/50 text-red-500 hover:bg-red-500/10 bg-transparent"
+                    >
+                      <XCircle className="h-4 w-4 mr-2" />
+                      Reject
+                    </Button>
+                    <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                      <CheckCircle2 className="h-4 w-4 mr-2" />
+                      Approve
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+
+          <TabsContent value="approved" className="space-y-6">
+            {approvedProjects.map((project) => (
+              <Card key={project.id} className="border-green-500/30">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-xl font-bold">{project.title}</h3>
+                        <Badge variant="secondary">{project.category}</Badge>
+                        <Badge className="bg-green-500/20 text-green-500 border-green-500/30">
+                          <CheckCircle2 className="h-3 w-3 mr-1" />
+                          Approved
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">by {project.creator}</p>
+                      <div className="flex items-center gap-6 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4 text-accent" />
+                          <span>{project.votes} community votes</span>
+                        </div>
+                        <span className="text-muted-foreground">Approved {project.approvedDate}</span>
+                      </div>
+                    </div>
+                    <Button variant="outline">View Project</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+
+          <TabsContent value="rejected" className="space-y-6">
+            {rejectedProjects.map((project) => (
+              <Card key={project.id} className="border-red-500/30">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-xl font-bold">{project.title}</h3>
+                        <Badge variant="secondary">{project.category}</Badge>
+                        <Badge className="bg-red-500/20 text-red-500 border-red-500/30">
+                          <XCircle className="h-3 w-3 mr-1" />
+                          Rejected
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">by {project.creator}</p>
+                      <div className="flex items-center gap-6 text-sm mb-3">
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <span>{project.votes} votes</span>
+                        </div>
+                        <span className="text-muted-foreground">Rejected {project.rejectedDate}</span>
+                      </div>
+                      <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+                        <p className="text-sm font-semibold text-red-500 mb-1">Rejection Reason:</p>
+                        <p className="text-sm text-muted-foreground">{project.reason}</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      <Footer />
+    </div>
+  )
 }
