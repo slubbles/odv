@@ -3,10 +3,12 @@
 import type React from "react"
 
 import { Label } from "@/components/ui/label"
-import { AlertCircle, Upload, X, FileIcon } from "lucide-react"
+import { AlertCircle, Upload, X, FileIcon, CheckCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { useFileUpload } from "@/lib/hooks/use-file-upload"
+import { Progress } from "@/components/ui/progress"
 
 interface FormFileUploadProps {
   label: string
@@ -17,6 +19,8 @@ interface FormFileUploadProps {
   required?: boolean
   maxSize?: number
   multiple?: boolean
+  onUploadComplete?: (url: string, path: string) => void
+  folder?: string
 }
 
 export function FormFileUpload({
@@ -28,9 +32,13 @@ export function FormFileUpload({
   required,
   maxSize = 10,
   multiple = false,
+  onUploadComplete,
+  folder = 'uploads'
 }: FormFileUploadProps) {
   const [files, setFiles] = useState<File[]>([])
   const [dragActive, setDragActive] = useState(false)
+  const [uploadedUrls, setUploadedUrls] = useState<Array<{ url: string; path: string; file: File }>>([])
+  const { uploadFile, isUploading, progress } = useFileUpload({ folder, maxSize: maxSize * 1024 * 1024 })
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault()
@@ -51,14 +59,25 @@ export function FormFileUpload({
     }
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFiles(Array.from(e.target.files))
+      const fileList = Array.from(e.target.files)
+      setFiles(fileList)
+      
+      // Auto-upload first file
+      if (fileList.length > 0 && onUploadComplete) {
+        const result = await uploadFile(fileList[0])
+        if (result) {
+          setUploadedUrls([{ ...result, file: fileList[0] }])
+          onUploadComplete(result.url, result.path)
+        }
+      }
     }
   }
 
   const removeFile = (index: number) => {
     setFiles(files.filter((_, i) => i !== index))
+    setUploadedUrls(uploadedUrls.filter((_, i) => i !== index))
   }
 
   return (
@@ -103,20 +122,40 @@ export function FormFileUpload({
         </p>
       </div>
 
+      {isUploading && (
+        <div className="space-y-2 p-3 border rounded-lg bg-muted/30">
+          <p className="text-sm font-medium">Uploading...</p>
+          <Progress value={progress} className="h-2" />
+        </div>
+      )}
+
       {files.length > 0 && (
         <div className="space-y-2">
-          {files.map((file, index) => (
-            <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
-              <FileIcon className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{file.name}</p>
-                <p className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+          {files.map((file, index) => {
+            const uploaded = uploadedUrls.find(u => u.file === file)
+            return (
+              <div key={index} className={cn(
+                "flex items-center gap-3 p-3 border rounded-lg",
+                uploaded && "border-green-500/50 bg-green-500/5"
+              )}>
+                {uploaded ? (
+                  <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                ) : (
+                  <FileIcon className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{file.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {(file.size / 1024 / 1024).toFixed(2)} MB
+                    {uploaded && <span className="text-green-500 ml-2">✓ Uploaded</span>}
+                  </p>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => removeFile(index)} className="flex-shrink-0">
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => removeFile(index)} className="flex-shrink-0">
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 
