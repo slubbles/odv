@@ -13,6 +13,10 @@ import {
 import { NotificationBell } from "@/components/notification-bell"
 import { MobileNav } from "@/components/mobile-nav"
 import { ClientOnly } from "@/components/client-only"
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
+
+// Import wallet adapter styles
+import "@solana/wallet-adapter-react-ui/styles.css"
 
 export function Header() {
   return (
@@ -87,9 +91,11 @@ export function Header() {
           <ClientOnly>
             <NotificationBell />
           </ClientOnly>
-          <Button className="hidden sm:flex bg-accent text-accent-foreground hover:bg-accent/90 focus-visible:ring-0">
-            Connect Wallet
-          </Button>
+          <ClientOnly>
+            <div className="hidden sm:block wallet-button-wrapper">
+              <WalletMultiButton />
+            </div>
+          </ClientOnly>
         </div>
       </div>
     </header>

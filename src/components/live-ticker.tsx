@@ -5,14 +5,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DollarSign } from "lucide-react"
 
 const recentActivity = [
-  { name: "Sarah M.", action: "backed", project: "AI Recipe App", amount: 1, time: "2m ago", avatar: "/creator2.png" },
+  { name: "Sarah M.", action: "backed", project: "AI Recipe App", amount: 1, time: "2m ago", avatar: "https://i.pravatar.cc/150?u=sarah" },
   {
     name: "Alex T.",
     action: "backed",
     project: "Pixel Quest",
     amount: 5,
     time: "5m ago",
-    avatar: "/abstract-geometric-sculpture.png",
+    avatar: "https://i.pravatar.cc/150?u=alex",
   },
   {
     name: "Jordan L.",
@@ -20,7 +20,7 @@ const recentActivity = [
     project: "Coffee Roastery",
     amount: 1,
     time: "8m ago",
-    avatar: "/abstract-geometric-sculpture.png",
+    avatar: "https://i.pravatar.cc/150?u=jordan",
   },
   {
     name: "Emily W.",
@@ -28,7 +28,7 @@ const recentActivity = [
     project: "Mental Health App",
     amount: 3,
     time: "12m ago",
-    avatar: "/creator5.png",
+    avatar: "https://i.pravatar.cc/150?u=emily",
   },
   {
     name: "Marcus G.",
@@ -36,7 +36,7 @@ const recentActivity = [
     project: "Vertical Garden",
     amount: 0,
     time: "15m ago",
-    avatar: "/abstract-geometric-sculpture.png",
+    avatar: "https://i.pravatar.cc/150?u=marcus",
   },
 ]
 
