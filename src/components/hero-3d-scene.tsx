@@ -20,10 +20,10 @@ function FloatingCube({ position }: { position: [number, number, number] }) {
       <mesh ref={meshRef} position={position}>
         <boxGeometry args={[0.5, 0.5, 0.5]} />
         <meshStandardMaterial
-          color="oklch(0.55 0.22 25)"
+          color="#ff6b35"
           metalness={0.7}
           roughness={0.3}
-          emissive="oklch(0.55 0.22 25)"
+          emissive="#ff6b35"
           emissiveIntensity={0.3}
         />
       </mesh>
@@ -46,10 +46,10 @@ function FloatingOctahedron({ position }: { position: [number, number, number] }
       <mesh ref={meshRef} position={position}>
         <octahedronGeometry args={[0.4, 0]} />
         <meshStandardMaterial
-          color="oklch(0.6 0.18 35)"
+          color="#ffaa33"
           metalness={0.8}
           roughness={0.2}
-          emissive="oklch(0.6 0.18 35)"
+          emissive="#ffaa33"
           emissiveIntensity={0.2}
         />
       </mesh>
@@ -72,10 +72,10 @@ function FloatingTorus({ position }: { position: [number, number, number] }) {
       <mesh ref={meshRef} position={position}>
         <torusGeometry args={[0.3, 0.12, 16, 32]} />
         <meshStandardMaterial
-          color="oklch(0.58 0.2 30)"
+          color="#ff8844"
           metalness={0.9}
           roughness={0.1}
-          emissive="oklch(0.58 0.2 30)"
+          emissive="#ff8844"
           emissiveIntensity={0.25}
         />
       </mesh>
@@ -96,10 +96,10 @@ function CentralSphere() {
     <mesh ref={meshRef}>
       <Sphere args={[0.8, 64, 64]}>
         <meshStandardMaterial
-          color="oklch(0.55 0.22 25)"
+          color="#ff6b35"
           metalness={0.6}
           roughness={0.4}
-          emissive="oklch(0.55 0.22 25)"
+          emissive="#ff6b35"
           emissiveIntensity={0.2}
           wireframe
         />
@@ -125,8 +125,8 @@ export function Hero3DScene() {
         <Suspense fallback={null}>
           <ambientLight intensity={0.4} />
           <directionalLight position={[10, 10, 5]} intensity={1.2} />
-          <pointLight position={[-10, -10, -5]} intensity={0.6} color="oklch(0.55 0.22 25)" />
-          <pointLight position={[5, 5, 5]} intensity={0.4} color="oklch(0.6 0.18 35)" />
+          <pointLight position={[-10, -10, -5]} intensity={0.6} color="#ff6b35" />
+          <pointLight position={[5, 5, 5]} intensity={0.4} color="#ffaa33" />
 
           <Stars radius={50} depth={50} count={isLowPerf ? 500 : 1000} factor={2} saturation={0} fade speed={0.5} />
 
