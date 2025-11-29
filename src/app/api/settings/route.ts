@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { getSupabaseClient } from '@/lib/supabase/api-client'
 
 // GET /api/settings - Get user settings
-export async function GET(request: NextRequest) {
+export async function PUT(request: NextRequest) {
   try {
+    const supabase = getSupabaseClient()
+    const supabase = getSupabaseClient()
     const { searchParams } = new URL(request.url)
     const wallet = searchParams.get('wallet')
 

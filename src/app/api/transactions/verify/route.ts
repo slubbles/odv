@@ -10,6 +10,7 @@ const supabase = createClient(
 // POST /api/transactions/verify - Verify blockchain transaction
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseClient()
     const body = await request.json()
     const { txSignature } = body
 
