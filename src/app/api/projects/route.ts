@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     // Start query
     let query = supabase
       .from('projects')
-      .select('*, users!projects_creator_wallet_fkey(name, avatar_url)', { count: 'exact' })
+      .select('*', { count: 'exact' })
 
     // Apply filters
     if (status && status !== 'all') {
