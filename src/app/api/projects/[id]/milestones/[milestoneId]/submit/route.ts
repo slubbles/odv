@@ -7,6 +7,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string; milestoneId: string }> }
 ) {
   try {
+    const supabase = getSupabaseClient()
     const { milestoneId } = await params
     const body = await request.json()
     const { proofUrl, proofDescription } = body

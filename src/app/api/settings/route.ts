@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseClient } from '@/lib/supabase/api-client'
 
 // GET /api/settings - Get user settings
-export async function PUT(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const supabase = getSupabaseClient()
     const supabase = getSupabaseClient()
     const { searchParams } = new URL(request.url)
     const wallet = searchParams.get('wallet')
@@ -39,6 +38,7 @@ export async function PUT(request: NextRequest) {
 // PATCH /api/settings - Update user settings
 export async function PATCH(request: NextRequest) {
   try {
+    const supabase = getSupabaseClient()
     const body = await request.json()
     const { wallet, notificationPreferences, privacySettings, email } = body
 

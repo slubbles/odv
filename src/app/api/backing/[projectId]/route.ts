@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { getSupabaseClient } from '@/lib/supabase/api-client'
 import { Connection, PublicKey } from '@solana/web3.js'
 import { createFundCampaignTransaction } from '@/lib/solana/transaction'
 
@@ -8,6 +8,7 @@ export async function POST(
   { params }: { params: Promise<{ projectId: string }> }
 ) {
   try {
+    const supabase = getSupabaseClient()
     const { projectId } = await params
     const body = await request.json()
     
@@ -151,6 +152,7 @@ export async function GET(
   { params }: { params: Promise<{ projectId: string }> }
 ) {
   try {
+    const supabase = getSupabaseClient()
     const { projectId } = await params
     const { searchParams } = new URL(request.url)
     const walletAddress = searchParams.get('wallet')

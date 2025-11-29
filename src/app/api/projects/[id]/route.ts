@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { getSupabaseClient } from '@/lib/supabase/api-client'
 
 // GET /api/projects/[id] - Get single project with full details
 export async function GET(
@@ -7,6 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const supabase = getSupabaseClient()
     const { id } = await params
 
     // Fetch project with creator info
@@ -84,6 +85,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const supabase = getSupabaseClient()
     const { id } = await params
     const body = await request.json()
     
@@ -180,6 +182,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const supabase = getSupabaseClient()
     const { id } = await params
     const { searchParams } = new URL(request.url)
     const wallet_address = searchParams.get('wallet')

@@ -7,6 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ txHash: string }> }
 ) {
   try {
+    const supabase = getSupabaseClient()
     const { txHash } = await params
 
     const { data: transaction, error } = await supabase

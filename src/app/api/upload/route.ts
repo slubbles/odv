@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { getSupabaseClient } from '@/lib/supabase/api-client'
 
 // POST /api/upload - Upload file to Supabase Storage
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseClient()
     const formData = await request.formData()
     const file = formData.get('file') as File
     const bucket = formData.get('bucket') as string || 'project-images'
@@ -87,6 +88,7 @@ export async function POST(request: NextRequest) {
 // DELETE /api/upload - Delete file from Supabase Storage
 export async function DELETE(request: NextRequest) {
   try {
+    const supabase = getSupabaseClient()
     const { searchParams } = new URL(request.url)
     const path = searchParams.get('path')
     const bucket = searchParams.get('bucket') || 'project-images'

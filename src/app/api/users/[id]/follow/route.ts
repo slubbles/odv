@@ -7,6 +7,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const supabase = getSupabaseClient()
     const { id: followingWallet } = await params
     const body = await request.json()
     const { followerWallet } = body
@@ -68,6 +69,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const supabase = getSupabaseClient()
     const { id: followingWallet } = await params
     const { searchParams } = new URL(request.url)
     const followerWallet = searchParams.get('follower')

@@ -7,6 +7,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string; milestoneId: string }> }
 ) {
   try {
+    const supabase = getSupabaseClient()
     const { milestoneId } = await params
     const body = await request.json()
     const { title, description, percentage, deadline } = body
@@ -45,6 +46,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string; milestoneId: string }> }
 ) {
   try {
+    const supabase = getSupabaseClient()
     const { milestoneId } = await params
 
     // Check if milestone can be deleted (must be locked)
