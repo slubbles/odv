@@ -38,7 +38,7 @@ export default function Home() {
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: "radial-gradient(ellipse at top, oklch(0.55 0.22 25 / 0.08) 0%, transparent 60%)",
+              background: "radial-gradient(ellipse at top, rgba(232, 76, 39, 0.08) 0%, transparent 60%)",
             }}
             aria-hidden="true"
           />
@@ -52,7 +52,7 @@ export default function Home() {
               className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 text-balance leading-tight"
             >
               Shark Tank if{" "}
-              <span className="bg-gradient-to-r from-[oklch(0.55_0.22_25)] to-[oklch(0.6_0.18_35)] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#e84c27] to-[#f4a127] bg-clip-text text-transparent">
                 sharks were $1
               </span>
             </h1>
@@ -200,7 +200,7 @@ export default function Home() {
             <div
               className="absolute inset-0 opacity-10"
               style={{
-                background: "linear-gradient(135deg, oklch(0.55_0.22_25) 0%, oklch(0.6_0.18_35) 100%)",
+                background: "linear-gradient(135deg, #e84c27 0%, #f4a127 100%)",
               }}
               aria-hidden="true"
             />
