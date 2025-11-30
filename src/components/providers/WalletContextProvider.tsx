@@ -18,7 +18,7 @@ export const WalletContextProvider: FC<{ children: ReactNode }> = ({ children })
         () => [
             new SolflareWalletAdapter(),
         ],
-        [network]
+        []
     );
 
     return (

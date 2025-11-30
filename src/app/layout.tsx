@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import "@solana/wallet-adapter-react-ui/styles.css"
 import { WalletContextProvider } from "@/components/providers/WalletContextProvider"
+import { QueryClientProvider } from "@/components/providers/QueryClientProvider"
 import { SkipNav } from "@/components/skip-nav"
 import { BottomNav } from "@/components/bottom-nav"
 import { Toaster } from "sonner"
@@ -82,13 +83,15 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.variable} ${poppins.variable} font-sans antialiased`}>
-        <WalletContextProvider>
-          <SkipNav />
-          {children}
-          <BottomNav />
-          <Toaster />
-          <Analytics />
-        </WalletContextProvider>
+        <QueryClientProvider>
+          <WalletContextProvider>
+            <SkipNav />
+            {children}
+            <BottomNav />
+            <Toaster />
+            <Analytics />
+          </WalletContextProvider>
+        </QueryClientProvider>
       </body>
     </html>
   )

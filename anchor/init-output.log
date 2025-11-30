@@ -1,0 +1,27 @@
+
+Found a 'test' script in the Anchor.toml. Running it as a test suite!
+
+Running test suite: "/workspaces/odv/anchor/Anchor.toml"
+
+npm WARN exec The following package was not found and will be installed: mocha@11.7.5
+
+✖ ERROR: Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'ts-node' imported from /home/codespace/.npm/_npx/508606763866ae01/node_modules/mocha/lib/nodejs/esm-utils.js
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:314:9)
+    at packageResolve (node:internal/modules/esm/resolve:767:81)
+    at moduleResolve (node:internal/modules/esm/resolve:853:18)
+    at defaultResolve (node:internal/modules/esm/resolve:983:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:731:20)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:310:38)
+    at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:664:36)
+    at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+    at ModuleLoader.import (node:internal/modules/esm/loader:663:21)
+    at defaultImportModuleDynamicallyForScript (node:internal/modules/esm/utils:235:31)
+    at importModuleDynamicallyCallback (node:internal/modules/esm/utils:257:12)
+    at exports.doImport (/home/codespace/.npm/_npx/508606763866ae01/node_modules/mocha/lib/nodejs/esm-utils.js:36:34)
+    at formattedImport (/home/codespace/.npm/_npx/508606763866ae01/node_modules/mocha/lib/nodejs/esm-utils.js:33:18)
+    at requireModule (/home/codespace/.npm/_npx/508606763866ae01/node_modules/mocha/lib/nodejs/esm-utils.js:102:36)
+    at exports.handleRequires (/home/codespace/.npm/_npx/508606763866ae01/node_modules/mocha/lib/cli/run-helpers.js:103:34)
+    at async /home/codespace/.npm/_npx/508606763866ae01/node_modules/mocha/lib/cli/run.js:358:25 {
+  code: 'ERR_MODULE_NOT_FOUND'
+}

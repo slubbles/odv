@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+declare_id!("4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA");
 
 #[program]
 pub mod odv_escrow {
@@ -16,6 +16,7 @@ pub mod odv_escrow {
         platform_config.fixed_backing_amount = fixed_backing_amount;
         platform_config.total_campaigns = 0;
         platform_config.total_backers = 0;
+        platform_config.paused = false;
         platform_config.bump = ctx.bumps.platform_config;
         Ok(())
     }
@@ -27,6 +28,24 @@ pub mod odv_escrow {
     ) -> Result<()> {
         let platform_config = &mut ctx.accounts.platform_config;
         platform_config.fixed_backing_amount = new_amount;
+        Ok(())
+    }
+
+    /// Pause platform (emergency stop, admin only)
+    pub fn pause_platform(
+        ctx: Context<UpdatePlatformConfig>,
+    ) -> Result<()> {
+        let platform_config = &mut ctx.accounts.platform_config;
+        platform_config.paused = true;
+        Ok(())
+    }
+
+    /// Unpause platform (admin only)
+    pub fn unpause_platform(
+        ctx: Context<UpdatePlatformConfig>,
+    ) -> Result<()> {
+        let platform_config = &mut ctx.accounts.platform_config;
+        platform_config.paused = false;
         Ok(())
     }
 
@@ -52,6 +71,8 @@ pub mod odv_escrow {
                 title: m.title,
                 amount: m.amount,
                 status: MilestoneStatus::Locked,
+                proof_url: None,
+                submitted_at: None,
                 votes_approve: 0,
                 votes_dispute: 0,
             });
@@ -68,9 +89,13 @@ pub mod odv_escrow {
     /// Creator submits proof for current active milestone
     pub fn submit_milestone_proof(
         ctx: Context<SubmitMilestoneProof>,
-        _proof_url: String, // IPFS CID or URL to proof (stored off-chain for now)
+        proof_url: String, // IPFS CID or URL to proof
     ) -> Result<()> {
         let campaign = &mut ctx.accounts.campaign;
+        let platform_config = &ctx.accounts.platform_config;
+        
+        require!(!platform_config.paused, ErrorCode::PlatformPaused);
+        
         let index = campaign.current_milestone_index as usize;
 
         require!(index < campaign.milestones.len(), ErrorCode::NoMoreMilestones);
@@ -81,11 +106,10 @@ pub mod odv_escrow {
             ErrorCode::MilestoneNotActive
         );
 
-        // Store proof URL (in production, might store full struct with metadata)
+        // Store proof URL and submission timestamp
+        milestone.proof_url = Some(proof_url);
+        milestone.submitted_at = Some(Clock::get()?.unix_timestamp);
         milestone.status = MilestoneStatus::InReview;
-        
-        // Note: proof_url is passed but not stored in current struct
-        // In production, add proof_url field to Milestone struct
         
         Ok(())
     }
@@ -169,6 +193,23 @@ pub mod odv_escrow {
     }
 
     pub fn release_milestone(ctx: Context<ReleaseMilestone>) -> Result<()> {
+        let platform_config = &ctx.accounts.platform_config;
+        
+        // Security: Platform must not be paused
+        require!(!platform_config.paused, ErrorCode::PlatformPaused);
+        
+        // Security: Only creator can release funds
+        require!(
+            ctx.accounts.creator.key() == ctx.accounts.campaign.creator,
+            ErrorCode::UnauthorizedWithdrawal
+        );
+        
+        // Security: Goal must be reached before releasing funds
+        require!(
+            ctx.accounts.campaign.raised >= ctx.accounts.campaign.goal,
+            ErrorCode::GoalNotReached
+        );
+        
         // Read values needed for validation and transfer (immutable borrows only)
         let index = ctx.accounts.campaign.current_milestone_index as usize;
 
@@ -214,6 +255,51 @@ pub mod odv_escrow {
 
         Ok(())
     }
+
+    /// Refund all backers if campaign fails to reach goal by deadline
+    pub fn refund_campaign(
+        ctx: Context<RefundCampaign>,
+    ) -> Result<()> {
+        let campaign = &ctx.accounts.campaign;
+        let clock = Clock::get()?;
+        
+        // Check deadline has passed
+        require!(
+            clock.unix_timestamp > campaign.deadline,
+            ErrorCode::DeadlineNotReached
+        );
+        
+        // Check goal was not met
+        require!(
+            campaign.raised < campaign.goal,
+            ErrorCode::GoalAlreadyReached
+        );
+        
+        let amount = ctx.accounts.platform_config.fixed_backing_amount;
+        let creator_key = campaign.creator;
+        let bump = campaign.bump;
+        
+        // Transfer refund to backer
+        let seeds = &[
+            b"campaign".as_ref(),
+            creator_key.as_ref(),
+            &[bump],
+        ];
+        let signer = &[&seeds[..]];
+
+        let cpi_context = CpiContext::new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            anchor_spl::token::Transfer {
+                from: ctx.accounts.campaign_vault.to_account_info(),
+                to: ctx.accounts.backer_token_account.to_account_info(),
+                authority: ctx.accounts.campaign.to_account_info(),
+            },
+            signer,
+        );
+        anchor_spl::token::transfer(cpi_context, amount)?;
+        
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -221,7 +307,7 @@ pub struct InitializePlatform<'info> {
     #[account(
         init,
         payer = admin,
-        space = 8 + 32 + 8 + 8 + 8 + 1,
+        space = 8 + 32 + 8 + 8 + 8 + 1 + 1,
         seeds = [b"platform_config"],
         bump
     )]
@@ -268,6 +354,11 @@ pub struct SubmitMilestoneProof<'info> {
     )]
     pub campaign: Account<'info, Campaign>,
     pub creator: Signer<'info>,
+    #[account(
+        seeds = [b"platform_config"],
+        bump = platform_config.bump,
+    )]
+    pub platform_config: Account<'info, PlatformConfig>,
 }
 
 #[derive(Accounts)]
@@ -318,11 +409,33 @@ pub struct ReleaseMilestone<'info> {
     pub campaign: Account<'info, Campaign>,
     #[account(mut)]
     pub campaign_vault: Account<'info, anchor_spl::token::TokenAccount>,
-    /// CHECK: Verified by has_one constraint
     #[account(mut)]
-    pub creator: AccountInfo<'info>,
+    pub creator: Signer<'info>,
     #[account(mut)]
     pub creator_token_account: Account<'info, anchor_spl::token::TokenAccount>,
+    #[account(
+        seeds = [b"platform_config"],
+        bump = platform_config.bump,
+    )]
+    pub platform_config: Account<'info, PlatformConfig>,
+    pub token_program: Program<'info, anchor_spl::token::Token>,
+}
+
+#[derive(Accounts)]
+pub struct RefundCampaign<'info> {
+    #[account(mut)]
+    pub campaign: Account<'info, Campaign>,
+    #[account(mut)]
+    pub campaign_vault: Account<'info, anchor_spl::token::TokenAccount>,
+    #[account(mut)]
+    pub backer: Signer<'info>,
+    #[account(mut)]
+    pub backer_token_account: Account<'info, anchor_spl::token::TokenAccount>,
+    #[account(
+        seeds = [b"platform_config"],
+        bump = platform_config.bump,
+    )]
+    pub platform_config: Account<'info, PlatformConfig>,
     pub token_program: Program<'info, anchor_spl::token::Token>,
 }
 
@@ -332,6 +445,7 @@ pub struct PlatformConfig {
     pub fixed_backing_amount: u64,        // Fixed amount per backing (e.g., 1_000_000 = $1 USDC)
     pub total_campaigns: u64,             // Total campaigns created
     pub total_backers: u64,               // Total unique backers
+    pub paused: bool,                     // Emergency pause flag
     pub bump: u8,
 }
 
@@ -352,6 +466,8 @@ pub struct Milestone {
     pub title: String,
     pub amount: u64,
     pub status: MilestoneStatus,
+    pub proof_url: Option<String>,
+    pub submitted_at: Option<i64>,
     pub votes_approve: u64,
     pub votes_dispute: u64,
 }
@@ -384,4 +500,14 @@ pub enum ErrorCode {
     MilestoneNotInReview,
     #[msg("Unauthorized: Only admin can perform this action")]
     UnauthorizedAdmin,
+    #[msg("Unauthorized: Only creator can withdraw funds")]
+    UnauthorizedWithdrawal,
+    #[msg("Goal not reached: Cannot release funds until funding goal is met")]
+    GoalNotReached,
+    #[msg("Platform is paused: Operations are temporarily disabled")]
+    PlatformPaused,
+    #[msg("Deadline not reached: Cannot refund until campaign deadline passes")]
+    DeadlineNotReached,
+    #[msg("Goal already reached: Cannot refund successful campaign")]
+    GoalAlreadyReached,
 }

@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       query = query.eq('status', status)
     }
 
-    if (category && category !== 'all') {
+    if (category) {
       query = query.eq('category', category)
     }
 
