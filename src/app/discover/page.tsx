@@ -46,8 +46,8 @@ export default function DiscoverPage() {
         <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input 
-              placeholder="Search projects..." 
+            <Input
+              placeholder="Search projects..."
               className="pl-10"
               value={searchQuery}
               onChange={(e) => {
@@ -142,8 +142,8 @@ export default function DiscoverPage() {
           {error && (
             <div className="text-center py-12 text-red-400">
               <p>{error}</p>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="mt-4"
                 onClick={() => window.location.reload()}
               >
@@ -163,9 +163,32 @@ export default function DiscoverPage() {
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {projects.map((project: any) => (
-                <ProjectCard key={project.id} {...project} />
-              ))}
+              {projects.map((project: any) => {
+                // Transform database fields to match ProjectCard props
+                const daysLeft = project.deadline
+                  ? Math.max(0, Math.ceil((new Date(project.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+                  : 0;
+
+                return (
+                  <ProjectCard
+                    key={project.id}
+                    id={project.id}
+                    title={project.title}
+                    description={project.description || project.tagline}
+                    creator={{
+                      name: project.creator_name || 'Anonymous',
+                      avatar: project.creator_avatar
+                    }}
+                    category={project.category}
+                    image={project.image_url}
+                    raised={project.raised}
+                    goal={project.goal}
+                    backers={project.backers_count}
+                    daysLeft={daysLeft}
+                    trending={project.backers_count > 200}
+                  />
+                );
+              })}
             </div>
           )}
         </div>

@@ -427,11 +427,12 @@ INSERT INTO follows (id, follower_wallet, following_wallet, created_at) VALUES
 ('e3333333-3333-3333-3333-000000000003', 'BaCKeR4WaLLeT999999999999999999999999999', 'EYx0rSs6NzrYskXXwMdZfS9iZZoL1MzZ0AO5LrSZzRoF', NOW() - INTERVAL '10 days');
 
 -- Sample notifications (corrected to use user_wallet)
-INSERT INTO notifications (id, user_wallet, type, title, message, project_id, created_at, is_read) VALUES
-('d1111111-1111-1111-1111-000000000001', 'BaCKeR1WaLLeT666666666666666666666666666', 'project_update', 'DeFi Dashboard Pro posted an update', 'MVP is Live! 🎉', 'aaaaaaaa-aaaa-aaaa-aaaa-000000000001', NOW() - INTERVAL '10 days', true),
-('d1111111-1111-1111-1111-000000000002', 'BaCKeR1WaLLeT666666666666666666666666666', 'project_update', 'DeFi Dashboard Pro posted an update', 'NFT Module in Testing', 'aaaaaaaa-aaaa-aaaa-aaaa-000000000001', NOW() - INTERVAL '3 days', false),
-('d2222222-2222-2222-2222-000000000001', 'BaCKeR2WaLLeT777777777777777777777777777', 'milestone_completed', 'DeFi Dashboard Pro completed a milestone', 'MVP with 5 wallet integrations', 'aaaaaaaa-aaaa-aaaa-aaaa-000000000001', NOW() - INTERVAL '10 days', true),
-('d3333333-3333-3333-3333-000000000001', 'BaCKeR3WaLLeT888888888888888888888888888', 'project_funded', 'Carbon Credit NFT Marketplace is 75% funded!', 'Only $6,077 to go!', 'aaaaaaaa-aaaa-aaaa-aaaa-000000000002', NOW() - INTERVAL '5 days', false);
+INSERT INTO notifications (id, user_wallet, type, title, message, data, created_at, read) VALUES
+('d1111111-1111-1111-1111-000000000001', 'BaCKeR1WaLLeT666666666666666666666666666', 'project_update', 'DeFi Dashboard Pro posted an update', 'MVP is Live! 🎉', '{"project_id": "aaaaaaaa-aaaa-aaaa-aaaa-000000000001"}'::jsonb, NOW() - INTERVAL '10 days', true),
+('d1111111-1111-1111-1111-000000000002', 'BaCKeR1WaLLeT666666666666666666666666666', 'project_update', 'DeFi Dashboard Pro posted an update', 'NFT Module in Testing', '{"project_id": "aaaaaaaa-aaaa-aaaa-aaaa-000000000001"}'::jsonb, NOW() - INTERVAL '3 days', false),
+('d2222222-2222-2222-2222-000000000001', 'BaCKeR2WaLLeT777777777777777777777777777', 'milestone_completed', 'DeFi Dashboard Pro completed a milestone', 'MVP with 5 wallet integrations', '{"project_id": "aaaaaaaa-aaaa-aaaa-aaaa-000000000001"}'::jsonb, NOW() - INTERVAL '10 days', true),
+('d3333333-3333-3333-3333-000000000001', 'BaCKeR3WaLLeT888888888888888888888888888', 'project_funded', 'Carbon Credit NFT Marketplace is 75% funded!', 'Only $6,077 to go!', '{"project_id": "aaaaaaaa-aaaa-aaaa-aaaa-000000000002"}'::jsonb, NOW() - INTERVAL '5 days', false);
+
 
 -- ============================================================================
 -- 7. ACTIVITY FEED
