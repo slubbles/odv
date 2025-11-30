@@ -32,10 +32,21 @@ OneDollarVentures is like Kickstarter met Solana at a dollar store, fell in love
 
 - **Frontend**: Next.js 15 (because we like living on the edge)
 - **Styling**: TailwindCSS + shadcn/ui (pretty components go brrr)
-- **Blockchain**: Solana (fast, cheap, web3-y)
+- **Blockchain**: SOON Network (SVM rollup - Solana-compatible, faster, cheaper)
 - **Database**: Supabase (PostgreSQL but make it serverless)
-- **Payments**: USDC on Solana (stablecoins for stable minds)
+- **Payments**: USDC on SOON/Solana (stablecoins for stable minds)
 - **NFTs**: Metaplex (your proof of early support)
+
+## 🌐 Network
+
+This project runs on **SOON Network Testnet** - an Ethereum-based SVM rollup that's 100% Solana-compatible.
+
+- **RPC Endpoint**: https://rpc.testnet.soo.network/rpc
+- **Explorer**: https://explorer.testnet.soo.network
+- **Faucet**: https://faucet.testnet.soo.network
+- **Why SOON?**: Lower fees (~90%), faster finality, same Solana experience
+
+See [SOON_NETWORK_MIGRATION.md](./SOON_NETWORK_MIGRATION.md) for setup details.
 
 ## 🚀 Getting Started
 

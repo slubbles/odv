@@ -16,6 +16,7 @@ import {
     TOKEN_PROGRAM_ID
 } from '@solana/spl-token';
 import { getCampaignPDA, getCampaignVaultPDA, ODV_ESCROW_PROGRAM_ID } from './program';
+import { getExplorerTransactionUrl, isSoonNetwork } from './network-utils';
 
 // Devnet USDC Mint Address (Standard)
 export const USDC_MINT_ADDRESS = new PublicKey("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
@@ -96,6 +97,61 @@ export async function createFundCampaignTransaction(
     transaction.feePayer = backerPublicKey;
 
     return transaction;
+}
+
+/**
+ * Get transaction confirmation with appropriate settings for current network
+ */
+export async function confirmTransaction(
+    connection: Connection,
+    signature: string,
+    commitment: 'processed' | 'confirmed' | 'finalized' = 'confirmed'
+): Promise<void> {
+    // SOON Network typically has faster confirmation times
+    const maxRetries = isSoonNetwork() ? 3 : 5;
+    
+    let retries = 0;
+    while (retries < maxRetries) {
+        try {
+            const confirmation = await connection.confirmTransaction(signature, commitment);
+            if (confirmation.value.err) {
+                throw new Error(`Transaction failed: ${JSON.stringify(confirmation.value.err)}`);
+            }
+            return;
+        } catch (error) {
+            retries++;
+            if (retries >= maxRetries) {
+                throw error;
+            }
+            // Wait before retrying
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+    }
+}
+
+/**
+ * Send and confirm transaction with network-appropriate settings
+ */
+export async function sendAndConfirmTransactionWithRetry(
+    connection: Connection,
+    transaction: Transaction,
+    commitment: 'processed' | 'confirmed' | 'finalized' = 'confirmed'
+): Promise<string> {
+    const signature = await connection.sendRawTransaction(transaction.serialize(), {
+        maxRetries: isSoonNetwork() ? 3 : 5,
+        preflightCommitment: commitment,
+        skipPreflight: false,
+    });
+    
+    await confirmTransaction(connection, signature, commitment);
+    return signature;
+}
+
+/**
+ * Get explorer URL for a transaction signature
+ */
+export function getTransactionExplorerUrl(signature: string): string {
+    return getExplorerTransactionUrl(signature);
 }
 
 // Legacy function kept for backward compatibility (will remove after full migration)
