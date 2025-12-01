@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useWallet, useConnection } from "@solana/wallet-adapter-react"
 import { PublicKey } from "@solana/web3.js"
 import { createFundCampaignTransaction } from "@/lib/solana/transaction"
+import { getExplorerTransactionUrl } from "@/lib/solana/network-utils"
 import { toast } from "sonner"
 
 export function useBackProject() {
@@ -20,7 +21,7 @@ export function useBackProject() {
     setIsSubmitting(true)
 
     try {
-      // Step 1: Create Solana transaction
+      // Step 1: Create Solana transaction for SOON Testnet
       const creatorPublicKey = new PublicKey(creatorWallet)
       const transaction = await createFundCampaignTransaction(
         connection,
@@ -31,10 +32,13 @@ export function useBackProject() {
 
       // Step 2: Sign and send transaction
       const signedTx = await signTransaction(transaction)
-      const signature = await connection.sendRawTransaction(signedTx.serialize())
+      const signature = await connection.sendRawTransaction(signedTx.serialize(), {
+        skipPreflight: false,
+        preflightCommitment: 'confirmed'
+      })
       
       // Step 3: Confirm transaction
-      toast.loading("Confirming transaction...", { id: "backing" })
+      toast.loading("Confirming transaction on SOON Testnet...", { id: "backing" })
       await connection.confirmTransaction(signature, 'confirmed')
 
       // Step 4: Record backing in database
@@ -56,9 +60,14 @@ export function useBackProject() {
         throw new Error(data.error || 'Failed to record backing')
       }
 
-      toast.success("Successfully backed project! 🎉", { id: "backing" })
+      const explorerUrl = getExplorerTransactionUrl(signature)
+      toast.success("Successfully backed project! 🎉", { 
+        id: "backing",
+        description: `View on SOON Explorer: ${explorerUrl}`,
+        duration: 5000
+      })
       
-      return { success: true, signature, backing: data.backing }
+      return { success: true, signature, backing: data.backing, explorerUrl }
 
     } catch (error: any) {
       console.error('Failed to back project:', error)

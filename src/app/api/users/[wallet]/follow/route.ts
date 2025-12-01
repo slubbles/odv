@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSupabaseClient } from '@/lib/supabase/api-client'
+import { createClient } from '@/lib/supabase/server'
 
-// POST /api/users/[id]/follow - Follow a creator
+// POST /api/users/[wallet]/follow - Follow a creator
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ wallet: string }> }
 ) {
   try {
-    const supabase = getSupabaseClient()
-    const { id: followingWallet } = await params
+    const supabase = await createClient()
+    const { wallet: followingWallet } = await params
     const body = await request.json()
     const { followerWallet } = body
 
@@ -63,14 +63,14 @@ export async function POST(
   }
 }
 
-// DELETE /api/users/[id]/follow - Unfollow a creator
+// DELETE /api/users/[wallet]/follow - Unfollow a creator
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ wallet: string }> }
 ) {
   try {
-    const supabase = getSupabaseClient()
-    const { id: followingWallet } = await params
+    const supabase = await createClient()
+    const { wallet: followingWallet } = await params
     const { searchParams } = new URL(request.url)
     const followerWallet = searchParams.get('follower')
 

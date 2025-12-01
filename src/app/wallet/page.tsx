@@ -1,122 +1,125 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { useWallet, useConnection } from "@solana/wallet-adapter-react"
+import { LAMPORTS_PER_SOL } from "@solana/web3.js"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { TrendingUp, TrendingDown, Download, Plus, Award } from "lucide-react"
+import { TrendingUp, TrendingDown, Award, Loader2, AlertCircle, ExternalLink, Copy, Check } from "lucide-react"
+import { toast } from "sonner"
 
-const transactions = [
-  {
-    id: 1,
-    type: "backed",
-    description: "Backed: AI-Powered Recipe Discovery",
-    amount: -25,
-    date: "2025-01-15",
-    status: "completed",
-  },
-  {
-    id: 2,
-    type: "backed",
-    description: "Backed: Sustainable Fashion Marketplace",
-    amount: -10,
-    date: "2025-01-14",
-    status: "completed",
-  },
-  {
-    id: 3,
-    type: "deposit",
-    description: "Wallet Top-up",
-    amount: 100,
-    date: "2025-01-12",
-    status: "completed",
-  },
-  {
-    id: 4,
-    type: "backed",
-    description: "Backed: Indie Game Studio: Pixel Quest",
-    amount: -50,
-    date: "2025-01-10",
-    status: "completed",
-  },
-  {
-    id: 5,
-    type: "withdraw",
-    description: "Withdrawal to Bank",
-    amount: -200,
-    date: "2025-01-08",
-    status: "completed",
-  },
-  {
-    id: 6,
-    type: "backed",
-    description: "Backed: Mental Health Journaling App",
-    amount: -15,
-    date: "2025-01-05",
-    status: "completed",
-  },
-  {
-    id: 7,
-    type: "deposit",
-    description: "Wallet Top-up",
-    amount: 250,
-    date: "2025-01-01",
-    status: "completed",
-  },
-]
+interface Transaction {
+  id: string
+  project_id: string
+  project_title: string
+  amount: number
+  transaction_signature: string
+  created_at: string
+}
 
-const nftCollection = [
-  {
-    id: 1,
-    name: "Gold Founder Badge",
-    project: "AI-Powered Recipe Discovery",
-    image: "/placeholder.svg?key=nft1",
-    tier: "Gold Supporter",
-    earnedDate: "2025-01-15",
-  },
-  {
-    id: 2,
-    name: "Gold Supporter Badge",
-    project: "Indie Game Studio",
-    image: "/placeholder.svg?key=nft2",
-    tier: "Gold Supporter",
-    earnedDate: "2025-01-10",
-  },
-  {
-    id: 3,
-    name: "Silver Supporter Badge",
-    project: "Mental Health App",
-    image: "/placeholder.svg?key=nft3",
-    tier: "Silver Supporter",
-    earnedDate: "2025-01-05",
-  },
-  {
-    id: 4,
-    name: "Silver Supporter Badge",
-    project: "Sustainable Fashion",
-    image: "/placeholder.svg?key=nft4",
-    tier: "Silver Supporter",
-    earnedDate: "2025-01-14",
-  },
-  {
-    id: 5,
-    name: "Bronze Supporter Badge",
-    project: "Community Coffee Roastery",
-    image: "/placeholder.svg?key=nft5",
-    tier: "Bronze Supporter",
-    earnedDate: "2024-12-28",
-  },
-  {
-    id: 6,
-    name: "Early Backer Badge",
-    project: "Urban Vertical Garden",
-    image: "/placeholder.svg?key=nft6",
-    tier: "Early Backer",
-    earnedDate: "2024-12-20",
-  },
-]
+interface NFTBadge {
+  id: string
+  project_id: string
+  project_title: string
+  tier: string
+  earned_at: string
+}
 
 export default function WalletPage() {
+  const { publicKey, connected } = useWallet()
+  const { connection } = useConnection()
+  const [solBalance, setSolBalance] = useState<number | null>(null)
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [badges, setBadges] = useState<NFTBadge[]>([])
+  const [loading, setLoading] = useState(true)
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    if (!connected || !publicKey) {
+      setLoading(false)
+      return
+    }
+
+    const fetchData = async () => {
+      setLoading(true)
+      try {
+        // Fetch SOL balance
+        const balance = await connection.getBalance(publicKey)
+        setSolBalance(balance / LAMPORTS_PER_SOL)
+
+        // Fetch backing history (transactions)
+        const txResponse = await fetch(`/api/wallet/transactions?wallet=${publicKey.toString()}`)
+        if (txResponse.ok) {
+          const txData = await txResponse.json()
+          setTransactions(txData.transactions || [])
+        }
+
+        // For now, badges are derived from transactions
+        // In future, this would fetch actual NFT metadata
+        const badgesFromTx = transactions.map((tx) => ({
+          id: tx.id,
+          project_id: tx.project_id,
+          project_title: tx.project_title,
+          tier: tx.amount >= 25 ? "Gold" : tx.amount >= 10 ? "Silver" : "Bronze",
+          earned_at: tx.created_at,
+        }))
+        setBadges(badgesFromTx)
+      } catch (error) {
+        console.error("Failed to fetch wallet data:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [connected, publicKey, connection])
+
+  const copyAddress = () => {
+    if (publicKey) {
+      navigator.clipboard.writeText(publicKey.toString())
+      setCopied(true)
+      toast.success("Address copied!")
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  const totalBacked = transactions.reduce((sum, tx) => sum + tx.amount, 0)
+  const projectsBacked = new Set(transactions.map((tx) => tx.project_id)).size
+
+  if (!connected) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <div className="flex-1 container mx-auto px-4 py-12 max-w-6xl">
+          <Card className="border-yellow-500/30 bg-yellow-500/10">
+            <CardContent className="p-8 text-center">
+              <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold mb-2">Wallet Not Connected</h2>
+              <p className="text-muted-foreground">Please connect your wallet to view your balance and transactions.</p>
+            </CardContent>
+          </Card>
+        </div>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <div className="flex-1 container mx-auto px-4 py-12 flex items-center justify-center">
+          <Loader2 className="h-12 w-12 animate-spin text-accent" />
+        </div>
+        <Footer />
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -124,7 +127,7 @@ export default function WalletPage() {
       <div className="flex-1 container mx-auto px-4 py-12 max-w-6xl">
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Wallet</h1>
-          <p className="text-lg text-muted-foreground">Your earnings and NFT collection</p>
+          <p className="text-lg text-muted-foreground">Your balance and backing history</p>
         </div>
 
         {/* Balance Card */}
@@ -138,30 +141,28 @@ export default function WalletPage() {
           <CardContent className="relative p-8">
             <div className="grid md:grid-cols-3 gap-8">
               <div>
-                <p className="text-sm text-muted-foreground mb-2">Balance</p>
-                <p className="text-4xl font-bold mb-4">$345.50</p>
-                <div className="flex gap-2">
-                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                    <Plus className="h-4 w-4 mr-1" />
-                    Add funds
-                  </Button>
-                  <Button size="sm" variant="outline">
-                    <Download className="h-4 w-4 mr-1" />
-                    Withdraw
+                <p className="text-sm text-muted-foreground mb-2">SOL Balance</p>
+                <p className="text-4xl font-bold mb-4">{solBalance?.toFixed(4) || "0"} SOL</p>
+                <div className="flex items-center gap-2">
+                  <code className="text-xs bg-muted px-2 py-1 rounded font-mono">
+                    {publicKey?.toString().slice(0, 8)}...{publicKey?.toString().slice(-6)}
+                  </code>
+                  <Button size="icon" variant="ghost" className="h-6 w-6" onClick={copyAddress}>
+                    {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                   </Button>
                 </div>
               </div>
 
               <div>
-                <p className="text-sm text-muted-foreground mb-2">Available</p>
-                <p className="text-2xl font-bold text-accent">$245.50</p>
-                <p className="text-xs text-muted-foreground mt-1">Ready to back</p>
+                <p className="text-sm text-muted-foreground mb-2">Total Backed</p>
+                <p className="text-2xl font-bold text-accent">${totalBacked.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground mt-1">{transactions.length} transactions</p>
               </div>
 
               <div>
-                <p className="text-sm text-muted-foreground mb-2">Locked</p>
-                <p className="text-2xl font-bold">$100.00</p>
-                <p className="text-xs text-muted-foreground mt-1">In active projects</p>
+                <p className="text-sm text-muted-foreground mb-2">Projects Supported</p>
+                <p className="text-2xl font-bold">{projectsBacked}</p>
+                <p className="text-xs text-muted-foreground mt-1">unique projects</p>
               </div>
             </div>
           </CardContent>
@@ -169,84 +170,117 @@ export default function WalletPage() {
 
         <Tabs defaultValue="transactions" className="w-full">
           <TabsList>
-            <TabsTrigger value="transactions">Transactions</TabsTrigger>
-            <TabsTrigger value="nfts">NFTs ({nftCollection.length})</TabsTrigger>
+            <TabsTrigger value="transactions">Transactions ({transactions.length})</TabsTrigger>
+            <TabsTrigger value="nfts">Badges ({badges.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="transactions" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Transaction History</CardTitle>
+                <CardTitle>Backing History</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {transactions.map((transaction) => (
-                    <div
-                      key={transaction.id}
-                      className="flex items-center justify-between p-4 rounded-lg border border-border hover:border-accent/50 transition-all"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div
-                          className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                            transaction.type === "backed"
-                              ? "bg-destructive/20"
-                              : transaction.type === "deposit"
-                                ? "bg-accent/20"
-                                : "bg-muted"
-                          }`}
-                        >
-                          {transaction.amount < 0 ? (
-                            <TrendingDown
-                              className={`h-5 w-5 ${
-                                transaction.type === "backed" ? "text-destructive" : "text-muted-foreground"
-                              }`}
-                            />
-                          ) : (
-                            <TrendingUp className="h-5 w-5 text-accent" />
+                {transactions.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No transactions yet</p>
+                    <p className="text-sm mt-2">Back your first project to get started!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {transactions.map((transaction) => (
+                      <div
+                        key={transaction.id}
+                        className="flex items-center justify-between p-4 rounded-lg border border-border hover:border-accent/50 transition-all"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="h-10 w-10 rounded-full flex items-center justify-center bg-accent/20">
+                            <TrendingDown className="h-5 w-5 text-accent" />
+                          </div>
+                          <div>
+                            <p className="font-semibold">Backed: {transaction.project_title}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {new Date(transaction.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right flex items-center gap-4">
+                          <div>
+                            <p className="font-bold text-lg text-accent">${transaction.amount}</p>
+                            <Badge variant="secondary" className="text-xs">
+                              completed
+                            </Badge>
+                          </div>
+                          {transaction.transaction_signature && (
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-8 w-8"
+                              onClick={() =>
+                                window.open(
+                                  `https://explorer.testnet.soo.network/tx/${transaction.transaction_signature}`,
+                                  "_blank"
+                                )
+                              }
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </Button>
                           )}
                         </div>
-                        <div>
-                          <p className="font-semibold">{transaction.description}</p>
-                          <p className="text-sm text-muted-foreground">{transaction.date}</p>
-                        </div>
                       </div>
-                      <div className="text-right">
-                        <p
-                          className={`font-bold text-lg ${transaction.amount < 0 ? "text-destructive" : "text-accent"}`}
-                        >
-                          {transaction.amount > 0 ? "+" : ""}${Math.abs(transaction.amount)}
-                        </p>
-                        <Badge variant="secondary" className="text-xs">
-                          {transaction.status}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 text-center">
-                  <Button variant="outline">Show more</Button>
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="nfts" className="mt-6">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {nftCollection.map((nft) => (
-                <Card key={nft.id} className="overflow-hidden hover:border-accent/50 transition-all">
-                  <div className="aspect-square bg-muted flex items-center justify-center">
-                    <Award className="h-24 w-24 text-accent" />
-                  </div>
-                  <CardContent className="p-6">
-                    <Badge className="mb-3 bg-accent/20 text-accent-foreground border-accent/30">{nft.tier}</Badge>
-                    <h3 className="text-lg font-bold mb-2">{nft.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{nft.project}</p>
-                    <p className="text-xs text-muted-foreground">Earned: {nft.earnedDate}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            {badges.length === 0 ? (
+              <Card>
+                <CardContent className="p-8 text-center text-muted-foreground">
+                  <Award className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No badges earned yet</p>
+                  <p className="text-sm mt-2">Back projects to earn supporter badges!</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {badges.map((badge) => (
+                  <Card key={badge.id} className="overflow-hidden hover:border-accent/50 transition-all">
+                    <div className="aspect-square bg-muted flex items-center justify-center">
+                      <Award
+                        className={`h-24 w-24 ${
+                          badge.tier === "Gold"
+                            ? "text-yellow-500"
+                            : badge.tier === "Silver"
+                              ? "text-gray-400"
+                              : "text-amber-700"
+                        }`}
+                      />
+                    </div>
+                    <CardContent className="p-6">
+                      <Badge
+                        className={`mb-3 ${
+                          badge.tier === "Gold"
+                            ? "bg-yellow-500/20 text-yellow-500 border-yellow-500/30"
+                            : badge.tier === "Silver"
+                              ? "bg-gray-400/20 text-gray-400 border-gray-400/30"
+                              : "bg-amber-700/20 text-amber-700 border-amber-700/30"
+                        }`}
+                      >
+                        {badge.tier} Supporter
+                      </Badge>
+                      <h3 className="text-lg font-bold mb-2">{badge.tier} Backer Badge</h3>
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{badge.project_title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Earned: {new Date(badge.earned_at).toLocaleDateString()}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>

@@ -16,17 +16,33 @@ import {
     TOKEN_PROGRAM_ID
 } from '@solana/spl-token';
 import { getCampaignPDA, getCampaignVaultPDA, ODV_ESCROW_PROGRAM_ID } from './program';
+import { PROGRAM_ID, PLATFORM_CONFIG_SEED } from './config';
 import { getExplorerTransactionUrl, isSoonNetwork } from './network-utils';
 
-// Devnet USDC Mint Address (Standard)
-export const USDC_MINT_ADDRESS = new PublicKey("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
+// USDC Mint Address (can be overridden via env var)
+export const USDC_MINT_ADDRESS = new PublicKey(
+    process.env.NEXT_PUBLIC_USDC_MINT || "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
+);
+
+// Fund instruction discriminator from IDL: [218, 188, 111, 221, 152, 113, 174, 7]
+const FUND_DISCRIMINATOR = Buffer.from([218, 188, 111, 221, 152, 113, 174, 7]);
+
+/**
+ * Get Platform Config PDA
+ */
+function getPlatformConfigPDA(): [PublicKey, number] {
+    return PublicKey.findProgramAddressSync(
+        [Buffer.from(PLATFORM_CONFIG_SEED)],
+        PROGRAM_ID
+    );
+}
 
 /**
  * Create a transaction to fund a campaign through the Escrow program
  * @param connection - Solana connection
  * @param backerPublicKey - Public key of the backer
  * @param creatorPublicKey - Public key of the project creator
- * @param amount - Amount in USDC (default 1)
+ * @param amount - Amount parameter (ignored - fixed $1 enforced by contract)
  */
 export async function createFundCampaignTransaction(
     connection: Connection,
@@ -39,6 +55,7 @@ export async function createFundCampaignTransaction(
     // 1. Derive PDAs
     const [campaignPDA] = getCampaignPDA(creatorPublicKey);
     const [campaignVaultPDA] = getCampaignVaultPDA(campaignPDA);
+    const [platformConfigPDA] = getPlatformConfigPDA();
 
     // 2. Get ATAs
     const backerAta = await getAssociatedTokenAddress(
@@ -68,25 +85,19 @@ export async function createFundCampaignTransaction(
         }
     }
 
-    // 4. Create fund instruction
-    // Note: This is a simplified version. In production, use the Anchor-generated client
-    const amountInSmallestUnit = amount * 1_000_000;
-
-    const fundInstructionData = Buffer.from([
-        1, // Instruction discriminator for 'fund'
-        ...new Uint8Array(new BigUint64Array([BigInt(amountInSmallestUnit)]).buffer),
-    ]);
-
+    // 4. Create fund instruction using proper discriminator
+    // The fund instruction takes no args - amount comes from PlatformConfig
     const fundInstruction = new TransactionInstruction({
         keys: [
             { pubkey: campaignPDA, isSigner: false, isWritable: true },
             { pubkey: vaultAta, isSigner: false, isWritable: true },
-            { pubkey: backerPublicKey, isSigner: true, isWritable: false },
+            { pubkey: backerPublicKey, isSigner: true, isWritable: true },
             { pubkey: backerAta, isSigner: false, isWritable: true },
+            { pubkey: platformConfigPDA, isSigner: false, isWritable: false },
             { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
         ],
-        programId: ODV_ESCROW_PROGRAM_ID,
-        data: fundInstructionData,
+        programId: PROGRAM_ID,
+        data: FUND_DISCRIMINATOR, // Just the discriminator, no additional args
     });
 
     transaction.add(fundInstruction);

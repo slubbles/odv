@@ -1,40 +1,122 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { useWallet } from "@solana/wallet-adapter-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, XCircle, Clock, AlertCircle } from "lucide-react"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CheckCircle2, XCircle, Clock, AlertCircle, Loader2, ExternalLink } from "lucide-react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { toast } from "sonner"
+
+interface Milestone {
+  id: string
+  project_id: string
+  project_title: string
+  title: string
+  description: string
+  due_date: string
+  status: string
+  evidence_url: string | null
+  evidence_submitted: boolean
+  votes: {
+    approve: number
+    reject: number
+  }
+}
+
+interface Stats {
+  pending_review: number
+  overdue: number
+  on_track: number
+  approved: number
+  rejected: number
+}
 
 export default function AdminMilestonesPage() {
-  const milestones = [
-    {
-      id: 1,
-      project: "AI Recipe App",
-      title: "MVP Release",
-      dueDate: "2024-02-15",
-      status: "pending-review",
-      votes: { approve: 234, reject: 12 },
-      evidenceSubmitted: true,
-    },
-    {
-      id: 2,
-      project: "Pixel Art Game",
-      title: "Alpha Testing",
-      dueDate: "2024-03-01",
-      status: "overdue",
-      votes: null,
-      evidenceSubmitted: false,
-    },
-    {
-      id: 3,
-      project: "Sustainable Fashion",
-      title: "First Collection",
-      dueDate: "2024-02-20",
-      status: "on-track",
-      votes: null,
-      evidenceSubmitted: false,
-    },
-  ]
+  const { publicKey, connected } = useWallet()
+  const [milestones, setMilestones] = useState<Milestone[]>([])
+  const [stats, setStats] = useState<Stats>({
+    pending_review: 0,
+    overdue: 0,
+    on_track: 0,
+    approved: 0,
+    rejected: 0,
+  })
+  const [loading, setLoading] = useState(true)
+  const [filter, setFilter] = useState<string>("all")
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetchMilestones()
+  }, [filter])
+
+  const fetchMilestones = async () => {
+    setLoading(true)
+    try {
+      const params = new URLSearchParams()
+      if (filter !== "all") {
+        params.set("status", filter)
+      }
+
+      const response = await fetch(`/api/admin/milestones?${params}`)
+      if (response.ok) {
+        const data = await response.json()
+        setMilestones(data.milestones || [])
+        setStats(
+          data.stats || {
+            pending_review: 0,
+            overdue: 0,
+            on_track: 0,
+            approved: 0,
+            rejected: 0,
+          }
+        )
+      } else {
+        toast.error("Failed to load milestones")
+      }
+    } catch (error) {
+      console.error("Error fetching milestones:", error)
+      toast.error("Failed to load milestones")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleAction = async (milestoneId: string, action: "approve" | "reject") => {
+    if (!connected || !publicKey) {
+      toast.error("Please connect your wallet")
+      return
+    }
+
+    setActionLoading(milestoneId)
+    try {
+      const response = await fetch("/api/admin/milestones", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          milestone_id: milestoneId,
+          action,
+          admin_wallet: publicKey.toString(),
+        }),
+      })
+
+      if (response.ok) {
+        toast.success(`Milestone ${action}d successfully`)
+        fetchMilestones() // Refresh data
+      } else {
+        const error = await response.json()
+        toast.error(error.error || `Failed to ${action} milestone`)
+      }
+    } catch (error) {
+      console.error(`Error ${action}ing milestone:`, error)
+      toast.error(`Failed to ${action} milestone`)
+    } finally {
+      setActionLoading(null)
+    }
+  }
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -44,6 +126,10 @@ export default function AdminMilestonesPage() {
         return "bg-red-500/20 text-red-400 border-red-500/30"
       case "on-track":
         return "bg-green-500/20 text-green-400 border-green-500/30"
+      case "approved":
+        return "bg-accent/20 text-accent border-accent/30"
+      case "rejected":
+        return "bg-red-500/20 text-red-400 border-red-500/30"
       default:
         return "bg-muted text-muted-foreground border-border"
     }
@@ -57,9 +143,29 @@ export default function AdminMilestonesPage() {
         return <AlertCircle className="h-5 w-5 text-red-500" />
       case "on-track":
         return <CheckCircle2 className="h-5 w-5 text-green-500" />
+      case "approved":
+        return <CheckCircle2 className="h-5 w-5 text-accent" />
+      case "rejected":
+        return <XCircle className="h-5 w-5 text-red-500" />
       default:
         return <Clock className="h-4 w-4 text-muted-foreground" />
     }
+  }
+
+  if (!connected) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <div className="container mx-auto px-4 py-8 flex-1">
+          <Card className="p-8 text-center border-yellow-500/30 bg-yellow-500/10">
+            <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Admin Access Required</h2>
+            <p className="text-muted-foreground">Please connect your admin wallet to manage milestones.</p>
+          </Card>
+        </div>
+        <Footer />
+      </div>
+    )
   }
 
   return (
@@ -72,102 +178,144 @@ export default function AdminMilestonesPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-4 mb-8">
-          <Card className="p-6">
+          <Card className="p-6 cursor-pointer hover:border-yellow-500/50 transition-all" onClick={() => setFilter("pending-review")}>
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm text-muted-foreground">Pending Review</p>
               <Clock className="h-4 w-4 text-yellow-500" />
             </div>
-            <p className="text-3xl font-semibold">8</p>
+            <p className="text-3xl font-semibold">{stats.pending_review}</p>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-6 cursor-pointer hover:border-red-500/50 transition-all" onClick={() => setFilter("overdue")}>
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm text-muted-foreground">Overdue</p>
               <AlertCircle className="h-4 w-4 text-red-500" />
             </div>
-            <p className="text-3xl font-semibold">3</p>
+            <p className="text-3xl font-semibold">{stats.overdue}</p>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-6 cursor-pointer hover:border-green-500/50 transition-all" onClick={() => setFilter("approved")}>
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm text-muted-foreground">Approved</p>
               <CheckCircle2 className="h-4 w-4 text-green-500" />
             </div>
-            <p className="text-3xl font-semibold">45</p>
+            <p className="text-3xl font-semibold">{stats.approved}</p>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-6 cursor-pointer hover:border-red-500/50 transition-all" onClick={() => setFilter("rejected")}>
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm text-muted-foreground">Rejected</p>
               <XCircle className="h-4 w-4 text-red-500" />
             </div>
-            <p className="text-3xl font-semibold">2</p>
+            <p className="text-3xl font-semibold">{stats.rejected}</p>
           </Card>
         </div>
 
-        <div className="space-y-6">
-          {milestones.map((milestone) => (
-            <Card key={milestone.id} className="p-6">
-              <div className="flex items-start justify-between gap-6">
-                <div className="flex items-start gap-4 flex-1">
-                  {getStatusIcon(milestone.status)}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-sans text-lg font-semibold">{milestone.title}</h3>
-                      <Badge className={getStatusBadge(milestone.status)}>{milestone.status.replace("-", " ")}</Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-3">{milestone.project}</p>
-                    <div className="flex items-center gap-6 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">Due: </span>
-                        <span className="text-foreground">{new Date(milestone.dueDate).toLocaleDateString()}</span>
+        <Tabs value={filter} onValueChange={setFilter} className="mb-6">
+          <TabsList>
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="pending-review">Pending</TabsTrigger>
+            <TabsTrigger value="overdue">Overdue</TabsTrigger>
+            <TabsTrigger value="on-track">On Track</TabsTrigger>
+            <TabsTrigger value="approved">Approved</TabsTrigger>
+            <TabsTrigger value="rejected">Rejected</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-accent" />
+          </div>
+        ) : milestones.length === 0 ? (
+          <Card className="p-8 text-center">
+            <Clock className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+            <p className="text-muted-foreground">No milestones found</p>
+          </Card>
+        ) : (
+          <div className="space-y-6">
+            {milestones.map((milestone) => (
+              <Card key={milestone.id} className="p-6">
+                <div className="flex items-start justify-between gap-6">
+                  <div className="flex items-start gap-4 flex-1">
+                    {getStatusIcon(milestone.status)}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="font-sans text-lg font-semibold">{milestone.title}</h3>
+                        <Badge className={getStatusBadge(milestone.status)}>{milestone.status.replace("-", " ")}</Badge>
                       </div>
-                      {milestone.votes && (
+                      <p className="text-sm text-muted-foreground mb-3">{milestone.project_title}</p>
+                      {milestone.description && (
+                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{milestone.description}</p>
+                      )}
+                      <div className="flex items-center gap-6 text-sm flex-wrap">
+                        <div>
+                          <span className="text-muted-foreground">Due: </span>
+                          <span className="text-foreground">{new Date(milestone.due_date).toLocaleDateString()}</span>
+                        </div>
                         <div>
                           <span className="text-muted-foreground">Votes: </span>
                           <span className="text-green-400">{milestone.votes.approve} approve</span>
                           <span className="text-muted-foreground"> / </span>
                           <span className="text-red-400">{milestone.votes.reject} reject</span>
                         </div>
-                      )}
-                      <div>
-                        <span className="text-muted-foreground">Evidence: </span>
-                        <span className={milestone.evidenceSubmitted ? "text-green-400" : "text-muted-foreground"}>
-                          {milestone.evidenceSubmitted ? "Submitted" : "Not submitted"}
-                        </span>
+                        <div>
+                          <span className="text-muted-foreground">Evidence: </span>
+                          <span className={milestone.evidence_submitted ? "text-green-400" : "text-muted-foreground"}>
+                            {milestone.evidence_submitted ? "Submitted" : "Not submitted"}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex gap-2 shrink-0">
-                  <Button variant="outline" size="sm">
-                    View Evidence
-                  </Button>
-                  {milestone.status === "pending-review" && (
-                    <>
+                  <div className="flex gap-2 shrink-0">
+                    {milestone.evidence_url && (
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-green-400 hover:text-green-400 hover:border-green-500/50 bg-transparent"
+                        onClick={() => window.open(milestone.evidence_url!, "_blank")}
                       >
-                        <CheckCircle2 className="h-4 w-4 mr-2" />
-                        Approve
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        View Evidence
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-red-400 hover:text-red-400 hover:border-red-500/50 bg-transparent"
-                      >
-                        <XCircle className="h-4 w-4 mr-2" />
-                        Reject
-                      </Button>
-                    </>
-                  )}
+                    )}
+                    {milestone.status === "pending-review" && (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-green-400 hover:text-green-400 hover:border-green-500/50 bg-transparent"
+                          onClick={() => handleAction(milestone.id, "approve")}
+                          disabled={actionLoading === milestone.id}
+                        >
+                          {actionLoading === milestone.id ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <CheckCircle2 className="h-4 w-4 mr-2" />
+                          )}
+                          Approve
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-red-400 hover:text-red-400 hover:border-red-500/50 bg-transparent"
+                          onClick={() => handleAction(milestone.id, "reject")}
+                          disabled={actionLoading === milestone.id}
+                        >
+                          {actionLoading === milestone.id ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <XCircle className="h-4 w-4 mr-2" />
+                          )}
+                          Reject
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
       <Footer />
     </div>

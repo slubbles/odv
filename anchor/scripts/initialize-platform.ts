@@ -1,6 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { OdvEscrow } from "../target/types/odv_escrow";
+import { OdvEscrow } from "../target/types/odv_escrow.js";
 import { PublicKey } from "@solana/web3.js";
 
 async function initializePlatform() {
@@ -53,9 +53,7 @@ async function initializePlatform() {
     const tx = await program.methods
       .initializePlatform(fixedBackingAmount)
       .accounts({
-        platformConfig: platformConfigPDA,
         admin: provider.wallet.publicKey,
-        systemProgram: anchor.web3.SystemProgram.programId,
       })
       .rpc();
     

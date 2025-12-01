@@ -60,73 +60,53 @@ export function usePlatformConfig() {
 }
 
 /**
- * Hook to fetch campaign data
+ * Hook to fetch campaign data by creator
  */
-export function useCampaign(campaignPDA: string | PublicKey | null) {
+export function useCampaign(creatorWallet: string | PublicKey | null) {
   const sdk = useODVProgram();
 
   return useQuery({
-    queryKey: ['campaign', campaignPDA?.toString()],
+    queryKey: ['campaign', creatorWallet?.toString()],
     queryFn: async () => {
       if (!sdk) throw new Error('Wallet not connected');
-      if (!campaignPDA) throw new Error('Campaign PDA required');
+      if (!creatorWallet) throw new Error('Creator wallet required');
 
-      const pubkey = typeof campaignPDA === 'string' ? new PublicKey(campaignPDA) : campaignPDA;
+      const pubkey = typeof creatorWallet === 'string' ? new PublicKey(creatorWallet) : creatorWallet;
       return await sdk.getCampaign(pubkey);
     },
-    enabled: !!sdk && !!campaignPDA,
+    enabled: !!sdk && !!creatorWallet,
     staleTime: 30000, // 30 seconds
   });
 }
 
 /**
- * Hook to fetch backing data
+ * Hook to initialize a campaign (create new crowdfunding campaign)
  */
-export function useBacking(backingPDA: string | PublicKey | null) {
-  const sdk = useODVProgram();
-
-  return useQuery({
-    queryKey: ['backing', backingPDA?.toString()],
-    queryFn: async () => {
-      if (!sdk) throw new Error('Wallet not connected');
-      if (!backingPDA) throw new Error('Backing PDA required');
-
-      const pubkey = typeof backingPDA === 'string' ? new PublicKey(backingPDA) : backingPDA;
-      return await sdk.getBacking(pubkey);
-    },
-    enabled: !!sdk && !!backingPDA,
-    staleTime: 30000, // 30 seconds
-  });
-}
-
-/**
- * Hook to create a campaign
- */
-export function useCreateCampaign() {
+export function useInitializeCampaign() {
   const sdk = useODVProgram();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (params: {
-      title: string;
-      description: string;
       goal: number; // in USDC (will be converted to smallest units)
       durationDays: number;
-      milestones: Array<{ description: string; fundingPercentage: number }>;
+      milestones: Array<{ title: string; amount: number }>;
     }) => {
       if (!sdk) throw new Error('Wallet not connected');
 
-      const campaignId = new BN(Date.now());
       const goal = new BN(params.goal * 1_000_000); // Convert USDC to smallest units
       const deadline = new BN(Math.floor(Date.now() / 1000) + params.durationDays * 86400);
+      
+      // Convert milestones amounts to BN
+      const milestones = params.milestones.map(m => ({
+        title: m.title,
+        amount: new BN(m.amount * 1_000_000),
+      }));
 
-      return await sdk.createCampaign({
-        campaignId,
+      return await sdk.initializeCampaign({
         goal,
         deadline,
-        title: params.title,
-        description: params.description,
-        milestones: params.milestones,
+        milestones,
       });
     },
     onSuccess: () => {
@@ -137,25 +117,30 @@ export function useCreateCampaign() {
 }
 
 /**
- * Hook to back a project
+ * Hook to fund/back a project
  */
-export function useBackProject() {
+export function useFundCampaign() {
   const sdk = useODVProgram();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (params: {
-      campaign: PublicKey;
-      usdcMint: PublicKey;
-      backerTokenAccount: PublicKey;
-      campaignTokenAccount: PublicKey;
+      creatorWallet: string | PublicKey;
     }) => {
       if (!sdk) throw new Error('Wallet not connected');
-      return await sdk.backProject(params);
+      
+      const creatorPubkey = typeof params.creatorWallet === 'string' 
+        ? new PublicKey(params.creatorWallet) 
+        : params.creatorWallet;
+        
+      return await sdk.fundCampaign({ creatorWallet: creatorPubkey });
     },
     onSuccess: (_, variables) => {
+      const creatorKey = typeof variables.creatorWallet === 'string' 
+        ? variables.creatorWallet 
+        : variables.creatorWallet.toString();
       // Invalidate campaign data to show updated backing count
-      queryClient.invalidateQueries({ queryKey: ['campaign', variables.campaign.toString()] });
+      queryClient.invalidateQueries({ queryKey: ['campaign', creatorKey] });
     },
   });
 }
@@ -165,20 +150,21 @@ export function useBackProject() {
  */
 export function useSubmitMilestoneProof() {
   const sdk = useODVProgram();
+  const wallet = useWallet();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (params: {
-      campaign: PublicKey;
-      milestoneIndex: number;
       proofUrl: string;
     }) => {
       if (!sdk) throw new Error('Wallet not connected');
       return await sdk.submitMilestoneProof(params);
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       // Invalidate campaign data to show updated milestone
-      queryClient.invalidateQueries({ queryKey: ['campaign', variables.campaign.toString()] });
+      if (wallet.publicKey) {
+        queryClient.invalidateQueries({ queryKey: ['campaign', wallet.publicKey.toString()] });
+      }
     },
   });
 }
@@ -188,28 +174,25 @@ export function useSubmitMilestoneProof() {
  */
 export function useReleaseMilestone() {
   const sdk = useODVProgram();
+  const wallet = useWallet();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (params: {
-      campaign: PublicKey;
-      milestoneIndex: number;
-      usdcMint: PublicKey;
-      campaignTokenAccount: PublicKey;
-      creatorTokenAccount: PublicKey;
-    }) => {
+    mutationFn: async () => {
       if (!sdk) throw new Error('Wallet not connected');
-      return await sdk.releaseMilestone(params);
+      return await sdk.releaseMilestone({});
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       // Invalidate campaign data to show released milestone
-      queryClient.invalidateQueries({ queryKey: ['campaign', variables.campaign.toString()] });
+      if (wallet.publicKey) {
+        queryClient.invalidateQueries({ queryKey: ['campaign', wallet.publicKey.toString()] });
+      }
     },
   });
 }
 
 /**
- * Hook to refund campaign
+ * Hook to refund campaign (for backers after failed campaign)
  */
 export function useRefundCampaign() {
   const sdk = useODVProgram();
@@ -217,19 +200,77 @@ export function useRefundCampaign() {
 
   return useMutation({
     mutationFn: async (params: {
-      campaign: PublicKey;
-      backing: PublicKey;
-      usdcMint: PublicKey;
-      campaignTokenAccount: PublicKey;
-      backerTokenAccount: PublicKey;
+      creatorWallet: string | PublicKey;
     }) => {
       if (!sdk) throw new Error('Wallet not connected');
-      return await sdk.refundCampaign(params);
+      
+      const creatorPubkey = typeof params.creatorWallet === 'string' 
+        ? new PublicKey(params.creatorWallet) 
+        : params.creatorWallet;
+        
+      return await sdk.refundCampaign({ creatorWallet: creatorPubkey });
     },
     onSuccess: (_, variables) => {
-      // Invalidate backing data
-      queryClient.invalidateQueries({ queryKey: ['backing', variables.backing.toString()] });
-      queryClient.invalidateQueries({ queryKey: ['campaign', variables.campaign.toString()] });
+      const creatorKey = typeof variables.creatorWallet === 'string' 
+        ? variables.creatorWallet 
+        : variables.creatorWallet.toString();
+      queryClient.invalidateQueries({ queryKey: ['campaign', creatorKey] });
+    },
+  });
+}
+
+/**
+ * Hook to approve milestone (Admin only)
+ */
+export function useApproveMilestone() {
+  const sdk = useODVProgram();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: {
+      creatorWallet: string | PublicKey;
+    }) => {
+      if (!sdk) throw new Error('Wallet not connected');
+      
+      const creatorPubkey = typeof params.creatorWallet === 'string' 
+        ? new PublicKey(params.creatorWallet) 
+        : params.creatorWallet;
+        
+      return await sdk.approveMilestone({ creatorWallet: creatorPubkey });
+    },
+    onSuccess: (_, variables) => {
+      const creatorKey = typeof variables.creatorWallet === 'string' 
+        ? variables.creatorWallet 
+        : variables.creatorWallet.toString();
+      queryClient.invalidateQueries({ queryKey: ['campaign', creatorKey] });
+    },
+  });
+}
+
+/**
+ * Hook to reject milestone (Admin only)
+ */
+export function useRejectMilestone() {
+  const sdk = useODVProgram();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: {
+      creatorWallet: string | PublicKey;
+    }) => {
+      if (!sdk) throw new Error('Wallet not connected');
+      
+      const creatorPubkey = typeof params.creatorWallet === 'string' 
+        ? new PublicKey(params.creatorWallet) 
+        : params.creatorWallet;
+        
+      return await sdk.rejectMilestone({ creatorWallet: creatorPubkey });
+    },
+    onSuccess: (_, variables) => {
+      const creatorKey = typeof variables.creatorWallet === 'string' 
+        ? variables.creatorWallet 
+        : variables.creatorWallet.toString();
+      queryClient.invalidateQueries({ queryKey: ['campaign', creatorKey] });
     },
   });
 }
@@ -265,15 +306,23 @@ export function usePlatformControl() {
 }
 
 /**
+ * Check if current wallet is admin
+ */
+export function useIsAdmin() {
+  const sdk = useODVProgram();
+  return sdk?.isAdmin() ?? false;
+}
+
+/**
  * Helper hook to get explorer URL
  */
 export function useExplorerUrl() {
   const sdk = useODVProgram();
 
   return useCallback(
-    (signature: string, cluster: 'devnet' | 'mainnet-beta' = 'devnet') => {
+    (signature: string) => {
       if (!sdk) return '';
-      return sdk.getExplorerUrl(signature, cluster);
+      return sdk.getExplorerUrl(signature);
     },
     [sdk]
   );

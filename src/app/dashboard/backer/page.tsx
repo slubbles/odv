@@ -176,7 +176,7 @@ export default function BackerDashboardPage() {
                                     <span>{daysLeft} days left</span>
                                   </div>
                                   <Button variant="outline" size="sm" asChild>
-                                    <Link href={`/projects/${project.id}`}>
+                                    <Link href={`/project/${project.id}`}>
                                       <ExternalLink className="h-4 w-4 mr-2" />
                                       View Project
                                     </Link>
@@ -227,7 +227,7 @@ export default function BackerDashboardPage() {
 
                             <div className="flex gap-3 pt-4">
                               <Button variant="outline" size="sm" asChild>
-                                <Link href={`/projects/${project.id}`}>Check Updates</Link>
+                                <Link href={`/project/${project.id}`}>Check Updates</Link>
                               </Button>
                               <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
                                 Claim NFT

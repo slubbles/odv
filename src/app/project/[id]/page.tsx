@@ -12,6 +12,8 @@ import { Users, Clock, Heart, MessageCircle, CheckCircle, Circle, Award, Trendin
 import { SocialShare } from "@/components/social-share"
 import { useProject } from "@/lib/hooks/use-projects"
 import { UpdatesList } from "@/components/project/updates-list"
+import { BackProjectButton } from "@/components/back-project-button"
+import { CommentsList } from "@/components/comments-list"
 
 function calculateDaysLeft(deadline: string | null): number {
   if (!deadline) return 0
@@ -103,38 +105,6 @@ const rewardTiers = [
       "Custom recipe development",
     ],
     backers: 16,
-  },
-]
-
-const comments = [
-  {
-    id: 1,
-    user: { name: "Michael Brown", avatar: "/placeholder.svg?key=p2zkq" },
-    content: "This looks amazing! I love how the AI learns from my preferences. Can't wait to see the mobile app!",
-    timestamp: "2 hours ago",
-    likes: 12,
-  },
-  {
-    id: 2,
-    user: { name: "Lisa Anderson", avatar: "/placeholder.svg?key=82ons" },
-    content:
-      "Just backed at the Gold level. The custom recipe feature is exactly what I need for my dietary restrictions.",
-    timestamp: "5 hours ago",
-    likes: 8,
-  },
-  {
-    id: 3,
-    user: { name: "David Kim", avatar: "/placeholder.svg?key=0fhm8" },
-    content: "Great to see milestone 2 progressing well. Will there be integration with smart kitchen devices?",
-    timestamp: "1 day ago",
-    likes: 15,
-  },
-  {
-    id: 4,
-    user: { name: "Emma Wilson", avatar: "/placeholder.svg?key=cqwgw" },
-    content: "The AI recommendations are spot on! Discovered so many new recipes I love.",
-    timestamp: "2 days ago",
-    likes: 6,
   },
 ]
 
@@ -388,58 +358,7 @@ export default function ProjectDetailPage() {
               </TabsContent>
 
               <TabsContent value="backers" className="space-y-4 mt-6">
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex gap-4">
-                      <Avatar>
-                        <AvatarFallback>You</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <textarea
-                          placeholder="Got thoughts? Drop them here..."
-                          className="w-full min-h-[100px] bg-muted rounded-lg p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-accent"
-                        />
-                        <div className="mt-2 flex justify-end">
-                          <Button>Post</Button>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {comments.map((comment) => (
-                  <Card key={comment.id}>
-                    <CardContent className="p-6">
-                      <div className="flex gap-4">
-                        <Avatar>
-                          <AvatarImage src={comment.user.avatar || "/placeholder.svg"} />
-                          <AvatarFallback>{comment.user.name[0]}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="font-semibold">{comment.user.name}</span>
-                            <span className="text-sm text-muted-foreground">{comment.timestamp}</span>
-                          </div>
-                          <p className="text-muted-foreground leading-relaxed mb-3">{comment.content}</p>
-                          <div className="flex items-center gap-4">
-                            <Button size="sm" variant="ghost" className="h-8 px-2">
-                              <Heart className="h-4 w-4 mr-1" />
-                              {comment.likes}
-                            </Button>
-                            <Button size="sm" variant="ghost" className="h-8 px-2">
-                              <MessageCircle className="h-4 w-4 mr-1" />
-                              Reply
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-
-                <div className="text-center pt-4">
-                  <Button variant="outline">Load More Comments</Button>
-                </div>
+                <CommentsList projectId={project.id} />
               </TabsContent>
             </Tabs>
           </div>
@@ -466,9 +385,12 @@ export default function ProjectDetailPage() {
                   </div>
                 </div>
 
-                <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90" size="lg">
-                  Back This Project
-                </Button>
+                <BackProjectButton 
+                  projectId={project.id}
+                  creatorWallet={project.creator_wallet}
+                  size="lg"
+                  className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                />
 
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="h-4 w-4" />

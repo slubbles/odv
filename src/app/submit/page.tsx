@@ -92,9 +92,21 @@ export default function SubmitPage() {
       return
     }
 
+    // Validate milestone deadlines
+    for (const m of formData.milestones) {
+      if (!m.deadline) {
+        toast.error("All milestones must have a deadline")
+        return
+      }
+    }
+
     setIsSubmitting(true)
 
     try {
+      // Calculate campaign deadline from duration
+      const durationDays = parseInt(formData.duration) || 30
+      const deadline = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000).toISOString()
+
       const response = await fetch('/api/projects', {
         method: 'POST',
         headers: {
@@ -106,18 +118,15 @@ export default function SubmitPage() {
           description: formData.description,
           category: formData.category,
           goal: parseFloat(formData.goal),
-          videoUrl: formData.videoUrl || undefined,
-          imageUrl: formData.imageUrl || undefined,
-          creatorWallet: publicKey.toString(),
-          twitterLink: undefined,
-          githubLink: undefined,
-          websiteLink: undefined,
+          deadline: deadline,
+          video_url: formData.videoUrl || null,
+          image_url: formData.imageUrl || null,
+          creator_wallet: publicKey.toString(),
           milestones: formData.milestones.map(m => ({
             title: m.title,
             percentage: m.percentage,
             deadline: new Date(m.deadline).toISOString()
-          })),
-          duration: parseInt(formData.duration)
+          }))
         })
       })
 

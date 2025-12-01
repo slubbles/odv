@@ -1,16 +1,22 @@
 import * as anchor from '@coral-xyz/anchor';
 import { Program, AnchorProvider, BN, web3, Idl } from '@coral-xyz/anchor';
-import { Connection, PublicKey, SystemProgram, Keypair } from '@solana/web3.js';
+import { Connection, PublicKey, SystemProgram, Keypair, Transaction } from '@solana/web3.js';
 import { AnchorWallet } from '@solana/wallet-adapter-react';
-import { PROGRAM_ID, RPC_ENDPOINT, PLATFORM_CONFIG_SEED } from './config';
-import type { OdvEscrow } from './types/odv_escrow';
+import { TOKEN_PROGRAM_ID, getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, getAccount, TokenAccountNotFoundError, TokenInvalidAccountOwnerError } from '@solana/spl-token';
+import { PROGRAM_ID, RPC_ENDPOINT, PLATFORM_CONFIG_SEED, PLATFORM_ADMIN } from './config';
 import IDL from './idl/odv_escrow.json';
+import { getExplorerTransactionUrl } from './network-utils';
+
+// USDC Mint on SOON Testnet (use env var or fallback)
+export const USDC_MINT = new PublicKey(
+  process.env.NEXT_PUBLIC_USDC_MINT || '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU'
+);
 
 /**
- * ODV Program SDK - Wrapper for smart contract interactions
+ * ODV Program SDK - Wrapper for smart contract interactions on SOON Testnet
  */
 export class ODVProgramSDK {
-  program: Program<OdvEscrow>;
+  program: Program;
   provider: AnchorProvider;
   connection: Connection;
 
@@ -33,31 +39,27 @@ export class ODVProgramSDK {
   }
 
   /**
-   * Get Campaign PDA
+   * Get Campaign PDA (uses creator's pubkey)
    */
-  getCampaignPDA(creator: PublicKey, campaignId: BN): [PublicKey, number] {
+  getCampaignPDA(creator: PublicKey): [PublicKey, number] {
     return PublicKey.findProgramAddressSync(
-      [
-        Buffer.from('campaign'),
-        creator.toBuffer(),
-        campaignId.toArrayLike(Buffer, 'le', 8),
-      ],
+      [Buffer.from('campaign'), creator.toBuffer()],
       this.program.programId
     );
   }
 
   /**
-   * Get Backing PDA
+   * Get Campaign Vault PDA (token account holding USDC)
    */
-  getBackingPDA(campaign: PublicKey, backer: PublicKey): [PublicKey, number] {
+  getCampaignVaultPDA(campaign: PublicKey): [PublicKey, number] {
     return PublicKey.findProgramAddressSync(
-      [Buffer.from('backing'), campaign.toBuffer(), backer.toBuffer()],
+      [Buffer.from('campaign_vault'), campaign.toBuffer()],
       this.program.programId
     );
   }
 
   /**
-   * Initialize Platform (Admin only)
+   * Initialize Platform (Admin only - already done on SOON Testnet)
    */
   async initializePlatform(fixedBackingAmount: BN): Promise<string> {
     const [platformConfigPDA] = this.getPlatformConfigPDA();
@@ -68,7 +70,7 @@ export class ODVProgramSDK {
         platformConfig: platformConfigPDA,
         admin: this.provider.wallet.publicKey,
         systemProgram: SystemProgram.programId,
-      })
+      } as any)
       .rpc();
   }
 
@@ -77,128 +79,170 @@ export class ODVProgramSDK {
    */
   async getPlatformConfig() {
     const [platformConfigPDA] = this.getPlatformConfigPDA();
-    return await this.program.account.platformConfig.fetch(platformConfigPDA);
+    try {
+      // Use bracket notation for dynamic account access
+      const account = this.program.account as any;
+      return await account.platformConfig.fetch(platformConfigPDA);
+    } catch (error) {
+      console.error('Failed to fetch platform config:', error);
+      return null;
+    }
   }
 
   /**
-   * Create Campaign
+   * Initialize Campaign (Create a new crowdfunding campaign)
    */
-  async createCampaign(params: {
-    campaignId: BN;
+  async initializeCampaign(params: {
     goal: BN;
     deadline: BN;
-    title: string;
-    description: string;
-    milestones: Array<{ description: string; fundingPercentage: number }>;
+    milestones: Array<{ title: string; amount: BN }>;
   }): Promise<{ signature: string; campaignPDA: PublicKey }> {
-    const [platformConfigPDA] = this.getPlatformConfigPDA();
-    const [campaignPDA] = this.getCampaignPDA(
-      this.provider.wallet.publicKey,
-      params.campaignId
-    );
+    const [campaignPDA] = this.getCampaignPDA(this.provider.wallet.publicKey);
 
     const signature = await this.program.methods
-      .createCampaign(
-        params.campaignId,
-        params.goal,
-        params.deadline,
-        params.title,
-        params.description,
-        params.milestones
-      )
+      .initialize(params.goal, params.deadline, params.milestones)
       .accounts({
         campaign: campaignPDA,
-        platformConfig: platformConfigPDA,
         creator: this.provider.wallet.publicKey,
         systemProgram: SystemProgram.programId,
-      })
+      } as any)
       .rpc();
 
     return { signature, campaignPDA };
   }
 
   /**
-   * Fetch Campaign
+   * Fetch Campaign data
    */
-  async getCampaign(campaignPDA: PublicKey) {
-    return await this.program.account.campaign.fetch(campaignPDA);
+  async getCampaign(creator: PublicKey) {
+    const [campaignPDA] = this.getCampaignPDA(creator);
+    try {
+      const account = this.program.account as any;
+      return await account.campaign.fetch(campaignPDA);
+    } catch (error) {
+      console.error('Failed to fetch campaign:', error);
+      return null;
+    }
   }
 
   /**
-   * Back Project (Support a campaign)
+   * Fund/Back Project (Support a campaign with $1)
+   * The fixed backing amount is read from PlatformConfig on-chain
    */
-  async backProject(params: {
-    campaign: PublicKey;
-    usdcMint: PublicKey;
-    backerTokenAccount: PublicKey;
-    campaignTokenAccount: PublicKey;
-  }): Promise<{ signature: string; backingPDA: PublicKey }> {
-    const [backingPDA] = this.getBackingPDA(
-      params.campaign,
+  async fundCampaign(params: {
+    creatorWallet: PublicKey;
+    usdcMint?: PublicKey;
+  }): Promise<{ signature: string }> {
+    const [platformConfigPDA] = this.getPlatformConfigPDA();
+    const [campaignPDA] = this.getCampaignPDA(params.creatorWallet);
+    const [campaignVaultPDA] = this.getCampaignVaultPDA(campaignPDA);
+    
+    const usdcMint = params.usdcMint || USDC_MINT;
+    
+    // Get backer's token account
+    const backerTokenAccount = await getAssociatedTokenAddress(
+      usdcMint,
       this.provider.wallet.publicKey
     );
 
-    const signature = await this.program.methods
-      .backProject()
+    // Get campaign vault token account (create if needed)
+    const vaultTokenAccount = await getAssociatedTokenAddress(
+      usdcMint,
+      campaignVaultPDA,
+      true // allowOwnerOffCurve for PDA
+    );
+
+    // Build transaction with potential ATA creation
+    const tx = new Transaction();
+    
+    // Check if vault ATA exists, create if needed
+    try {
+      await getAccount(this.connection, vaultTokenAccount);
+    } catch (error: unknown) {
+      if (error instanceof TokenAccountNotFoundError || error instanceof TokenInvalidAccountOwnerError) {
+        tx.add(
+          createAssociatedTokenAccountInstruction(
+            this.provider.wallet.publicKey, // payer
+            vaultTokenAccount,
+            campaignVaultPDA, // owner (PDA)
+            usdcMint
+          )
+        );
+      }
+    }
+
+    // Add fund instruction
+    const fundIx = await this.program.methods
+      .fund()
       .accounts({
-        backing: backingPDA,
-        campaign: params.campaign,
+        campaign: campaignPDA,
+        campaignVault: vaultTokenAccount,
         backer: this.provider.wallet.publicKey,
-        backerTokenAccount: params.backerTokenAccount,
-        campaignTokenAccount: params.campaignTokenAccount,
-        usdcMint: params.usdcMint,
-        systemProgram: SystemProgram.programId,
-        tokenProgram: anchor.utils.token.TOKEN_PROGRAM_ID,
-      })
-      .rpc();
+        backerTokenAccount: backerTokenAccount,
+        platformConfig: platformConfigPDA,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      } as any)
+      .instruction();
+    
+    tx.add(fundIx);
 
-    return { signature, backingPDA };
-  }
-
-  /**
-   * Fetch Backing
-   */
-  async getBacking(backingPDA: PublicKey) {
-    return await this.program.account.backing.fetch(backingPDA);
+    // Send transaction
+    const signature = await this.provider.sendAndConfirm(tx);
+    return { signature };
   }
 
   /**
    * Submit Milestone Proof (Creator only)
    */
   async submitMilestoneProof(params: {
-    campaign: PublicKey;
-    milestoneIndex: number;
     proofUrl: string;
   }): Promise<string> {
+    const [platformConfigPDA] = this.getPlatformConfigPDA();
+    const [campaignPDA] = this.getCampaignPDA(this.provider.wallet.publicKey);
+
     return await this.program.methods
-      .submitMilestoneProof(params.milestoneIndex, params.proofUrl)
+      .submitMilestoneProof(params.proofUrl)
       .accounts({
-        campaign: params.campaign,
+        campaign: campaignPDA,
         creator: this.provider.wallet.publicKey,
-      })
+        platformConfig: platformConfigPDA,
+      } as any)
       .rpc();
   }
 
   /**
-   * Release Milestone Funds (Creator only)
+   * Release Milestone Funds (Creator only, after admin approval)
    */
   async releaseMilestone(params: {
-    campaign: PublicKey;
-    milestoneIndex: number;
-    usdcMint: PublicKey;
-    campaignTokenAccount: PublicKey;
-    creatorTokenAccount: PublicKey;
+    usdcMint?: PublicKey;
   }): Promise<string> {
+    const [platformConfigPDA] = this.getPlatformConfigPDA();
+    const [campaignPDA] = this.getCampaignPDA(this.provider.wallet.publicKey);
+    const [campaignVaultPDA] = this.getCampaignVaultPDA(campaignPDA);
+    
+    const usdcMint = params.usdcMint || USDC_MINT;
+    
+    const vaultTokenAccount = await getAssociatedTokenAddress(
+      usdcMint,
+      campaignVaultPDA,
+      true
+    );
+    
+    const creatorTokenAccount = await getAssociatedTokenAddress(
+      usdcMint,
+      this.provider.wallet.publicKey
+    );
+
     return await this.program.methods
-      .releaseMilestone(params.milestoneIndex)
+      .releaseMilestone()
       .accounts({
-        campaign: params.campaign,
+        campaign: campaignPDA,
+        campaignVault: vaultTokenAccount,
         creator: this.provider.wallet.publicKey,
-        campaignTokenAccount: params.campaignTokenAccount,
-        creatorTokenAccount: params.creatorTokenAccount,
-        usdcMint: params.usdcMint,
-        tokenProgram: anchor.utils.token.TOKEN_PROGRAM_ID,
-      })
+        creatorTokenAccount: creatorTokenAccount,
+        platformConfig: platformConfigPDA,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      } as any)
       .rpc();
   }
 
@@ -206,23 +250,74 @@ export class ODVProgramSDK {
    * Refund Campaign (Backer only, after failed campaign)
    */
   async refundCampaign(params: {
-    campaign: PublicKey;
-    backing: PublicKey;
-    usdcMint: PublicKey;
-    campaignTokenAccount: PublicKey;
-    backerTokenAccount: PublicKey;
+    creatorWallet: PublicKey;
+    usdcMint?: PublicKey;
   }): Promise<string> {
+    const [platformConfigPDA] = this.getPlatformConfigPDA();
+    const [campaignPDA] = this.getCampaignPDA(params.creatorWallet);
+    const [campaignVaultPDA] = this.getCampaignVaultPDA(campaignPDA);
+    
+    const usdcMint = params.usdcMint || USDC_MINT;
+    
+    const vaultTokenAccount = await getAssociatedTokenAddress(
+      usdcMint,
+      campaignVaultPDA,
+      true
+    );
+    
+    const backerTokenAccount = await getAssociatedTokenAddress(
+      usdcMint,
+      this.provider.wallet.publicKey
+    );
+
     return await this.program.methods
       .refundCampaign()
       .accounts({
-        campaign: params.campaign,
-        backing: params.backing,
+        campaign: campaignPDA,
+        campaignVault: vaultTokenAccount,
         backer: this.provider.wallet.publicKey,
-        campaignTokenAccount: params.campaignTokenAccount,
-        backerTokenAccount: params.backerTokenAccount,
-        usdcMint: params.usdcMint,
-        tokenProgram: anchor.utils.token.TOKEN_PROGRAM_ID,
-      })
+        backerTokenAccount: backerTokenAccount,
+        platformConfig: platformConfigPDA,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      } as any)
+      .rpc();
+  }
+
+  /**
+   * Approve Milestone (Admin only)
+   */
+  async approveMilestone(params: {
+    creatorWallet: PublicKey;
+  }): Promise<string> {
+    const [platformConfigPDA] = this.getPlatformConfigPDA();
+    const [campaignPDA] = this.getCampaignPDA(params.creatorWallet);
+
+    return await this.program.methods
+      .approveMilestone()
+      .accounts({
+        campaign: campaignPDA,
+        platformConfig: platformConfigPDA,
+        admin: this.provider.wallet.publicKey,
+      } as any)
+      .rpc();
+  }
+
+  /**
+   * Reject Milestone (Admin only)
+   */
+  async rejectMilestone(params: {
+    creatorWallet: PublicKey;
+  }): Promise<string> {
+    const [platformConfigPDA] = this.getPlatformConfigPDA();
+    const [campaignPDA] = this.getCampaignPDA(params.creatorWallet);
+
+    return await this.program.methods
+      .rejectMilestone()
+      .accounts({
+        campaign: campaignPDA,
+        platformConfig: platformConfigPDA,
+        admin: this.provider.wallet.publicKey,
+      } as any)
       .rpc();
   }
 
@@ -237,7 +332,7 @@ export class ODVProgramSDK {
       .accounts({
         platformConfig: platformConfigPDA,
         admin: this.provider.wallet.publicKey,
-      })
+      } as any)
       .rpc();
   }
 
@@ -252,15 +347,37 @@ export class ODVProgramSDK {
       .accounts({
         platformConfig: platformConfigPDA,
         admin: this.provider.wallet.publicKey,
-      })
+      } as any)
       .rpc();
   }
 
   /**
-   * Get transaction explorer URL
+   * Update backing amount (Admin only)
    */
-  getExplorerUrl(signature: string, cluster: 'devnet' | 'mainnet-beta' = 'devnet'): string {
-    return `https://explorer.solana.com/tx/${signature}?cluster=${cluster}`;
+  async updateBackingAmount(newAmount: BN): Promise<string> {
+    const [platformConfigPDA] = this.getPlatformConfigPDA();
+
+    return await this.program.methods
+      .updateBackingAmount(newAmount)
+      .accounts({
+        platformConfig: platformConfigPDA,
+        admin: this.provider.wallet.publicKey,
+      } as any)
+      .rpc();
+  }
+
+  /**
+   * Check if current wallet is admin
+   */
+  isAdmin(): boolean {
+    return this.provider.wallet.publicKey.equals(PLATFORM_ADMIN);
+  }
+
+  /**
+   * Get transaction explorer URL (SOON Testnet)
+   */
+  getExplorerUrl(signature: string): string {
+    return getExplorerTransactionUrl(signature);
   }
 }
 

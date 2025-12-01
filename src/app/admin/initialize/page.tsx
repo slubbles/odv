@@ -6,12 +6,14 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { PublicKey, SystemProgram } from '@solana/web3.js';
 import { BN } from '@coral-xyz/anchor';
 import { useODVProgram } from '@/lib/solana/hooks';
-import { PLATFORM_ADMIN, PROGRAM_ID } from '@/lib/solana/config';
+import { PLATFORM_ADMIN, PROGRAM_ID, EXPLORER_URL } from '@/lib/solana/config';
+
+type Status = 'idle' | 'checking' | 'initializing' | 'success' | 'error';
 
 export default function InitializePlatformPage() {
   const { publicKey, connected } = useWallet();
   const sdk = useODVProgram();
-  const [status, setStatus] = useState<'idle' | 'checking' | 'initializing' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<Status>('idle');
   const [message, setMessage] = useState('');
   const [txSignature, setTxSignature] = useState('');
   const [platformConfig, setPlatformConfig] = useState<any>(null);
@@ -25,15 +27,19 @@ export default function InitializePlatformPage() {
     }
 
     setStatus('checking');
-    setMessage('Checking platform status...');
+    setMessage('Checking platform status on SOON Testnet...');
 
     try {
-      const [platformConfigPDA] = sdk.getPlatformConfigPDA();
       const config = await sdk.getPlatformConfig();
       
-      setPlatformConfig(config);
-      setStatus('success');
-      setMessage('Platform is already initialized!');
+      if (config) {
+        setPlatformConfig(config);
+        setStatus('success');
+        setMessage('Platform is already initialized!');
+      } else {
+        setStatus('idle');
+        setMessage('Platform not initialized yet. Click the button below to initialize.');
+      }
     } catch (error: any) {
       if (error.message?.includes('Account does not exist')) {
         setStatus('idle');
@@ -58,7 +64,7 @@ export default function InitializePlatformPage() {
     }
 
     setStatus('initializing');
-    setMessage('Initializing platform... Please approve the transaction in Phantom.');
+    setMessage('Initializing platform on SOON Testnet... Please approve the transaction.');
 
     try {
       const fixedBackingAmount = new BN(1_000_000); // 1 USDC
@@ -66,7 +72,7 @@ export default function InitializePlatformPage() {
 
       setTxSignature(signature);
       setStatus('success');
-      setMessage('Platform initialized successfully!');
+      setMessage('Platform initialized successfully on SOON Testnet!');
 
       // Wait a bit then fetch the config
       setTimeout(() => checkPlatformStatus(), 2000);
@@ -77,10 +83,15 @@ export default function InitializePlatformPage() {
     }
   };
 
+  const isInitializing = status === 'initializing';
+  const isChecking = status === 'checking';
+  const showInitButton = connected && isAdmin && (status === 'idle' || status === 'error');
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-8">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-4xl font-bold mb-8 text-center">🚀 Platform Initialization</h1>
+        <p className="text-center text-gray-400 mb-8">SOON Testnet</p>
 
         {/* Wallet Connection */}
         <div className="bg-gray-800 rounded-lg p-6 mb-6">
@@ -111,16 +122,16 @@ export default function InitializePlatformPage() {
             <h2 className="text-xl font-semibold mb-4">2. Check Platform Status</h2>
             <button
               onClick={checkPlatformStatus}
-              disabled={status === 'checking'}
+              disabled={isChecking}
               className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition"
             >
-              {status === 'checking' ? 'Checking...' : 'Check Status'}
+              {isChecking ? 'Checking...' : 'Check Status'}
             </button>
           </div>
         )}
 
         {/* Initialize Button */}
-        {connected && isAdmin && status === 'idle' && (
+        {showInitButton && (
           <div className="bg-gray-800 rounded-lg p-6 mb-6">
             <h2 className="text-xl font-semibold mb-4">3. Initialize Platform</h2>
             <div className="mb-4 p-4 bg-gray-700 rounded">
@@ -134,10 +145,10 @@ export default function InitializePlatformPage() {
             </div>
             <button
               onClick={initializePlatform}
-              disabled={status === 'initializing'}
+              disabled={isInitializing}
               className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition"
             >
-              {status === 'initializing' ? 'Initializing... Check Phantom' : 'Initialize Platform'}
+              {isInitializing ? 'Initializing... Check Wallet' : 'Initialize Platform'}
             </button>
           </div>
         )}
@@ -147,14 +158,14 @@ export default function InitializePlatformPage() {
           <div className={`rounded-lg p-6 mb-6 ${
             status === 'success' ? 'bg-green-900/50 border border-green-500' :
             status === 'error' ? 'bg-red-900/50 border border-red-500' :
-            status === 'initializing' || status === 'checking' ? 'bg-blue-900/50 border border-blue-500' :
+            isInitializing || isChecking ? 'bg-blue-900/50 border border-blue-500' :
             'bg-gray-800'
           }`}>
             <p className="font-semibold mb-2">
               {status === 'success' && '✅ Success'}
               {status === 'error' && '❌ Error'}
-              {status === 'initializing' && '⏳ Processing'}
-              {status === 'checking' && '🔍 Checking'}
+              {isInitializing && '⏳ Processing'}
+              {isChecking && '🔍 Checking'}
               {status === 'idle' && 'ℹ️ Info'}
             </p>
             <p className="text-sm">{message}</p>
@@ -162,12 +173,12 @@ export default function InitializePlatformPage() {
             {txSignature && (
               <div className="mt-4">
                 <a
-                  href={`https://explorer.solana.com/tx/${txSignature}?cluster=devnet`}
+                  href={`${EXPLORER_URL}/tx/${txSignature}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:text-blue-300 underline text-sm"
                 >
-                  View transaction on Solana Explorer →
+                  View transaction on SOON Explorer →
                 </a>
               </div>
             )}
@@ -185,11 +196,15 @@ export default function InitializePlatformPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Fixed Backing:</span>
-                <span>{platformConfig.fixedBackingAmount.toNumber() / 1_000_000} USDC</span>
+                <span>{Number(platformConfig.fixedBackingAmount) / 1_000_000} USDC</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Campaign Counter:</span>
-                <span>{platformConfig.campaignCounter.toString()}</span>
+                <span className="text-gray-400">Total Campaigns:</span>
+                <span>{platformConfig.totalCampaigns?.toString() || '0'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Total Backers:</span>
+                <span>{platformConfig.totalBackers?.toString() || '0'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Status:</span>
@@ -205,7 +220,7 @@ export default function InitializePlatformPage() {
         <div className="mt-8 bg-gray-800 rounded-lg p-6">
           <h3 className="font-semibold mb-2">📋 Important Info</h3>
           <ul className="text-sm text-gray-400 space-y-2">
-            <li>• <strong>Network:</strong> Solana Devnet</li>
+            <li>• <strong>Network:</strong> SOON Testnet</li>
             <li>• <strong>Program ID:</strong> <span className="font-mono text-xs">{PROGRAM_ID.toString()}</span></li>
             <li>• <strong>Admin Wallet:</strong> <span className="font-mono text-xs">{PLATFORM_ADMIN.toString()}</span></li>
             <li>• <strong>Required:</strong> ~0.002 SOL for initialization</li>

@@ -146,6 +146,7 @@ export async function POST(request: NextRequest) {
     
     const {
       title,
+      tagline,
       description,
       category,
       goal,
@@ -169,6 +170,7 @@ export async function POST(request: NextRequest) {
       .from('projects')
       .insert({
         title,
+        tagline: tagline || null,
         description,
         category,
         goal,

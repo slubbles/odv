@@ -191,7 +191,7 @@ export default function CreatorDashboardPage() {
                                       View Analytics
                                     </Button>
                                     <Button variant="outline" size="sm" className="flex-1 bg-transparent" asChild>
-                                      <Link href={`/projects/${project.id}`}>
+                                      <Link href={`/project/${project.id}`}>
                                         <Edit className="h-4 w-4 mr-2" />
                                         View Project
                                       </Link>
