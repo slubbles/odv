@@ -43,10 +43,10 @@ This project runs on **SOON Network Testnet** - an Ethereum-based SVM rollup tha
 
 - **RPC Endpoint**: https://rpc.testnet.soo.network/rpc
 - **Explorer**: https://explorer.testnet.soo.network
-- **Faucet**: https://faucet.testnet.soo.network
+- **Faucet**: https://faucet.soo.network/
 - **Why SOON?**: Lower fees (~90%), faster finality, same Solana experience
 
-See [SOON_NETWORK_MIGRATION.md](./SOON_NETWORK_MIGRATION.md) for setup details.
+See [SOON_TESTNET_DEPLOYMENT.md](./SOON_TESTNET_DEPLOYMENT.md) for complete deployment guide.
 
 ## 🚀 Getting Started
 

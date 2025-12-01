@@ -4,14 +4,14 @@
 seeds = false
 skip-lint = false
 
-[programs.devnet]
+[programs.localnet]
 odv_escrow = "4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
+cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

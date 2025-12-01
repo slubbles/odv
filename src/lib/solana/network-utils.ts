@@ -24,10 +24,8 @@ export function getNetworkType(): NetworkType {
  * Get the RPC endpoint URL
  */
 export function getRpcEndpoint(): string {
-    return process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
-}
-
-/**
+  return process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://rpc.testnet.soo.network/rpc';
+}/**
  * Get the explorer URL for a transaction
  * @param signature - Transaction signature
  * @returns Full URL to view the transaction on the appropriate explorer
