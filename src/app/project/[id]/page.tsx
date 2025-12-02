@@ -289,7 +289,7 @@ export default function ProjectDetailPage() {
                 ) : (
                   milestones.map((milestone: any) => {
                     const milestoneProgress = milestone.status === 'completed' ? 100 : milestone.status === 'in_review' ? 75 : milestone.status === 'active' ? 50 : 0
-                    
+
                     return (
                       <Card key={milestone.id}>
                         <CardContent className="p-6">
@@ -350,7 +350,7 @@ export default function ProjectDetailPage() {
               </TabsContent>
 
               <TabsContent value="updates" className="space-y-6 mt-6">
-                <UpdatesList 
+                <UpdatesList
                   projectTitle={project.title}
                   creatorName={project.creator_name || "Anonymous Creator"}
                   creatorAvatar={project.creator_avatar}
@@ -380,12 +380,12 @@ export default function ProjectDetailPage() {
                     <p className="text-sm text-muted-foreground">backers</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{project.daysLeft}</p>
+                    <p className="text-2xl font-bold">{daysLeft}</p>
                     <p className="text-sm text-muted-foreground">days left</p>
                   </div>
                 </div>
 
-                <BackProjectButton 
+                <BackProjectButton
                   projectId={project.id}
                   creatorWallet={project.creator_wallet}
                   size="lg"

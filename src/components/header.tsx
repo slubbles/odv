@@ -32,11 +32,10 @@ export function Header() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
-            <ClientOnly>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:ring-0 focus-visible:outline-none">
-                  Explore <ChevronDown className="h-4 w-4" />
-                </DropdownMenuTrigger>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:ring-0 focus-visible:outline-none">
+                Explore <ChevronDown className="h-4 w-4" />
+              </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
                 <DropdownMenuItem asChild>
                   <Link href="/discover">Discover</Link>
@@ -53,9 +52,7 @@ export function Header() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </ClientOnly>
 
-          <ClientOnly>
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:ring-0 focus-visible:outline-none">
                 My Portfolio <ChevronDown className="h-4 w-4" />
@@ -79,7 +76,6 @@ export function Header() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </ClientOnly>
 
             <Link href="/submit" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Submit Project

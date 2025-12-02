@@ -5,12 +5,25 @@ export async function GET(request: Request) {
   try {
     const supabase = await createClient()
     const { searchParams } = new URL(request.url)
-    
+
     const status = searchParams.get("status") || "pending"
     const category = searchParams.get("category")
     const dateFrom = searchParams.get("dateFrom")
     const dateTo = searchParams.get("dateTo")
     const sort = searchParams.get("sort") || "newest"
+
+    // Check if Supabase is configured (mock check)
+    const isMockMode = !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder")
+
+    if (isMockMode) {
+      const { mockDb } = await import("@/lib/mock-db")
+      const projects = mockDb.getProjects({
+        status,
+        category: category || undefined,
+        sort
+      })
+      return NextResponse.json({ projects })
+    }
 
     let query = supabase
       .from("projects")

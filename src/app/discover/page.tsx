@@ -6,7 +6,9 @@ import { ProjectCard } from "@/components/project-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Search, SlidersHorizontal, TrendingUp, Star, Clock, Loader2 } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Search, SlidersHorizontal, TrendingUp, Star, Clock, Loader2, X } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Footer } from "@/components/footer"
 import { useProjects } from "@/lib/hooks/use-projects"
@@ -17,16 +19,26 @@ export default function DiscoverPage() {
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("trending")
+  const [status, setStatus] = useState("active")
   const [page, setPage] = useState(1)
 
   const { projects, loading, error, pagination } = useProjects({
     category: selectedCategory,
-    status: "active",
+    status: status,
     search: searchQuery,
     sort: sortBy,
     page,
     limit: 12
   })
+
+  const clearFilters = () => {
+    setSelectedCategory("all")
+    setSearchQuery("")
+    setSortBy("trending")
+    setStatus("active")
+    setPage(1)
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -48,24 +60,48 @@ export default function DiscoverPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search projects..."
-              className="pl-10"
+              className="pl-10 pr-10"
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value)
                 setPage(1)
               }}
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 rounded-md border border-input bg-background hover:bg-accent/10 transition-colors cursor-pointer"
-          >
-            <option value="trending">Trending</option>
-            <option value="newest">Newest</option>
-            <option value="ending">Ending Soon</option>
-            <option value="funded">Most Funded</option>
-          </select>
+
+          <div className="flex gap-2">
+            <Select value={status} onValueChange={(value) => { setStatus(value); setPage(1); }}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="coming_soon">Coming Soon</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={sortBy} onValueChange={(value) => { setSortBy(value); setPage(1); }}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="trending">Trending</SelectItem>
+                <SelectItem value="newest">Newest</SelectItem>
+                <SelectItem value="ending">Ending Soon</SelectItem>
+                <SelectItem value="funded">Most Funded</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Categories */}
@@ -153,13 +189,27 @@ export default function DiscoverPage() {
           )}
 
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-accent" />
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="flex flex-col space-y-3">
+                  <Skeleton className="h-[200px] w-full rounded-xl" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-[250px]" />
+                    <Skeleton className="h-4 w-[200px]" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : projects.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <p className="text-lg mb-2">No projects found</p>
-              <p className="text-sm">Try adjusting your filters or search query</p>
+            <div className="text-center py-12 text-muted-foreground bg-muted/30 rounded-lg border border-dashed">
+              <div className="flex justify-center mb-4">
+                <Search className="h-12 w-12 text-muted-foreground/50" />
+              </div>
+              <p className="text-lg font-medium mb-2">No projects found</p>
+              <p className="text-sm mb-6">We couldn't find any projects matching your criteria.</p>
+              <Button onClick={clearFilters} variant="outline">
+                Clear Filters
+              </Button>
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">

@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = getSupabaseClient()
     const { searchParams } = new URL(request.url)
-    
+
     const status = searchParams.get('status') // active, funded, completed, all
     const category = searchParams.get('category')
     const search = searchParams.get('search')
@@ -15,67 +15,14 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '12')
     const creator = searchParams.get('creator') // filter by creator wallet
 
-    // Start query
-    let query = supabase
-      .from('projects')
-      .select('*', { count: 'exact' })
-    
-    // Fallback to mock data if Supabase fails (for development)
-    let isMockMode = false
-
-    // Apply filters
-    if (status && status !== 'all') {
-      query = query.eq('status', status)
-    }
-
-    if (category) {
-      query = query.eq('category', category)
-    }
-
-    if (creator) {
-      query = query.eq('creator_wallet', creator)
-    }
-
-    if (search) {
-      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`)
-    }
-
-    // Apply sorting
-    switch (sort) {
-      case 'trending':
-        // Sort by backers count and recent activity
-        query = query.order('backers_count', { ascending: false })
-        break
-      case 'newest':
-        query = query.order('created_at', { ascending: false })
-        break
-      case 'ending':
-        query = query.order('deadline', { ascending: true })
-        break
-      case 'funded':
-        query = query.order('raised', { ascending: false })
-        break
-      default:
-        query = query.order('created_at', { ascending: false })
-    }
-
-    // Pagination
-    const from = (page - 1) * limit
-    const to = from + limit - 1
-    query = query.range(from, to)
-
     let projects: any[] = []
     let count = 0
+    let isMockMode = false
 
-    try {
-      const result = await query
-      projects = result.data || []
-      count = result.count || 0
-      if (result.error) throw result.error
-    } catch (error: any) {
-      console.warn('Supabase unavailable, using mock data:', error.message)
+    // Use mock data if Supabase is not available
+    if (!supabase) {
       isMockMode = true
-      
+
       // Mock data for development
       const mockProjects = [
         {
@@ -112,10 +59,107 @@ export async function GET(request: NextRequest) {
           deadline: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000).toISOString(),
           created_at: new Date().toISOString(),
         },
+        {
+          id: '3',
+          title: 'Eco-Friendly Smart Gardens',
+          tagline: 'Grow organic food at home',
+          description: 'IoT-powered indoor garden system for urban dwellers',
+          category: 'Technology',
+          goal: 8000,
+          raised: 4200,
+          backers_count: 67,
+          status: 'active',
+          creator_wallet: 'GHI789',
+          creator_name: 'Charlie Green',
+          creator_avatar: '/default-avatar.png',
+          image_url: '/placeholder-project.png',
+          deadline: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(),
+          created_at: new Date().toISOString(),
+        },
       ]
-      
-      projects = mockProjects.filter(p => !status || p.status === status)
+
+      projects = mockProjects.filter(p => !status || status === 'all' || p.status === status)
       count = projects.length
+    } else {
+      // Start query
+      let query = supabase
+        .from('projects')
+        .select('*', { count: 'exact' })
+
+      // Apply filters
+      if (status && status !== 'all') {
+        query = query.eq('status', status)
+      }
+
+      if (category) {
+        query = query.eq('category', category)
+      }
+
+      if (creator) {
+        query = query.eq('creator_wallet', creator)
+      }
+
+      if (search) {
+        query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`)
+      }
+
+      // Apply sorting
+      switch (sort) {
+        case 'trending':
+          // Sort by backers count and recent activity
+          query = query.order('backers_count', { ascending: false })
+          break
+        case 'newest':
+          query = query.order('created_at', { ascending: false })
+          break
+        case 'ending':
+          query = query.order('deadline', { ascending: true })
+          break
+        case 'funded':
+          query = query.order('raised', { ascending: false })
+          break
+        default:
+          query = query.order('created_at', { ascending: false })
+      }
+
+      // Pagination
+      const from = (page - 1) * limit
+      const to = from + limit - 1
+      query = query.range(from, to)
+
+      try {
+        const result = await query
+        projects = result.data || []
+        count = result.count || 0
+        if (result.error) throw result.error
+      } catch (error: any) {
+        console.warn('Supabase query failed, using mock data:', error.message)
+        isMockMode = true
+
+        // Same mock data as above (fallback if query fails)
+        const mockProjects = [
+          {
+            id: '1',
+            title: 'Decentralized Social Network',
+            tagline: 'Web3 social media without the drama',
+            description: 'Building the next generation of social networking on Solana',
+            category: 'Technology',
+            goal: 10000,
+            raised: 3500,
+            backers_count: 45,
+            status: 'active',
+            creator_wallet: 'ABC123',
+            creator_name: 'Alice Builder',
+            creator_avatar: '/default-avatar.png',
+            image_url: '/placeholder-project.png',
+            deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            created_at: new Date().toISOString(),
+          },
+        ]
+
+        projects = mockProjects.filter(p => !status || p.status === status)
+        count = projects.length
+      }
     }
 
     return NextResponse.json({
@@ -143,7 +187,7 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = getSupabaseClient()
     const body = await request.json()
-    
+
     const {
       title,
       tagline,

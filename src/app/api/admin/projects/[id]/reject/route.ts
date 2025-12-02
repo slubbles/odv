@@ -19,6 +19,31 @@ export async function POST(
       )
     }
 
+    // Check if Supabase is configured (mock check)
+    const isMockMode = !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder")
+
+    if (isMockMode) {
+      const { mockDb } = await import("@/lib/mock-db")
+      const project = mockDb.updateStatus(id, 'rejected', reason)
+
+      if (!project) {
+        return NextResponse.json(
+          { error: 'Project not found' },
+          { status: 404 }
+        )
+      }
+
+      return NextResponse.json({
+        success: true,
+        project,
+        message: 'Project rejected (Mock Mode)',
+      })
+    }
+
+    if (!supabase) {
+      return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
+    }
+
     const { data: project, error } = await supabase
       .from('projects')
       .update({

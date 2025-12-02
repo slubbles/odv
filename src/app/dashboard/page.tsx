@@ -1,12 +1,16 @@
+"use client"
+
+import { useState } from "react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { DollarSign, Users, FolderOpen, Plus, Edit, BarChart3 } from "lucide-react"
 import Link from "next/link"
+import { cn } from "@/lib/utils"
 
 const creatorStats = {
   totalRaised: 45000,
@@ -87,6 +91,8 @@ const myProjects = [
 ]
 
 export default function DashboardPage() {
+  const [activeTab, setActiveTab] = useState("backed")
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -99,7 +105,7 @@ export default function DashboardPage() {
               <p className="text-lg text-muted-foreground">What you backed. What you built.</p>
             </div>
             <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90" asChild>
-              <Link href="/create">
+              <Link href="/submit">
                 <Plus className="mr-2 h-5 w-5" />
                 Submit New Project
               </Link>
@@ -107,7 +113,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <Tabs defaultValue="backed" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList>
             <TabsTrigger value="backed">Backed Projects</TabsTrigger>
             <TabsTrigger value="my-projects">My Projects</TabsTrigger>
@@ -148,9 +154,12 @@ export default function DashboardPage() {
                           <Progress value={project.progress} className="h-2" />
                         </div>
 
-                        <Button size="sm" variant="outline" className="w-full bg-transparent" asChild>
-                          <Link href={`/project/${project.id}`}>View Project</Link>
-                        </Button>
+                        <Link
+                          href={`/project/${project.id}`}
+                          className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-full bg-transparent")}
+                        >
+                          View Project
+                        </Link>
                       </div>
                     </div>
                   </div>

@@ -56,7 +56,7 @@ export default function SubmitPage() {
   const updateMilestone = (index: number, field: keyof MilestoneInput, value: any) => {
     setFormData(prev => ({
       ...prev,
-      milestones: prev.milestones.map((m, i) => 
+      milestones: prev.milestones.map((m, i) =>
         i === index ? { ...m, [field]: value } : m
       )
     }))
@@ -137,7 +137,7 @@ export default function SubmitPage() {
       }
 
       toast.success("Project created successfully!")
-      
+
       // Redirect to project page or dashboard
       router.push(`/dashboard/creator`)
 
@@ -147,6 +147,50 @@ export default function SubmitPage() {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const handleNextStep = () => {
+    // Validate current step
+    if (step === 1) {
+      if (!formData.title || !formData.category || !formData.tagline) {
+        toast.error("Please fill in all required fields")
+        return
+      }
+    }
+
+    if (step === 2) {
+      if (!formData.description) {
+        toast.error("Please provide a project description")
+        return
+      }
+    }
+
+    if (step === 3) {
+      if (!formData.goal || !formData.duration) {
+        toast.error("Please set a funding goal and duration")
+        return
+      }
+      if (formData.milestones.length === 0) {
+        toast.error("Please add at least one milestone")
+        return
+      }
+
+      const totalPercentage = formData.milestones.reduce((sum, m) => sum + m.percentage, 0)
+      if (totalPercentage !== 100) {
+        toast.error(`Milestone percentages must total 100% (currently ${totalPercentage}%)`)
+        return
+      }
+
+      // Validate milestone deadlines
+      for (const m of formData.milestones) {
+        if (!m.deadline) {
+          toast.error("All milestones must have a deadline")
+          return
+        }
+      }
+    }
+
+    setStep(prev => Math.min(prev + 1, 4))
   }
 
   return (
@@ -167,9 +211,8 @@ export default function SubmitPage() {
             {[1, 2, 3, 4].map((s) => (
               <div key={s} className="flex-1 flex items-center">
                 <div
-                  className={`h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center font-bold text-sm sm:text-base ${
-                    s <= step ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"
-                  }`}
+                  className={`h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center font-bold text-sm sm:text-base ${s <= step ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"
+                    }`}
                 >
                   {s < step ? <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5" /> : s}
                 </div>
@@ -200,9 +243,9 @@ export default function SubmitPage() {
               <>
                 <div className="space-y-2">
                   <Label htmlFor="title">What'd you build? *</Label>
-                  <Input 
-                    id="title" 
-                    placeholder="Project title" 
+                  <Input
+                    id="title"
+                    placeholder="Project title"
                     value={formData.title}
                     onChange={(e) => handleInputChange('title', e.target.value)}
                   />
@@ -228,9 +271,9 @@ export default function SubmitPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="tagline">One-line pitch *</Label>
-                  <Input 
-                    id="tagline" 
-                    placeholder="Describe it in one sentence" 
+                  <Input
+                    id="tagline"
+                    placeholder="Describe it in one sentence"
                     value={formData.tagline}
                     onChange={(e) => handleInputChange('tagline', e.target.value)}
                   />
@@ -238,9 +281,9 @@ export default function SubmitPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="imageUrl">Project Image URL (Optional)</Label>
-                  <Input 
-                    id="imageUrl" 
-                    placeholder="https://..." 
+                  <Input
+                    id="imageUrl"
+                    placeholder="https://..."
                     value={formData.imageUrl}
                     onChange={(e) => handleInputChange('imageUrl', e.target.value)}
                   />
@@ -253,10 +296,10 @@ export default function SubmitPage() {
               <>
                 <div className="space-y-2">
                   <Label htmlFor="description">Tell us about it *</Label>
-                  <Textarea 
-                    id="description" 
-                    placeholder="Pitch it in plain English. Be real." 
-                    rows={8} 
+                  <Textarea
+                    id="description"
+                    placeholder="Pitch it in plain English. Be real."
+                    rows={8}
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
                   />
@@ -264,9 +307,9 @@ export default function SubmitPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="videoUrl">Video URL (Optional)</Label>
-                  <Input 
-                    id="videoUrl" 
-                    placeholder="https://youtube.com/..." 
+                  <Input
+                    id="videoUrl"
+                    placeholder="https://youtube.com/..."
                     value={formData.videoUrl}
                     onChange={(e) => handleInputChange('videoUrl', e.target.value)}
                   />
@@ -279,10 +322,10 @@ export default function SubmitPage() {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="goal">Funding Goal (USD) *</Label>
-                    <Input 
-                      id="goal" 
-                      type="number" 
-                      placeholder="10000" 
+                    <Input
+                      id="goal"
+                      type="number"
+                      placeholder="10000"
                       value={formData.goal}
                       onChange={(e) => handleInputChange('goal', e.target.value)}
                     />
@@ -290,10 +333,10 @@ export default function SubmitPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="duration">Campaign Duration (Days) *</Label>
-                    <Input 
-                      id="duration" 
-                      type="number" 
-                      placeholder="30" 
+                    <Input
+                      id="duration"
+                      type="number"
+                      placeholder="30"
                       value={formData.duration}
                       onChange={(e) => handleInputChange('duration', e.target.value)}
                     />
@@ -313,10 +356,10 @@ export default function SubmitPage() {
                       <CardContent className="p-4 space-y-4">
                         <div className="flex items-center justify-between">
                           <Label>Milestone {index + 1}</Label>
-                          <Button 
-                            type="button" 
-                            variant="ghost" 
-                            size="sm" 
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
                             onClick={() => removeMilestone(index)}
                           >
                             Remove
@@ -326,17 +369,17 @@ export default function SubmitPage() {
                         <div className="grid md:grid-cols-3 gap-4">
                           <div className="space-y-2 md:col-span-2">
                             <Label>Title</Label>
-                            <Input 
-                              placeholder="Milestone title" 
+                            <Input
+                              placeholder="Milestone title"
                               value={milestone.title}
                               onChange={(e) => updateMilestone(index, 'title', e.target.value)}
                             />
                           </div>
                           <div className="space-y-2">
                             <Label>Percentage (%)</Label>
-                            <Input 
-                              type="number" 
-                              placeholder="25" 
+                            <Input
+                              type="number"
+                              placeholder="25"
                               value={milestone.percentage || ''}
                               onChange={(e) => updateMilestone(index, 'percentage', parseFloat(e.target.value) || 0)}
                             />
@@ -345,8 +388,8 @@ export default function SubmitPage() {
 
                         <div className="space-y-2">
                           <Label>Deadline</Label>
-                          <Input 
-                            type="date" 
+                          <Input
+                            type="date"
                             value={milestone.deadline}
                             onChange={(e) => updateMilestone(index, 'deadline', e.target.value)}
                           />
@@ -357,7 +400,7 @@ export default function SubmitPage() {
 
                   {formData.milestones.length > 0 && (
                     <div className="text-sm text-muted-foreground">
-                      Total: {formData.milestones.reduce((sum, m) => sum + m.percentage, 0)}% 
+                      Total: {formData.milestones.reduce((sum, m) => sum + m.percentage, 0)}%
                       (must equal 100%)
                     </div>
                   )}
@@ -407,12 +450,12 @@ export default function SubmitPage() {
                   Back
                 </Button>
               )}
-              
+
               {step < 4 ? (
                 <Button
                   type="button"
                   className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90"
-                  onClick={() => setStep(step + 1)}
+                  onClick={handleNextStep}
                 >
                   Continue
                 </Button>

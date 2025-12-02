@@ -10,6 +10,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid project IDs" }, { status: 400 })
     }
 
+    // Check if Supabase is configured (mock check)
+    const isMockMode = !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder")
+
+    if (isMockMode) {
+      const { mockDb } = await import("@/lib/mock-db")
+      const projects = mockDb.bulkUpdateStatus(projectIds, 'approved')
+      return NextResponse.json({ success: true, count: projects.length })
+    }
+
+    if (!supabase) {
+      return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
+    }
+
     // Check auth
     const {
       data: { user },
