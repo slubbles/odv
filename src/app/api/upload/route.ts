@@ -45,6 +45,10 @@ export async function POST(request: NextRequest) {
     const arrayBuffer = await file.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
 
+    if (!supabase) {
+      return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
+    }
+
     // Upload to Supabase Storage
     const { data, error } = await supabase.storage
       .from(bucket)
@@ -98,6 +102,10 @@ export async function DELETE(request: NextRequest) {
         { error: 'File path required' },
         { status: 400 }
       )
+    }
+
+    if (!supabase) {
+      return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
     }
 
     const { error } = await supabase.storage

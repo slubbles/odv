@@ -12,6 +12,10 @@ export async function POST(
     const body = await request.json()
     const { notes } = body
 
+    if (!supabase) {
+      return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
+    }
+
     // Get milestone details
     const { data: milestone } = await supabase
       .from('milestones')

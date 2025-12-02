@@ -18,6 +18,10 @@ export async function POST(request: NextRequest) {
     // TODO: Implement actual blockchain withdrawal
     // For now, just create a transaction record
 
+    if (!supabase) {
+      return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
+    }
+
     const { data: transaction, error } = await supabase
       .from('transactions')
       .insert({

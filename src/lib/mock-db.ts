@@ -109,11 +109,18 @@ const INITIAL_PROJECTS: MockProject[] = [
 ]
 
 // Global variable to hold state across hot reloads (in dev)
-let mockProjects: MockProject[] = [...INITIAL_PROJECTS]
+const globalForMockDb = globalThis as unknown as {
+    mockProjects: MockProject[] | undefined
+}
+
+if (!globalForMockDb.mockProjects) {
+    globalForMockDb.mockProjects = [...INITIAL_PROJECTS]
+}
 
 export const mockDb = {
     getProjects: (filters: { status?: string; category?: string; sort?: string } = {}) => {
-        let filtered = [...mockProjects]
+        // Always read from global to get latest state
+        let filtered = [...globalForMockDb.mockProjects!]
 
         if (filters.status) {
             filtered = filtered.filter(p => p.status === filters.status)
@@ -144,39 +151,41 @@ export const mockDb = {
     },
 
     getProject: (id: string) => {
-        return mockProjects.find(p => p.id === id)
+        return globalForMockDb.mockProjects!.find(p => p.id === id)
     },
 
     updateStatus: (id: string, status: "approved" | "rejected", reason?: string) => {
-        const projectIndex = mockProjects.findIndex(p => p.id === id)
+        const projects = globalForMockDb.mockProjects!
+        const projectIndex = projects.findIndex(p => p.id === id)
         if (projectIndex === -1) return null
 
         const updatedProject = {
-            ...mockProjects[projectIndex],
+            ...projects[projectIndex],
             status,
             updated_at: new Date().toISOString(),
             ...(status === 'approved' ? { approvedDate: new Date().toISOString() } : {}),
             ...(status === 'rejected' ? { rejectedDate: new Date().toISOString(), rejectionReason: reason } : {})
         }
 
-        mockProjects[projectIndex] = updatedProject
+        projects[projectIndex] = updatedProject
         return updatedProject
     },
 
     bulkUpdateStatus: (ids: string[], status: "approved" | "rejected", reason?: string) => {
+        const projects = globalForMockDb.mockProjects!
         const updatedProjects: MockProject[] = []
 
         ids.forEach(id => {
-            const projectIndex = mockProjects.findIndex(p => p.id === id)
+            const projectIndex = projects.findIndex(p => p.id === id)
             if (projectIndex !== -1) {
                 const updatedProject = {
-                    ...mockProjects[projectIndex],
+                    ...projects[projectIndex],
                     status,
                     updated_at: new Date().toISOString(),
                     ...(status === 'approved' ? { approvedDate: new Date().toISOString() } : {}),
                     ...(status === 'rejected' ? { rejectedDate: new Date().toISOString(), rejectionReason: reason } : {})
                 }
-                mockProjects[projectIndex] = updatedProject
+                projects[projectIndex] = updatedProject
                 updatedProjects.push(updatedProject)
             }
         })
@@ -186,6 +195,6 @@ export const mockDb = {
 
     // Helper to reset DB if needed
     reset: () => {
-        mockProjects = [...INITIAL_PROJECTS]
+        globalForMockDb.mockProjects = [...INITIAL_PROJECTS]
     }
 }
