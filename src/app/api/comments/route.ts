@@ -17,6 +17,13 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
     const { data: comments, error, count } = await supabase
       .from('comments')
       .select(`
@@ -106,6 +113,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
     // Create the comment
     const { data: comment, error } = await supabase
       .from('comments')
@@ -190,6 +204,13 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
     // Check if already liked
     const { data: existingLike } = await supabase
       .from('comment_likes')
@@ -261,6 +282,13 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json(
         { error: 'Missing comment ID or wallet address' },
         { status: 400 }
+      )
+    }
+
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
       )
     }
 

@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseClient } from '@/lib/supabase/api-client'
 import { isAdminRequest } from '@/lib/auth/admin-api'
-import { notifyProjectRejected } from '@/lib/notifications'
 
-// POST /api/admin/projects/[id]/reject - Reject project
-export async function POST(
+// GET /api/admin/projects/[id] - Get project details for admin
+export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -20,22 +19,13 @@ export async function POST(
 
     const supabase = getSupabaseClient()
     const { id } = await params
-    const body = await request.json()
-    const { reason } = body
-
-    if (!reason) {
-      return NextResponse.json(
-        { error: 'Rejection reason required' },
-        { status: 400 }
-      )
-    }
 
     // Check if Supabase is configured (mock check)
     const isMockMode = !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder")
 
     if (isMockMode) {
       const { mockDb } = await import("@/lib/mock-db")
-      const project = mockDb.updateStatus(id, 'rejected', reason)
+      const project = mockDb.getProject(id)
 
       if (!project) {
         return NextResponse.json(
@@ -46,8 +36,16 @@ export async function POST(
 
       return NextResponse.json({
         success: true,
-        project,
-        message: 'Project rejected (Mock Mode)',
+        project: {
+          ...project,
+          creator_wallet: project.creator_wallet || '4GCC5vqQ6R8MWnVW3tFE5iS6p66agk4XCaeZ8V9wFxRw',
+          goal: project.goal || 100,
+          deadline: project.deadline || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          milestones: project.milestones || [
+            { title: 'Phase 1', percentage: 50 },
+            { title: 'Phase 2', percentage: 50 },
+          ],
+        },
       })
     }
 
@@ -55,49 +53,39 @@ export async function POST(
       return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
     }
 
-    // First get the project details for notification
-    const { data: existingProject } = await supabase
+    // Get project with milestones
+    const { data: project, error } = await supabase
       .from('projects')
-      .select('creator_wallet, title')
+      .select(`
+        *,
+        milestones (
+          id,
+          title,
+          description,
+          percentage,
+          amount,
+          deadline,
+          status
+        )
+      `)
       .eq('id', id)
       .single()
 
-    if (!existingProject) {
+    if (error || !project) {
       return NextResponse.json(
         { error: 'Project not found' },
         { status: 404 }
       )
     }
 
-    const { data: project, error } = await supabase
-      .from('projects')
-      .update({
-        status: 'rejected',
-        rejection_reason: reason,
-      })
-      .eq('id', id)
-      .select()
-      .single()
-
-    if (error) throw error
-
-    // Notify creator of rejection with reason
-    await notifyProjectRejected(
-      existingProject.creator_wallet,
-      id,
-      existingProject.title,
-      reason
-    )
-
     return NextResponse.json({
       success: true,
       project,
-      message: 'Project rejected',
     })
   } catch (error: any) {
-    console.error('Reject project error:', error)
+    console.error('Get project error:', error)
     return NextResponse.json(
-      { error: 'Failed to reject project', details: error.message },
+      { error: 'Failed to get project', details: error.message },
       { status: 500 }
     )
   }

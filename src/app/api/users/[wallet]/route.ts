@@ -17,6 +17,13 @@ export async function GET(
       )
     }
 
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
     const { data: user, error } = await supabase
       .from('users')
       .select('*')
@@ -112,6 +119,13 @@ export async function PATCH(
       )
     }
 
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
     updates.updated_at = new Date().toISOString()
 
     const { data: user, error } = await supabase
@@ -169,6 +183,13 @@ export async function POST(
       avatar_url,
       user_type = 'backer'
     } = body
+
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
 
     // Upsert - create if not exists, update if exists
     const { data: user, error } = await supabase

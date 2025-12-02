@@ -12,6 +12,13 @@ export async function PATCH(
     const body = await request.json()
     const { title, description, percentage, deadline } = body
 
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
     const updateData: any = {}
     if (title !== undefined) updateData.title = title
     if (description !== undefined) updateData.description = description
@@ -48,6 +55,13 @@ export async function DELETE(
   try {
     const supabase = getSupabaseClient()
     const { milestoneId } = await params
+
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
 
     // Check if milestone can be deleted (must be locked)
     const { data: milestone } = await supabase

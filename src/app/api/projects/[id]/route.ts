@@ -10,6 +10,13 @@ export async function GET(
     const supabase = getSupabaseClient()
     const { id } = await params
 
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
     // Fetch project with creator info
     const { data: project, error: projectError } = await supabase
       .from('projects')
@@ -107,6 +114,13 @@ export async function PATCH(
       )
     }
 
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
     // Verify ownership
     const { data: project } = await supabase
       .from('projects')
@@ -191,6 +205,13 @@ export async function DELETE(
       return NextResponse.json(
         { error: 'Wallet address required for authorization' },
         { status: 401 }
+      )
+    }
+
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
       )
     }
 

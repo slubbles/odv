@@ -69,6 +69,11 @@ export function useProject(id: string) {
   const [project, setProject] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [refreshKey, setRefreshKey] = useState(0)
+
+  const refetch = () => {
+    setRefreshKey(prev => prev + 1)
+  }
 
   useEffect(() => {
     if (!id) return
@@ -94,7 +99,7 @@ export function useProject(id: string) {
     }
 
     fetchProject()
-  }, [id])
+  }, [id, refreshKey])
 
-  return { project, loading, error }
+  return { project, loading, error, refetch }
 }

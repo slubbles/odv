@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseClient } from '@/lib/supabase/api-client'
+import { notifyMilestoneSubmitted } from '@/lib/notifications'
+import { ADMIN_WALLETS } from '@/lib/auth/admin'
 
 // POST /api/projects/[id]/milestones/[milestoneId]/submit - Submit milestone for review
 export async function POST(
@@ -8,9 +10,9 @@ export async function POST(
 ) {
   try {
     const supabase = getSupabaseClient()
-    const { milestoneId } = await params
+    const { id: projectId, milestoneId } = await params
     const body = await request.json()
-    const { proofUrl, proofDescription } = body
+    const { proofUrl, proofDescription, walletAddress } = body
 
     if (!proofUrl || !proofDescription) {
       return NextResponse.json(
@@ -19,10 +21,17 @@ export async function POST(
       )
     }
 
-    // Check if milestone exists and is active
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
+    // Get milestone with project info
     const { data: milestone } = await supabase
       .from('milestones')
-      .select('status')
+      .select('status, title, project_id, projects(title, creator_wallet)')
       .eq('id', milestoneId)
       .single()
 
@@ -55,7 +64,23 @@ export async function POST(
 
     if (error) throw error
 
-    // TODO: Notify admin of new milestone submission
+    // Notify all admins of new milestone submission
+    // milestone.projects can be an array or single object depending on Supabase join
+    const projectData = Array.isArray(milestone.projects) 
+      ? milestone.projects[0] 
+      : milestone.projects
+    const project = projectData as { title: string; creator_wallet: string } | null
+    if (project) {
+      for (const adminWallet of ADMIN_WALLETS) {
+        await notifyMilestoneSubmitted(
+          adminWallet,
+          projectId,
+          project.title,
+          milestone.title,
+          walletAddress || project.creator_wallet
+        )
+      }
+    }
 
     return NextResponse.json({
       success: true,

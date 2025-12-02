@@ -32,7 +32,8 @@ export async function GET(request: NextRequest) {
           id,
           title,
           creator_id,
-          creator_name
+          creator_name,
+          creator_wallet
         )
       `,
         { count: "exact" }
@@ -74,6 +75,7 @@ export async function GET(request: NextRequest) {
       id: milestone.id,
       project_id: milestone.project_id,
       project_title: milestone.projects?.title || "Unknown Project",
+      creator_wallet: milestone.projects?.creator_wallet || null,
       title: milestone.title,
       description: milestone.description,
       due_date: milestone.due_date,
@@ -103,7 +105,7 @@ export async function GET(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json()
-    const { milestone_id, action, admin_wallet } = body
+    const { milestone_id, action, admin_wallet, approve_tx, release_tx } = body
 
     if (!milestone_id || !action || !admin_wallet) {
       return NextResponse.json({ error: "Missing required fields: milestone_id, action, admin_wallet" }, { status: 400 })
@@ -138,6 +140,13 @@ export async function PATCH(request: NextRequest) {
         status: "approved",
         votes_approve: (milestone.votes_approve || 0) + 1,
         updated_at: new Date().toISOString(),
+      }
+      // Store on-chain transaction signatures if provided
+      if (approve_tx) {
+        updateData.approve_tx = approve_tx
+      }
+      if (release_tx) {
+        updateData.release_tx = release_tx
       }
     } else if (action === "reject") {
       updateData = {

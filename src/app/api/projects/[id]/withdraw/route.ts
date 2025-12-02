@@ -12,6 +12,13 @@ export async function POST(
     const body = await request.json()
     const { reason } = body
 
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
     // Get project
     const { data: project, error: fetchError } = await supabase
       .from('projects')

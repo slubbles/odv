@@ -1,8 +1,18 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { isAdminRequest } from '@/lib/auth/admin-api'
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Check admin authorization
+    const walletAddress = request.headers.get('x-wallet-address')
+    if (!isAdminRequest(walletAddress)) {
+      return NextResponse.json(
+        { error: 'Unauthorized: Admin access required' },
+        { status: 403 }
+      )
+    }
+
     const supabase = await createClient()
     const { projectIds, reason } = await request.json()
 

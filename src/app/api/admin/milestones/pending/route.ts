@@ -9,6 +9,13 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50')
     const offset = parseInt(searchParams.get('offset') || '0')
 
+    if (!supabase) {
+      return NextResponse.json(
+        { milestones: [], total: 0, mockMode: true },
+        { status: 200 }
+      )
+    }
+
     const { data: milestones, error } = await supabase
       .from('milestones')
       .select('*, projects(title, creator_wallet)')

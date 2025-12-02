@@ -10,6 +10,13 @@ export async function GET(
     const supabase = getSupabaseClient()
     const { txHash } = await params
 
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
     const { data: transaction, error } = await supabase
       .from('transactions')
       .select('*')

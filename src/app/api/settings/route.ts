@@ -15,6 +15,13 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
     const { data: user, error } = await supabase
       .from('users')
       .select('notification_preferences, privacy_settings, email, email_verified')
@@ -53,6 +60,13 @@ export async function PATCH(request: NextRequest) {
     if (notificationPreferences) updateData.notification_preferences = notificationPreferences
     if (privacySettings) updateData.privacy_settings = privacySettings
     if (email !== undefined) updateData.email = email
+
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
 
     const { data: user, error } = await supabase
       .from('users')

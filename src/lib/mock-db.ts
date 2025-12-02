@@ -4,6 +4,7 @@ export interface MockProject {
     title: string
     creator: string
     creator_id: string
+    creator_wallet?: string
     category: string
     votes: number
     submittedDate: string
@@ -18,6 +19,7 @@ export interface MockProject {
     rejectionReason?: string
     created_at: string
     updated_at: string
+    milestones?: Array<{ title: string; percentage: number }>
 }
 
 const INITIAL_PROJECTS: MockProject[] = [
@@ -26,6 +28,7 @@ const INITIAL_PROJECTS: MockProject[] = [
         title: "Eco-Friendly Urban Garden Kit",
         creator: "GreenThumb Solutions",
         creator_id: "user-1",
+        creator_wallet: "4GCC5vqQ6R8MWnVW3tFE5iS6p66agk4XCaeZ8V9wFxRw",
         category: "Social Impact",
         votes: 156,
         submittedDate: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 days ago
@@ -43,6 +46,7 @@ const INITIAL_PROJECTS: MockProject[] = [
         title: "Neon Cyberpunk RPG",
         creator: "PixelForge Games",
         creator_id: "user-2",
+        creator_wallet: "Bp7Dz5mVr7dLNEVTJGXvQTi8LY7djRUYvMZv7dMwCMnN",
         category: "Gaming",
         votes: 892,
         submittedDate: new Date(Date.now() - 86400000 * 5).toISOString(), // 5 days ago
@@ -60,6 +64,7 @@ const INITIAL_PROJECTS: MockProject[] = [
         title: "AI-Powered Music Composer",
         creator: "AudioTech Labs",
         creator_id: "user-3",
+        creator_wallet: "Cz8Dw4nMr6cJMEVTJGXvQTi8LY7djRUYvMZv7dMwCMnP",
         category: "Technology",
         votes: 430,
         submittedDate: new Date(Date.now() - 86400000 * 1).toISOString(), // 1 day ago

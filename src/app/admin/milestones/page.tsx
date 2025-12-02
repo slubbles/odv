@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useWallet } from "@solana/wallet-adapter-react"
+import { useWallet, useConnection } from "@solana/wallet-adapter-react"
+import { PublicKey } from "@solana/web3.js"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -10,11 +11,17 @@ import { CheckCircle2, XCircle, Clock, AlertCircle, Loader2, ExternalLink } from
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { toast } from "sonner"
+import { 
+  createApproveMilestoneTransaction, 
+  createReleaseMilestoneTransaction,
+  createRejectMilestoneTransaction 
+} from "@/lib/solana/admin-operations"
 
 interface Milestone {
   id: string
   project_id: string
   project_title: string
+  creator_wallet?: string
   title: string
   description: string
   due_date: string
@@ -36,7 +43,8 @@ interface Stats {
 }
 
 export default function AdminMilestonesPage() {
-  const { publicKey, connected } = useWallet()
+  const { publicKey, connected, signTransaction } = useWallet()
+  const { connection } = useConnection()
   const [milestones, setMilestones] = useState<Milestone[]>([])
   const [stats, setStats] = useState<Stats>({
     pending_review: 0,
@@ -93,6 +101,69 @@ export default function AdminMilestonesPage() {
 
     setActionLoading(milestoneId)
     try {
+      // Find the milestone to get project info
+      const milestone = milestones.find(m => m.id === milestoneId)
+      
+      if (!milestone) {
+        toast.error("Milestone not found")
+        return
+      }
+
+      let approveTxSignature: string | undefined
+      let releaseTxSignature: string | undefined
+
+      // If approving, create and sign blockchain transactions
+      if (action === "approve" && milestone.creator_wallet) {
+        const creatorPubkey = new PublicKey(milestone.creator_wallet)
+        
+        // Step 1: Create and sign approve milestone transaction
+        toast.loading("Creating approve transaction...")
+        const approveTx = await createApproveMilestoneTransaction(
+          connection,
+          publicKey,
+          creatorPubkey
+        )
+        
+        const signedApproveTx = await signTransaction!(approveTx)
+        const approveRawTx = signedApproveTx.serialize()
+        approveTxSignature = await connection.sendRawTransaction(approveRawTx)
+        await connection.confirmTransaction(approveTxSignature, "confirmed")
+        
+        toast.success(`Approve transaction confirmed: ${approveTxSignature.slice(0, 8)}...`)
+        
+        // Step 2: Create and sign release milestone transaction
+        toast.loading("Creating release transaction...")
+        const releaseTx = await createReleaseMilestoneTransaction(
+          connection,
+          creatorPubkey
+        )
+        
+        const signedReleaseTx = await signTransaction!(releaseTx)
+        const releaseRawTx = signedReleaseTx.serialize()
+        releaseTxSignature = await connection.sendRawTransaction(releaseRawTx)
+        await connection.confirmTransaction(releaseTxSignature, "confirmed")
+        
+        toast.success(`Release transaction confirmed: ${releaseTxSignature.slice(0, 8)}...`)
+      } else if (action === "reject" && milestone.creator_wallet) {
+        // Create and sign reject milestone transaction
+        const creatorPubkey = new PublicKey(milestone.creator_wallet)
+        
+        toast.loading("Creating reject transaction...")
+        const rejectTx = await createRejectMilestoneTransaction(
+          connection,
+          publicKey,
+          creatorPubkey
+        )
+        
+        const signedRejectTx = await signTransaction!(rejectTx)
+        const rejectRawTx = signedRejectTx.serialize()
+        approveTxSignature = await connection.sendRawTransaction(rejectRawTx)
+        await connection.confirmTransaction(approveTxSignature, "confirmed")
+        
+        toast.success(`Reject transaction confirmed: ${approveTxSignature.slice(0, 8)}...`)
+      }
+
+      // Now record the action in the database
       const response = await fetch("/api/admin/milestones", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -100,6 +171,8 @@ export default function AdminMilestonesPage() {
           milestone_id: milestoneId,
           action,
           admin_wallet: publicKey.toString(),
+          approve_tx: approveTxSignature,
+          release_tx: releaseTxSignature,
         }),
       })
 
@@ -112,7 +185,7 @@ export default function AdminMilestonesPage() {
       }
     } catch (error) {
       console.error(`Error ${action}ing milestone:`, error)
-      toast.error(`Failed to ${action} milestone`)
+      toast.error(`Failed to ${action} milestone: ${error instanceof Error ? error.message : "Unknown error"}`)
     } finally {
       setActionLoading(null)
     }

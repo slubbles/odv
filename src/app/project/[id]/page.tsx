@@ -110,7 +110,7 @@ const rewardTiers = [
 
 export default function ProjectDetailPage() {
   const params = useParams()
-  const { project, loading, error } = useProject(params.id as string)
+  const { project, loading, error, refetch } = useProject(params.id as string)
 
   if (loading) {
     return (
@@ -390,6 +390,7 @@ export default function ProjectDetailPage() {
                   creatorWallet={project.creator_wallet}
                   size="lg"
                   className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                  onSuccess={refetch}
                 />
 
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">

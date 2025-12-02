@@ -22,8 +22,9 @@ import { LoadingSpinner } from "@/components/loading-spinner"
 import { RejectProjectDialog } from "@/components/reject-project-dialog"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { AdminGuard } from "@/components/admin/admin-guard"
 
-export default function AdminPage() {
+function AdminPageContent() {
   const {
     projects,
     loading,
@@ -382,5 +383,14 @@ export default function AdminPage() {
 
       <Footer />
     </div>
+  )
+}
+
+// Wrap the admin page with access control
+export default function AdminPage() {
+  return (
+    <AdminGuard>
+      <AdminPageContent />
+    </AdminGuard>
   )
 }

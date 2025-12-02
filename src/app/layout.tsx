@@ -9,6 +9,7 @@ import { QueryClientProvider } from "@/components/providers/QueryClientProvider"
 import { SkipNav } from "@/components/skip-nav"
 import { BottomNav } from "@/components/bottom-nav"
 import { Toaster } from "sonner"
+import { NetworkGuard } from "@/components/network-guard"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const poppins = Poppins({
@@ -85,9 +86,11 @@ export default function RootLayout({
       <body className={`${inter.variable} ${poppins.variable} font-sans antialiased`}>
         <QueryClientProvider>
           <WalletContextProvider>
-            <SkipNav />
-            {children}
-            <BottomNav />
+            <NetworkGuard>
+              <SkipNav />
+              {children}
+              <BottomNav />
+            </NetworkGuard>
             <Toaster />
             <Analytics />
           </WalletContextProvider>

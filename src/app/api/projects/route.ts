@@ -209,6 +209,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
     // Insert project
     const { data: project, error: projectError } = await supabase
       .from('projects')

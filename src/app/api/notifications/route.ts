@@ -18,6 +18,13 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
     let query = supabase
       .from('notifications')
       .select(`
@@ -94,6 +101,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
     const { data: notification, error } = await supabase
       .from('notifications')
       .insert({
@@ -147,6 +161,13 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json(
         { error: 'Wallet address required' },
         { status: 400 }
+      )
+    }
+
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
       )
     }
 

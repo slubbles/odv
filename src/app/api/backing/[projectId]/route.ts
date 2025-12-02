@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseClient } from '@/lib/supabase/api-client'
 import { Connection, PublicKey } from '@solana/web3.js'
 import { createFundCampaignTransaction } from '@/lib/solana/transaction'
+import { notifyNewBacker, notifyProjectFunded } from '@/lib/notifications'
 
 export async function POST(
   request: NextRequest,
@@ -25,10 +26,17 @@ export async function POST(
       )
     }
 
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
     // Fetch project to get creator wallet
     const { data: project, error: projectError } = await supabase
       .from('projects')
-      .select('id, creator_wallet, goal, raised, status')
+      .select('id, title, creator_wallet, goal, raised, status')
       .eq('id', projectId)
       .single()
 
@@ -132,6 +140,25 @@ export async function POST(
       // Don't fail the request - backing is recorded
     }
 
+    // Notify creator of new backer
+    await notifyNewBacker(
+      project.creator_wallet,
+      projectId,
+      project.title,
+      walletAddress
+    )
+
+    // Check if project reached its goal and notify
+    const newRaised = project.raised + amount
+    if (newRaised >= project.goal && project.raised < project.goal) {
+      await notifyProjectFunded(
+        project.creator_wallet,
+        projectId,
+        project.title,
+        newRaised * 1_000_000 // Convert to USDC smallest units
+      )
+    }
+
     return NextResponse.json({
       success: true,
       backing,
@@ -156,6 +183,13 @@ export async function GET(
     const { projectId } = await params
     const { searchParams } = new URL(request.url)
     const walletAddress = searchParams.get('wallet')
+
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
 
     if (!walletAddress) {
       // Return all backers for this project

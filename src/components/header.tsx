@@ -13,6 +13,7 @@ import {
 import { NotificationBell } from "@/components/notification-bell"
 import { MobileNav } from "@/components/mobile-nav"
 import { ClientOnly } from "@/components/client-only"
+import { NetworkIndicator } from "@/components/network-indicator"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 
 // Import wallet adapter styles
@@ -84,6 +85,9 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2">
+          <ClientOnly>
+            <NetworkIndicator />
+          </ClientOnly>
           <ClientOnly>
             <NotificationBell />
           </ClientOnly>
