@@ -20,25 +20,27 @@ export async function GET(request: NextRequest) {
         project_id,
         title,
         description,
-        due_date,
+        deadline,
+        percentage,
+        amount,
         status,
-        evidence_url,
-        evidence_submitted,
-        votes_approve,
-        votes_reject,
+        proof_url,
+        proof_description,
+        submitted_at,
+        reviewed_at,
+        reviewer_notes,
         created_at,
         updated_at,
         projects (
           id,
           title,
-          creator_id,
           creator_name,
           creator_wallet
         )
       `,
         { count: "exact" }
       )
-      .order("due_date", { ascending: true })
+      .order("deadline", { ascending: true })
       .range(offset, offset + limit - 1)
 
     // Apply status filter if provided
@@ -78,13 +80,17 @@ export async function GET(request: NextRequest) {
       creator_wallet: milestone.projects?.creator_wallet || null,
       title: milestone.title,
       description: milestone.description,
-      due_date: milestone.due_date,
+      due_date: milestone.deadline,
+      percentage: milestone.percentage,
+      amount: milestone.amount,
       status: milestone.status,
-      evidence_url: milestone.evidence_url,
-      evidence_submitted: milestone.evidence_submitted,
+      evidence_url: milestone.proof_url,
+      evidence_description: milestone.proof_description,
+      evidence_submitted: !!milestone.submitted_at,
+      reviewer_notes: milestone.reviewer_notes,
       votes: {
-        approve: milestone.votes_approve || 0,
-        reject: milestone.votes_reject || 0,
+        approve: 0,
+        reject: 0,
       },
       created_at: milestone.created_at,
       updated_at: milestone.updated_at,
