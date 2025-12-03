@@ -23,7 +23,7 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from("projects")
-      .select("id, title, creator_wallet, category, community_votes, status, goal, deadline, created_at, updated_at")
+      .select("id, title, creator_wallet, category, backers_count, raised, status, goal, deadline, created_at, updated_at")
       .eq("status", dbStatus)
 
     if (category && category !== "all") {
@@ -44,10 +44,12 @@ export async function GET(request: Request) {
         query = query.order("created_at", { ascending: true })
         break
       case "most_voted":
-        query = query.order("community_votes", { ascending: false })
+      case "most_backers":
+        query = query.order("backers_count", { ascending: false })
         break
       case "least_voted":
-        query = query.order("community_votes", { ascending: true })
+      case "least_backers":
+        query = query.order("backers_count", { ascending: true })
         break
       case "newest":
       default:
@@ -61,7 +63,28 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ projects })
+    // Map database fields to UI expected format
+    // UI expects: votes, creator, submittedDate, status (pending/approved/rejected)
+    const reverseStatusMap: Record<string, string> = {
+      queue: "pending",
+      active: "approved",
+      rejected: "rejected",
+    }
+
+    const mappedProjects = (projects || []).map((p: any) => ({
+      id: p.id,
+      title: p.title,
+      creator: p.creator_wallet,
+      creator_wallet: p.creator_wallet,
+      category: p.category,
+      votes: p.backers_count || 0,
+      goal: p.goal,
+      deadline: p.deadline,
+      submittedDate: p.created_at,
+      status: reverseStatusMap[p.status] || p.status,
+    }))
+
+    return NextResponse.json({ projects: mappedProjects })
   } catch (error) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
