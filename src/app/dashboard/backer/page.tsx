@@ -20,8 +20,8 @@ export default function BackerDashboardPage() {
     return (
       <div className="flex flex-col min-h-screen">
         <Header />
-        <div className="container mx-auto py-12 flex-1 flex items-center justify-center">
-          <Card className="p-12 text-center max-w-md">
+        <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 flex items-center justify-center pb-24 md:pb-12">
+          <Card className="p-8 sm:p-12 text-center max-w-md">
             <p className="text-muted-foreground mb-4">Connect your wallet to view your backer dashboard</p>
             <p className="text-sm text-muted-foreground">Use the wallet button in the header to get started</p>
           </Card>
@@ -34,10 +34,10 @@ export default function BackerDashboardPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container mx-auto py-12 flex-1">
-        <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">What you backed</h1>
-          <p className="text-xl text-muted-foreground">Your $1 bets. Track them all here.</p>
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 pb-24 md:pb-12">
+        <div className="mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-4">What you backed</h1>
+          <p className="text-lg sm:text-xl text-muted-foreground">Your $1 bets. Track them all here.</p>
         </div>
 
         {loading ? (
@@ -55,58 +55,58 @@ export default function BackerDashboardPage() {
           </div>
         ) : (
           <>
-            <div className="grid md:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-12">
               <Card className="border-accent/30">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                      <TrendingUp className="h-6 w-6 text-accent" />
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
+                      <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
                     </div>
-                    <div>
-                      <p className="text-2xl font-bold">{stats.totalBacked}</p>
-                      <p className="text-sm text-muted-foreground">bets placed</p>
+                    <div className="min-w-0">
+                      <p className="text-xl sm:text-2xl font-bold">{stats.totalBacked}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">bets placed</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card className="border-accent/30">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                      <DollarSign className="h-6 w-6 text-accent" />
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
+                      <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
                     </div>
-                    <div>
-                      <p className="text-2xl font-bold">${stats.totalSpent}</p>
-                      <p className="text-sm text-muted-foreground">total spent</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-accent/30">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                      <Award className="h-6 w-6 text-accent" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold">{stats.totalBacked}</p>
-                      <p className="text-sm text-muted-foreground">proof-of-backing NFTs</p>
+                    <div className="min-w-0">
+                      <p className="text-xl sm:text-2xl font-bold">${stats.totalSpent}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">total spent</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card className="border-accent/30">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                      <Clock className="h-6 w-6 text-accent" />
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
+                      <Award className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
                     </div>
-                    <div>
-                      <p className="text-2xl font-bold">{backedProjects.filter((p) => p.status === 'active').length}</p>
-                      <p className="text-sm text-muted-foreground">active projects</p>
+                    <div className="min-w-0">
+                      <p className="text-xl sm:text-2xl font-bold">{stats.totalBacked}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">NFTs</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-accent/30">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
+                      <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xl sm:text-2xl font-bold">{backedProjects.filter((p) => p.status === 'active').length}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">active</p>
                     </div>
                   </div>
                 </CardContent>

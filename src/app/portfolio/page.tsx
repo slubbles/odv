@@ -162,7 +162,7 @@ export default function PortfolioPage() {
     return (
       <div className="flex flex-col min-h-screen">
         <Header />
-        <div className="container py-12 flex items-center justify-center flex-1">
+        <div className="container px-4 sm:px-6 py-8 sm:py-12 flex items-center justify-center flex-1 pb-24 md:pb-12">
           <Loader2 className="h-8 w-8 animate-spin text-accent" />
         </div>
         <Footer />
@@ -174,23 +174,23 @@ export default function PortfolioPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container py-12 flex-1">
-        <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Your Bets</h1>
-          <p className="text-lg text-muted-foreground">Every dollar you risked. Every project you believed in.</p>
+      <div className="container px-4 sm:px-6 py-8 sm:py-12 flex-1 pb-24 md:pb-12">
+        <div className="mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-4">Your Bets</h1>
+          <p className="text-base sm:text-lg text-muted-foreground">Every dollar you risked. Every project you believed in.</p>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-12">
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="h-10 w-10 rounded-lg bg-accent/20 flex items-center justify-center">
-                  <DollarSign className="h-5 w-5 text-accent" />
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
+                  <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
                 </div>
-                <div>
-                  <p className="text-2xl font-bold">${stats.totalInvested}</p>
-                  <p className="text-sm text-muted-foreground">Dollars Bet</p>
+                <div className="min-w-0">
+                  <p className="text-lg sm:text-2xl font-bold">${stats.totalInvested}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">Dollars Bet</p>
                 </div>
               </div>
             </CardContent>

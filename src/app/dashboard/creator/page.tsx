@@ -34,13 +34,13 @@ export default function CreatorDashboardPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container mx-auto py-12 flex-1">
-        <div className="mb-12 flex items-center justify-between">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 pb-24 md:pb-12">
+        <div className="mb-8 sm:mb-12 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">What you're building</h1>
-            <p className="text-xl text-muted-foreground">Your projects. Your people. All here.</p>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-4">What you're building</h1>
+            <p className="text-lg sm:text-xl text-muted-foreground">Your projects. Your people. All here.</p>
           </div>
-          <Button className="bg-accent text-accent-foreground hover:bg-accent/90" asChild>
+          <Button className="bg-accent text-accent-foreground hover:bg-accent/90 w-full sm:w-auto" asChild>
             <Link href="/submit">+ Start Building</Link>
           </Button>
         </div>
@@ -60,58 +60,58 @@ export default function CreatorDashboardPage() {
           </div>
         ) : (
           <>
-            <div className="grid md:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-12">
               <Card className="border-accent/30">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                      <TrendingUp className="h-6 w-6 text-accent" />
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
+                      <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
                     </div>
-                    <div>
-                      <p className="text-2xl font-bold">{stats.activeProjects}</p>
-                      <p className="text-sm text-muted-foreground">currently live</p>
+                    <div className="min-w-0">
+                      <p className="text-xl sm:text-2xl font-bold">{stats.activeProjects}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">currently live</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card className="border-accent/30">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                      <DollarSign className="h-6 w-6 text-accent" />
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
+                      <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
                     </div>
-                    <div>
-                      <p className="text-2xl font-bold">${stats.totalRaised.toLocaleString()}</p>
-                      <p className="text-sm text-muted-foreground">people believed in you</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-accent/30">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                      <Users className="h-6 w-6 text-accent" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold">{stats.totalBackers}</p>
-                      <p className="text-sm text-muted-foreground">backers total</p>
+                    <div className="min-w-0">
+                      <p className="text-lg sm:text-2xl font-bold">${stats.totalRaised.toLocaleString()}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">believed in you</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card className="border-accent/30">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                      <BarChart className="h-6 w-6 text-accent" />
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
+                      <Users className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
                     </div>
-                    <div>
-                      <p className="text-2xl font-bold">{stats.totalProjects}</p>
-                      <p className="text-sm text-muted-foreground">total projects</p>
+                    <div className="min-w-0">
+                      <p className="text-xl sm:text-2xl font-bold">{stats.totalBackers}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">backers total</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-accent/30">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
+                      <BarChart className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xl sm:text-2xl font-bold">{stats.totalProjects}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">total projects</p>
                     </div>
                   </div>
                 </CardContent>

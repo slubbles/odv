@@ -76,9 +76,9 @@ function AdminPageContent() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container mx-auto py-12 flex-1">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 pb-24 md:pb-12">
         {/* Header */}
-        <div className="mb-12">
+        <div className="mb-8 sm:mb-12">
           <div className="flex items-center gap-3 mb-4">
             <Shield className="h-8 w-8 text-accent" />
             <Badge className="bg-accent/20 text-accent-foreground border-accent/30">Admin Panel</Badge>
@@ -88,58 +88,58 @@ function AdminPageContent() {
         </div>
 
         {/* Stats */}
-        <div className="grid md:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-12">
           <Card className="border-accent/30">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                  <Clock className="h-6 w-6 text-accent" />
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
+                  <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
                 </div>
-                <div>
-                  <p className="text-2xl font-bold">{pendingCount}</p>
-                  <p className="text-sm text-muted-foreground">Waiting</p>
+                <div className="min-w-0">
+                  <p className="text-xl sm:text-2xl font-bold">{pendingCount}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">Waiting</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-accent/30">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-green-500/20 flex items-center justify-center">
-                  <CheckCircle2 className="h-6 w-6 text-green-500" />
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-500" />
                 </div>
-                <div>
-                  <p className="text-2xl font-bold">{approvedCount}</p>
-                  <p className="text-sm text-muted-foreground">Let Through</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-accent/30">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-red-500/20 flex items-center justify-center">
-                  <XCircle className="h-6 w-6 text-red-500" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{rejectedCount}</p>
-                  <p className="text-sm text-muted-foreground">Blocked</p>
+                <div className="min-w-0">
+                  <p className="text-xl sm:text-2xl font-bold">{approvedCount}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">Let Through</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-accent/30">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                  <TrendingUp className="h-6 w-6 text-accent" />
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                  <XCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-500" />
                 </div>
-                <div>
-                  <p className="text-2xl font-bold">{approvalRate}%</p>
-                  <p className="text-sm text-muted-foreground">Approval Rate</p>
+                <div className="min-w-0">
+                  <p className="text-xl sm:text-2xl font-bold">{rejectedCount}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">Blocked</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-accent/30">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
+                  <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xl sm:text-2xl font-bold">{approvalRate}%</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">Approval Rate</p>
                 </div>
               </div>
             </CardContent>

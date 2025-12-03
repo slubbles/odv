@@ -177,9 +177,9 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <div className="flex-1 container mx-auto px-4 py-12 max-w-6xl">
+        <div className="flex-1 container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-6xl pb-24 md:pb-12">
           <Card className="border-yellow-500/30 bg-yellow-500/10">
-            <CardContent className="p-8 text-center">
+            <CardContent className="p-6 sm:p-8 text-center">
               <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold mb-2">Wallet Not Connected</h2>
               <p className="text-muted-foreground">
@@ -197,7 +197,7 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <div className="flex-1 container mx-auto px-4 py-12 flex items-center justify-center">
+        <div className="flex-1 container mx-auto px-4 sm:px-6 py-8 sm:py-12 flex items-center justify-center pb-24 md:pb-12">
           <Loader2 className="h-12 w-12 animate-spin text-accent" />
         </div>
         <Footer />
@@ -209,10 +209,10 @@ export default function ProfilePage() {
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <div className="flex-1 container mx-auto px-4 py-12 max-w-6xl">
-        <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Your Profile</h1>
-          <p className="text-lg text-muted-foreground">This is you. Own it.</p>
+      <div className="flex-1 container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-6xl pb-24 md:pb-12">
+        <div className="mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-4">Your Profile</h1>
+          <p className="text-base sm:text-lg text-muted-foreground">This is you. Own it.</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">

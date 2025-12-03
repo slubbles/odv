@@ -156,7 +156,7 @@ export default function ProjectDetailPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container py-12 flex-1">
+      <div className="container px-4 sm:px-6 py-8 sm:py-12 flex-1 pb-24 md:pb-12">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">

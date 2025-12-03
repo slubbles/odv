@@ -124,7 +124,7 @@ export default function WalletPage() {
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <div className="flex-1 container mx-auto px-4 py-12 max-w-6xl">
+      <div className="flex-1 container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-6xl pb-24 md:pb-12">
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Wallet</h1>
           <p className="text-lg text-muted-foreground">Your balance and backing history</p>
