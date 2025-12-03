@@ -65,7 +65,7 @@ export default function Home() {
                 className="bg-accent text-accent-foreground hover:bg-accent/90 w-full sm:w-auto"
                 asChild
               >
-                <Link href="/projects">
+                <Link href="/discover">
                   See what's building
                   <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
                 </Link>
@@ -125,7 +125,7 @@ export default function Home() {
                   <p className="text-sm sm:text-base text-muted-foreground">Devs who ship</p>
                 </div>
                 <Button variant="outline" size="sm" className="w-full sm:w-auto bg-transparent" asChild>
-                  <Link href="/projects">
+                  <Link href="/discover">
                     Show me all
                     <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
                   </Link>

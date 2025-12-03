@@ -2,13 +2,18 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Menu, Zap } from "lucide-react"
+import { Menu, Zap, Shield } from "lucide-react"
+import { useWallet } from "@solana/wallet-adapter-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
+const ADMIN_WALLET = "4GCC5vqQ6R8MWnVW3tFE5iS6p66agk4XCaeZ8V9wFxRw"
+
 export function MobileNav() {
   const [open, setOpen] = useState(false)
+  const { publicKey, connected } = useWallet()
+  const isAdmin = connected && publicKey?.toString() === ADMIN_WALLET
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -39,7 +44,7 @@ export function MobileNav() {
                     Discover
                   </Link>
                   <Link
-                    href="/projects"
+                    href="/discover"
                     className="py-2 px-4 hover:bg-accent/10 rounded-md"
                     onClick={() => setOpen(false)}
                   >
@@ -138,16 +143,59 @@ export function MobileNav() {
                   >
                     Profile Settings
                   </Link>
-                  <Link
-                    href="/admin"
-                    className="py-2 px-4 hover:bg-accent/10 rounded-md text-accent"
-                    onClick={() => setOpen(false)}
-                  >
-                    Admin Panel
-                  </Link>
                 </div>
               </AccordionContent>
             </AccordionItem>
+
+            {/* Admin Section - Only visible to admin wallet */}
+            {isAdmin && (
+              <AccordionItem value="admin" className="border-b-0">
+                <AccordionTrigger className="hover:no-underline text-accent">
+                  <span className="flex items-center gap-2">
+                    <Shield className="h-4 w-4" /> Admin
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="flex flex-col gap-2">
+                    <Link
+                      href="/admin"
+                      className="py-2 px-4 hover:bg-accent/10 rounded-md"
+                      onClick={() => setOpen(false)}
+                    >
+                      Queue Review
+                    </Link>
+                    <Link
+                      href="/admin/milestones"
+                      className="py-2 px-4 hover:bg-accent/10 rounded-md"
+                      onClick={() => setOpen(false)}
+                    >
+                      Milestones
+                    </Link>
+                    <Link
+                      href="/admin/analytics"
+                      className="py-2 px-4 hover:bg-accent/10 rounded-md"
+                      onClick={() => setOpen(false)}
+                    >
+                      Analytics
+                    </Link>
+                    <Link
+                      href="/admin/users"
+                      className="py-2 px-4 hover:bg-accent/10 rounded-md"
+                      onClick={() => setOpen(false)}
+                    >
+                      Users
+                    </Link>
+                    <Link
+                      href="/admin/initialize"
+                      className="py-2 px-4 hover:bg-accent/10 rounded-md"
+                      onClick={() => setOpen(false)}
+                    >
+                      Initialize Platform
+                    </Link>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            )}
           </Accordion>
 
           <Link href="/submit" onClick={() => setOpen(false)}>

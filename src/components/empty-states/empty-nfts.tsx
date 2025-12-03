@@ -37,7 +37,7 @@ export function EmptyNFTs() {
         Back a project, earn an NFT badge. Proof you believed before it was cool.
       </p>
       <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
-        <Link href="/projects">
+        <Link href="/discover">
           <Award className="mr-2 h-4 w-4" />
           Start Backing
         </Link>
