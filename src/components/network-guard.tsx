@@ -4,7 +4,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import { useEffect, useState, useCallback } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { AlertTriangle, ExternalLink, RefreshCw, Loader2, Zap } from "lucide-react"
+import { AlertTriangle, ExternalLink, RefreshCw, Loader2, Copy, CheckCircle2 } from "lucide-react"
 import { toast } from "sonner"
 
 const SOON_RPC_URL = 'https://rpc.testnet.soo.network/rpc'
@@ -14,11 +14,24 @@ interface NetworkGuardProps {
   children: React.ReactNode
 }
 
+// Detect which wallet is being used
+function detectWalletType(): 'phantom' | 'okx' | 'solflare' | 'unknown' {
+  if (typeof window === 'undefined') return 'unknown'
+  
+  const wallet = (window as any)
+  if (wallet.okxwallet?.solana) return 'okx'
+  if (wallet.phantom?.solana) return 'phantom'
+  if (wallet.solflare) return 'solflare'
+  return 'unknown'
+}
+
 // Check if we're connected to the right network
 async function isConnectedToSOON(connection: any): Promise<boolean> {
   try {
     const endpoint = connection._rpcEndpoint || connection.rpcEndpoint || ''
-    return endpoint.includes('soo.network') || endpoint.includes('soon')
+    const isSOON = endpoint.toLowerCase().includes('soo.network') || endpoint.toLowerCase().includes('soon')
+    console.log('[NetworkGuard] Checking connection:', endpoint, 'isSOON:', isSOON)
+    return isSOON
   } catch {
     return false
   }
@@ -120,6 +133,8 @@ export function NetworkGuard({ children }: NetworkGuardProps) {
   }
 
   if (networkMismatch && connected) {
+    const walletType = detectWalletType()
+    
     return (
       <>
         {children}
@@ -129,39 +144,72 @@ export function NetworkGuard({ children }: NetworkGuardProps) {
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                <CardTitle className="text-sm">Wrong Network Detected</CardTitle>
+                <CardTitle className="text-sm">Switch to SOON Network</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <CardDescription className="text-sm">
-                You're not connected to <strong className="text-foreground">{NETWORK_NAME}</strong>. 
-                Please switch networks to use the platform.
+                Please switch your wallet to <strong className="text-foreground">{NETWORK_NAME}</strong> to use this dApp.
               </CardDescription>
               
-              {/* Quick instructions */}
-              <div className="p-3 rounded-lg bg-muted/50 text-xs space-y-2">
-                <p className="font-medium">To switch in Phantom:</p>
-                <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
-                  <li>Open Phantom wallet</li>
-                  <li>Go to Settings (gear icon)</li>
-                  <li>Select "Developer Settings"</li>
-                  <li>Enable "Testnet Mode" or add Custom RPC</li>
-                  <li>Use this RPC URL:</li>
-                </ol>
-                <div className="flex items-center gap-2 mt-2">
-                  <code className="flex-1 px-2 py-1 bg-background rounded text-xs font-mono truncate">
-                    {SOON_RPC_URL}
-                  </code>
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="h-7 text-xs px-2"
-                    onClick={handleCopyRPC}
-                  >
-                    Copy
-                  </Button>
+              {/* OKX-specific instructions */}
+              {walletType === 'okx' && (
+                <div className="p-3 rounded-lg bg-muted/50 text-xs space-y-2">
+                  <p className="font-medium text-primary">For OKX Wallet:</p>
+                  <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
+                    <li>Click the network dropdown in OKX</li>
+                    <li>Search for <strong>"SOON"</strong></li>
+                    <li>Select <strong>"SOON Testnet"</strong></li>
+                    <li>Then reconnect to this dApp</li>
+                  </ol>
                 </div>
-              </div>
+              )}
+              
+              {/* Phantom-specific instructions */}
+              {walletType === 'phantom' && (
+                <div className="p-3 rounded-lg bg-muted/50 text-xs space-y-2">
+                  <p className="font-medium text-primary">For Phantom:</p>
+                  <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
+                    <li>Open Phantom → Settings (⚙️)</li>
+                    <li>Go to "Developer Settings"</li>
+                    <li>Enable "Testnet Mode"</li>
+                    <li>Add Custom RPC with this URL:</li>
+                  </ol>
+                  <div className="flex items-center gap-2 mt-2">
+                    <code className="flex-1 px-2 py-1 bg-background rounded text-xs font-mono truncate">
+                      {SOON_RPC_URL}
+                    </code>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="h-7 text-xs px-2"
+                      onClick={handleCopyRPC}
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+              
+              {/* Generic instructions */}
+              {walletType === 'unknown' && (
+                <div className="p-3 rounded-lg bg-muted/50 text-xs space-y-2">
+                  <p className="font-medium">Setup SOON Testnet RPC:</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <code className="flex-1 px-2 py-1 bg-background rounded text-xs font-mono truncate">
+                      {SOON_RPC_URL}
+                    </code>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="h-7 text-xs px-2"
+                      onClick={handleCopyRPC}
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              )}
 
               <div className="flex flex-wrap gap-2">
                 <Button
@@ -184,7 +232,7 @@ export function NetworkGuard({ children }: NetworkGuardProps) {
                   ) : (
                     <RefreshCw className="h-3 w-3 mr-1" />
                   )}
-                  Disconnect & Retry
+                  Reconnect
                 </Button>
                 <Button
                   size="sm"
@@ -192,7 +240,7 @@ export function NetworkGuard({ children }: NetworkGuardProps) {
                   onClick={() => window.open('https://faucet.testnet.soo.network/', '_blank')}
                 >
                   <ExternalLink className="h-3 w-3 mr-1" />
-                  SOON Faucet
+                  Get Test SOL
                 </Button>
               </div>
             </CardContent>

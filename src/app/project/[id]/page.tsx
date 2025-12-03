@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation"
 import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -114,20 +115,21 @@ export default function ProjectDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
+      <div className="flex flex-col min-h-screen">
         <Header />
-        <div className="container py-12 flex items-center justify-center">
+        <div className="container py-12 flex items-center justify-center flex-1">
           <Loader2 className="h-12 w-12 animate-spin text-accent" />
         </div>
+        <Footer />
       </div>
     )
   }
 
   if (error || !project) {
     return (
-      <div className="min-h-screen">
+      <div className="flex flex-col min-h-screen">
         <Header />
-        <div className="container py-12">
+        <div className="container py-12 flex-1">
           <Card className="border-red-500/30 bg-red-500/10">
             <CardContent className="p-8 text-center">
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
@@ -141,6 +143,7 @@ export default function ProjectDetailPage() {
             </CardContent>
           </Card>
         </div>
+        <Footer />
       </div>
     )
   }
@@ -150,10 +153,10 @@ export default function ProjectDetailPage() {
   const milestones = project.milestones || []
 
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container py-12">
+      <div className="container py-12 flex-1">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
@@ -388,6 +391,7 @@ export default function ProjectDetailPage() {
                 <BackProjectButton
                   projectId={project.id}
                   creatorWallet={project.creator_wallet}
+                  projectStatus={project.status}
                   size="lg"
                   className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
                   onSuccess={refetch}
@@ -410,8 +414,19 @@ export default function ProjectDetailPage() {
               <CardContent className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Status</span>
-                  <Badge variant={project.status === 'active' ? 'default' : 'secondary'}>
-                    {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+                  <Badge 
+                    variant="secondary"
+                    className={
+                      project.status === 'active' 
+                        ? 'bg-green-500/20 text-green-400 border-green-500/30' 
+                        : project.status === 'queue' || project.status === 'pending'
+                        ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+                        : project.status === 'funded' || project.status === 'completed'
+                        ? 'bg-accent/20 text-accent border-accent/30'
+                        : ''
+                    }
+                  >
+                    {project.status === 'queue' ? 'In Review' : project.status.charAt(0).toUpperCase() + project.status.slice(1)}
                   </Badge>
                 </div>
                 <div className="flex justify-between">
@@ -433,6 +448,7 @@ export default function ProjectDetailPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

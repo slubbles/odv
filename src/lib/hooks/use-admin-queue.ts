@@ -38,7 +38,7 @@ export function useAdminQueue() {
   })
   const [sortBy, setSortBy] = useState<SortOption>("newest")
   const { toast } = useToast()
-  const { publicKey, signTransaction } = useWallet()
+  const { publicKey, sendTransaction } = useWallet()
   const { connection } = useConnection()
 
   // Helper to get headers with wallet address for admin auth
@@ -89,7 +89,7 @@ export function useAdminQueue() {
   }, [filters, sortBy, toast, getAdminHeaders])
 
   const approveProject = useCallback(async (projectId: string) => {
-    if (!publicKey || !signTransaction) {
+    if (!publicKey || !sendTransaction) {
       toast({
         title: "Error",
         description: "Please connect your wallet to approve projects",
@@ -150,14 +150,14 @@ export function useAdminQueue() {
         milestones
       )
 
-      // Step 3: Admin signs and sends transaction
+      // Step 3: Admin signs and sends transaction (SOON-compatible)
       toast({
         title: "Please sign the transaction",
         description: "Approve the campaign initialization in your wallet",
       })
 
-      const signedTx = await signTransaction(transaction)
-      const signature = await connection.sendRawTransaction(signedTx.serialize(), {
+      // Use sendTransaction which handles signing + broadcasting to SOON RPC
+      const signature = await sendTransaction(transaction, connection, {
         skipPreflight: false,
         preflightCommitment: 'confirmed'
       })
@@ -201,7 +201,7 @@ export function useAdminQueue() {
         variant: "destructive",
       })
     }
-  }, [publicKey, signTransaction, connection, fetchProjects, toast, getAdminHeaders])
+  }, [publicKey, sendTransaction, connection, fetchProjects, toast, getAdminHeaders])
 
   const rejectProject = useCallback(async (projectId: string, reason: string) => {
     try {

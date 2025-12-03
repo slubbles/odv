@@ -19,9 +19,9 @@ import { getCampaignPDA, getCampaignVaultPDA, ODV_ESCROW_PROGRAM_ID } from './pr
 import { PROGRAM_ID, PLATFORM_CONFIG_SEED } from './config';
 import { getExplorerTransactionUrl, isSoonNetwork } from './network-utils';
 
-// USDC Mint Address (can be overridden via env var)
+// USDC Mint Address on SOON Testnet (Test USDC - can be overridden via env var)
 export const USDC_MINT_ADDRESS = new PublicKey(
-    process.env.NEXT_PUBLIC_USDC_MINT || "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
+    process.env.NEXT_PUBLIC_USDC_MINT || "3PNhmxDckddYL24zEfrsHLFLXXvrdzBBoZgfRW8rruDs"
 );
 
 // Fund instruction discriminator from IDL: [218, 188, 111, 221, 152, 113, 174, 7]

@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import { ChevronDown } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,8 +12,7 @@ import {
 import { NotificationBell } from "@/components/notification-bell"
 import { MobileNav } from "@/components/mobile-nav"
 import { ClientOnly } from "@/components/client-only"
-import { NetworkIndicator } from "@/components/network-indicator"
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
+import { WalletButton } from "@/components/wallet-button"
 
 // Import wallet adapter styles
 import "@solana/wallet-adapter-react-ui/styles.css"
@@ -84,16 +82,13 @@ export function Header() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-2">
-          <ClientOnly>
-            <NetworkIndicator />
-          </ClientOnly>
+        <div className="flex items-center gap-3">
           <ClientOnly>
             <NotificationBell />
           </ClientOnly>
           <ClientOnly>
-            <div className="hidden sm:block wallet-button-wrapper">
-              <WalletMultiButton />
+            <div className="wallet-button-wrapper">
+              <WalletButton />
             </div>
           </ClientOnly>
         </div>

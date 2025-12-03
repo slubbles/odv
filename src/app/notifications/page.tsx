@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -184,7 +185,7 @@ export default function NotificationsPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col min-h-screen">
       <Header />
 
       <div className="container py-12 max-w-4xl">
@@ -250,6 +251,7 @@ export default function NotificationsPage() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   )
 }

@@ -7,6 +7,12 @@ import { PublicKey, SystemProgram } from '@solana/web3.js';
 import { BN } from '@coral-xyz/anchor';
 import { useODVProgram } from '@/lib/solana/hooks';
 import { PLATFORM_ADMIN, PROGRAM_ID, EXPLORER_URL } from '@/lib/solana/config';
+import { Header } from '@/components/header';
+import { Footer } from '@/components/footer';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { CheckCircle2, AlertCircle, Loader2, ExternalLink, Shield, Wallet, Zap } from 'lucide-react';
 
 type Status = 'idle' | 'checking' | 'initializing' | 'success' | 'error';
 
@@ -88,145 +94,229 @@ export default function InitializePlatformPage() {
   const showInitButton = connected && isAdmin && (status === 'idle' || status === 'error');
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-8">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8 text-center">🚀 Platform Initialization</h1>
-        <p className="text-center text-gray-400 mb-8">SOON Testnet</p>
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      
+      <main className="flex-1 container mx-auto max-w-2xl px-4 py-12">
+        <div className="text-center mb-8">
+          <Badge className="mb-4 bg-accent/20 text-accent-foreground border-accent/30">
+            Admin Only
+          </Badge>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Platform Initialization</h1>
+          <p className="text-muted-foreground">SOON Testnet Configuration</p>
+        </div>
 
         {/* Wallet Connection */}
-        <div className="bg-gray-800 rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">1. Connect Wallet</h2>
-          <div className="flex items-center justify-between">
-            <div>
-              {connected ? (
-                <div>
-                  <p className="text-sm text-gray-400">Connected as:</p>
-                  <p className="font-mono text-sm">{publicKey?.toString().slice(0, 8)}...{publicKey?.toString().slice(-8)}</p>
-                  {isAdmin ? (
-                    <p className="text-green-400 text-sm mt-1">✅ Admin Wallet</p>
-                  ) : (
-                    <p className="text-yellow-400 text-sm mt-1">⚠️ Not admin wallet</p>
-                  )}
-                </div>
-              ) : (
-                <p className="text-gray-400">Not connected</p>
-              )}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Wallet className="h-5 w-5" />
+              1. Connect Wallet
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div>
+                {connected ? (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Connected as:</p>
+                    <p className="font-mono text-sm">{publicKey?.toString().slice(0, 8)}...{publicKey?.toString().slice(-8)}</p>
+                    {isAdmin ? (
+                      <Badge className="mt-2 bg-green-500/20 text-green-400 border-green-500/30">
+                        <CheckCircle2 className="h-3 w-3 mr-1" />
+                        Admin Wallet
+                      </Badge>
+                    ) : (
+                      <Badge className="mt-2 bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+                        <AlertCircle className="h-3 w-3 mr-1" />
+                        Not Admin Wallet
+                      </Badge>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground">Not connected</p>
+                )}
+              </div>
+              <WalletMultiButton />
             </div>
-            <WalletMultiButton />
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Check Status */}
         {connected && (
-          <div className="bg-gray-800 rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">2. Check Platform Status</h2>
-            <button
-              onClick={checkPlatformStatus}
-              disabled={isChecking}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition"
-            >
-              {isChecking ? 'Checking...' : 'Check Status'}
-            </button>
-          </div>
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                2. Check Platform Status
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Button
+                onClick={checkPlatformStatus}
+                disabled={isChecking}
+                variant="outline"
+                className="w-full"
+              >
+                {isChecking ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Checking...
+                  </>
+                ) : (
+                  'Check Status'
+                )}
+              </Button>
+            </CardContent>
+          </Card>
         )}
 
         {/* Initialize Button */}
         {showInitButton && (
-          <div className="bg-gray-800 rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">3. Initialize Platform</h2>
-            <div className="mb-4 p-4 bg-gray-700 rounded">
-              <p className="text-sm text-gray-300 mb-2">This will:</p>
-              <ul className="text-sm text-gray-400 space-y-1 ml-4">
-                <li>• Create the platform configuration account</li>
-                <li>• Set fixed backing to 1 USDC ($1)</li>
-                <li>• Set you as the platform admin</li>
-                <li>• Cost: ~0.002 SOL</li>
-              </ul>
-            </div>
-            <button
-              onClick={initializePlatform}
-              disabled={isInitializing}
-              className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition"
-            >
-              {isInitializing ? 'Initializing... Check Wallet' : 'Initialize Platform'}
-            </button>
-          </div>
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5" />
+                3. Initialize Platform
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4 p-4 bg-muted rounded-lg">
+                <p className="text-sm mb-2">This will:</p>
+                <ul className="text-sm text-muted-foreground space-y-1 ml-4">
+                  <li>• Create the platform configuration account</li>
+                  <li>• Set fixed backing to 1 USDC ($1)</li>
+                  <li>• Set you as the platform admin</li>
+                  <li>• Cost: ~0.002 SOL</li>
+                </ul>
+              </div>
+              <Button
+                onClick={initializePlatform}
+                disabled={isInitializing}
+                className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+              >
+                {isInitializing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Initializing... Check Wallet
+                  </>
+                ) : (
+                  'Initialize Platform'
+                )}
+              </Button>
+            </CardContent>
+          </Card>
         )}
 
         {/* Status Messages */}
         {message && (
-          <div className={`rounded-lg p-6 mb-6 ${
-            status === 'success' ? 'bg-green-900/50 border border-green-500' :
-            status === 'error' ? 'bg-red-900/50 border border-red-500' :
-            isInitializing || isChecking ? 'bg-blue-900/50 border border-blue-500' :
-            'bg-gray-800'
+          <Card className={`mb-6 ${
+            status === 'success' ? 'border-green-500/50' :
+            status === 'error' ? 'border-red-500/50' :
+            isInitializing || isChecking ? 'border-accent/50' :
+            ''
           }`}>
-            <p className="font-semibold mb-2">
-              {status === 'success' && '✅ Success'}
-              {status === 'error' && '❌ Error'}
-              {isInitializing && '⏳ Processing'}
-              {isChecking && '🔍 Checking'}
-              {status === 'idle' && 'ℹ️ Info'}
-            </p>
-            <p className="text-sm">{message}</p>
-
-            {txSignature && (
-              <div className="mt-4">
-                <a
-                  href={`${EXPLORER_URL}/tx/${txSignature}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-400 hover:text-blue-300 underline text-sm"
-                >
-                  View transaction on SOON Explorer →
-                </a>
+            <CardContent className="p-6">
+              <div className="flex items-start gap-3">
+                {status === 'success' && <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />}
+                {status === 'error' && <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />}
+                {(isInitializing || isChecking) && <Loader2 className="h-5 w-5 text-accent animate-spin shrink-0 mt-0.5" />}
+                <div>
+                  <p className="font-semibold mb-1">
+                    {status === 'success' && 'Success'}
+                    {status === 'error' && 'Error'}
+                    {isInitializing && 'Processing'}
+                    {isChecking && 'Checking'}
+                    {status === 'idle' && 'Info'}
+                  </p>
+                  <p className="text-sm text-muted-foreground">{message}</p>
+                </div>
               </div>
-            )}
-          </div>
+
+              {txSignature && (
+                <div className="mt-4 pt-4 border-t border-border">
+                  <a
+                    href={`${EXPLORER_URL}/tx/${txSignature}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-accent hover:text-accent/80 text-sm"
+                  >
+                    <ExternalLink className="h-4 w-4 mr-1" />
+                    View transaction on SOON Explorer
+                  </a>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         )}
 
         {/* Platform Config Display */}
         {platformConfig && (
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">✅ Platform Configuration</h2>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-400">Admin:</span>
-                <span className="font-mono">{platformConfig.admin.toString().slice(0, 8)}...{platformConfig.admin.toString().slice(-8)}</span>
+          <Card className="mb-6 border-green-500/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-green-400">
+                <CheckCircle2 className="h-5 w-5" />
+                Platform Configuration
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Admin:</span>
+                  <span className="font-mono">{platformConfig.admin.toString().slice(0, 8)}...{platformConfig.admin.toString().slice(-8)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Fixed Backing:</span>
+                  <span>{Number(platformConfig.fixedBackingAmount) / 1_000_000} USDC</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Total Campaigns:</span>
+                  <span>{platformConfig.totalCampaigns?.toString() || '0'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Total Backers:</span>
+                  <span>{platformConfig.totalBackers?.toString() || '0'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Status:</span>
+                  <Badge className={platformConfig.paused ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}>
+                    {platformConfig.paused ? 'Paused' : 'Active'}
+                  </Badge>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Fixed Backing:</span>
-                <span>{Number(platformConfig.fixedBackingAmount) / 1_000_000} USDC</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Total Campaigns:</span>
-                <span>{platformConfig.totalCampaigns?.toString() || '0'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Total Backers:</span>
-                <span>{platformConfig.totalBackers?.toString() || '0'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Status:</span>
-                <span className={platformConfig.paused ? 'text-red-400' : 'text-green-400'}>
-                  {platformConfig.paused ? 'Paused' : 'Active'}
-                </span>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Info Box */}
-        <div className="mt-8 bg-gray-800 rounded-lg p-6">
-          <h3 className="font-semibold mb-2">📋 Important Info</h3>
-          <ul className="text-sm text-gray-400 space-y-2">
-            <li>• <strong>Network:</strong> SOON Testnet</li>
-            <li>• <strong>Program ID:</strong> <span className="font-mono text-xs">{PROGRAM_ID.toString()}</span></li>
-            <li>• <strong>Admin Wallet:</strong> <span className="font-mono text-xs">{PLATFORM_ADMIN.toString()}</span></li>
-            <li>• <strong>Required:</strong> ~0.002 SOL for initialization</li>
-          </ul>
-        </div>
-      </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Configuration Details</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="text-sm text-muted-foreground space-y-2">
+              <li className="flex justify-between">
+                <span>Network:</span>
+                <span className="font-semibold text-foreground">SOON Testnet</span>
+              </li>
+              <li className="flex justify-between">
+                <span>Program ID:</span>
+                <span className="font-mono text-xs truncate ml-4">{PROGRAM_ID.toString()}</span>
+              </li>
+              <li className="flex justify-between">
+                <span>Admin Wallet:</span>
+                <span className="font-mono text-xs truncate ml-4">{PLATFORM_ADMIN.toString()}</span>
+              </li>
+              <li className="flex justify-between">
+                <span>Required SOL:</span>
+                <span className="font-semibold text-foreground">~0.002 SOL</span>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+      </main>
+
+      <Footer />
     </div>
   );
 }

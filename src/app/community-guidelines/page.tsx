@@ -1,13 +1,14 @@
 import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Shield, Users, Heart, AlertTriangle } from "lucide-react"
 
 export default function CommunityGuidelinesPage() {
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container py-12 max-w-4xl">
+      <div className="container py-12 max-w-4xl flex-1">
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-accent/20 mb-4">
             <Shield className="h-8 w-8 text-accent" />
@@ -159,6 +160,7 @@ export default function CommunityGuidelinesPage() {
           </Card>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

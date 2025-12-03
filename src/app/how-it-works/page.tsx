@@ -1,4 +1,5 @@
 import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Users, Rocket, TrendingUp, Shield, Play } from "lucide-react"
@@ -6,7 +7,7 @@ import Link from "next/link"
 
 export default function HowItWorksPage() {
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col min-h-screen">
       <Header />
 
       <div className="container py-12">
@@ -248,6 +249,7 @@ export default function HowItWorksPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

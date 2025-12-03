@@ -17,23 +17,15 @@ export async function GET(
       )
     }
 
-    // Fetch project with creator info
+    // Fetch project (without join - schema may not have the foreign key)
     const { data: project, error: projectError } = await supabase
       .from('projects')
-      .select(`
-        *,
-        users!projects_creator_wallet_fkey(
-          wallet_address,
-          name,
-          avatar_url,
-          bio,
-          user_type
-        )
-      `)
+      .select('*')
       .eq('id', id)
       .single()
 
     if (projectError || !project) {
+      console.error('Project fetch error:', projectError)
       return NextResponse.json(
         { error: 'Project not found' },
         { status: 404 }

@@ -23,7 +23,7 @@ export interface BackProjectResult {
 export function useBackProject() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [status, setStatus] = useState<BackingStatus>('idle')
-  const { publicKey, signTransaction, connected } = useWallet()
+  const { publicKey, sendTransaction, connected } = useWallet()
   const { connection } = useConnection()
 
   const resetStatus = useCallback(() => {
@@ -42,9 +42,9 @@ export function useBackProject() {
       return { success: false, error: "Wallet not connected", errorType: 'WALLET_NOT_CONNECTED', recoverable: true }
     }
 
-    if (!signTransaction) {
-      toast.error("Wallet does not support transaction signing")
-      return { success: false, error: "Wallet cannot sign transactions", errorType: 'WALLET_NOT_CONNECTED', recoverable: true }
+    if (!sendTransaction) {
+      toast.error("Wallet does not support transactions")
+      return { success: false, error: "Wallet cannot send transactions", errorType: 'WALLET_NOT_CONNECTED', recoverable: true }
     }
 
     // Validate creator wallet
@@ -91,15 +91,12 @@ export function useBackProject() {
         console.warn('Simulation warning:', formatErrorForLogging(simError))
       }
 
-      // Step 3: Sign transaction
+      // Step 3: Sign and send transaction (SOON-compatible approach)
       toast.loading("Please approve in your wallet...", { id: "backing" })
-      const signedTx = await signTransaction(transaction)
-
-      // Step 4: Send transaction
       setStatus('confirming')
-      toast.loading("Sending to SOON Network...", { id: "backing" })
       
-      const signature = await connection.sendRawTransaction(signedTx.serialize(), {
+      // Use sendTransaction which handles signing + broadcasting to SOON RPC
+      const signature = await sendTransaction(transaction, connection, {
         skipPreflight: false,
         preflightCommitment: 'confirmed',
         maxRetries: 3,
@@ -180,7 +177,7 @@ export function useBackProject() {
       // Reset status after a delay
       setTimeout(() => setStatus('idle'), 2000)
     }
-  }, [connected, publicKey, signTransaction, connection])
+  }, [connected, publicKey, sendTransaction, connection])
 
   const checkBackingStatus = useCallback(async (
     projectId: string, 

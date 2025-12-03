@@ -1,4 +1,5 @@
 import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 import { ProjectCard } from "@/components/project-card"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -34,7 +35,7 @@ const creatorProjects = [
 
 export default function CreatorProfilePage() {
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col min-h-screen">
       <Header />
 
       {/* Hero Section */}
@@ -137,6 +138,7 @@ export default function CreatorProfilePage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

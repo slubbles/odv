@@ -1,6 +1,7 @@
 "use client"
 
 import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -124,13 +125,14 @@ export default function PortfolioPage() {
 
   if (!connected) {
     return (
-      <div className="min-h-screen">
+      <div className="flex flex-col min-h-screen">
         <Header />
-        <div className="container py-12 flex items-center justify-center">
+        <div className="container py-12 flex items-center justify-center flex-1">
           <Card className="p-12 text-center max-w-md">
             <p className="text-muted-foreground mb-4">Connect your wallet to view your portfolio</p>
           </Card>
         </div>
+        <Footer />
       </div>
     )
   }
@@ -158,20 +160,21 @@ export default function PortfolioPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
+      <div className="flex flex-col min-h-screen">
         <Header />
-        <div className="container py-12 flex items-center justify-center">
+        <div className="container py-12 flex items-center justify-center flex-1">
           <Loader2 className="h-8 w-8 animate-spin text-accent" />
         </div>
+        <Footer />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container py-12">
+      <div className="container py-12 flex-1">
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Your Bets</h1>
           <p className="text-lg text-muted-foreground">Every dollar you risked. Every project you believed in.</p>
@@ -284,6 +287,7 @@ export default function PortfolioPage() {
           </TabsContent>
         </Tabs>
       </div>
+      <Footer />
     </div>
   )
 }

@@ -118,12 +118,109 @@ export default function CreatorDashboardPage() {
               </Card>
             </div>
 
-            <Tabs defaultValue="active" className="space-y-6">
+            <Tabs defaultValue="all" className="space-y-6">
               <TabsList>
-                <TabsTrigger value="active">Live Projects</TabsTrigger>
+                <TabsTrigger value="all">All Projects</TabsTrigger>
+                <TabsTrigger value="active">Live</TabsTrigger>
+                <TabsTrigger value="queue">In Review</TabsTrigger>
                 <TabsTrigger value="completed">Shipped</TabsTrigger>
                 <TabsTrigger value="draft">Drafts</TabsTrigger>
               </TabsList>
+
+              <TabsContent value="all" className="space-y-6">
+                {projects.length === 0 ? (
+                  <Card className="p-12 text-center">
+                    <p className="text-muted-foreground mb-4">You haven&apos;t created any projects yet</p>
+                    <Button className="bg-accent text-accent-foreground hover:bg-accent/90" asChild>
+                      <Link href="/submit">Start Building</Link>
+                    </Button>
+                  </Card>
+                ) : (
+                  <div className="grid gap-6">
+                    {projects.map((project) => {
+                      const progress = (project.raised / project.goal) * 100
+                      const daysLeft = project.deadline
+                        ? Math.max(
+                            0,
+                            Math.ceil((new Date(project.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                          )
+                        : 0
+                      
+                      const statusBadge = () => {
+                        switch (project.status) {
+                          case 'active':
+                            return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Live</Badge>
+                          case 'queue':
+                          case 'pending':
+                            return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">In Review</Badge>
+                          case 'funded':
+                          case 'completed':
+                            return <Badge className="bg-accent/20 text-accent border-accent/30">Shipped</Badge>
+                          case 'draft':
+                            return <Badge variant="secondary">Draft</Badge>
+                          default:
+                            return <Badge variant="secondary">{project.status}</Badge>
+                        }
+                      }
+
+                      return (
+                        <Card key={project.id} className="hover:border-accent/50 transition-all">
+                          <div className="grid md:grid-cols-[200px_1fr] gap-6">
+                            <div className="aspect-video md:aspect-auto bg-muted rounded-lg overflow-hidden">
+                              <img
+                                src={project.image_url || "/placeholder.svg"}
+                                alt={project.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div className="p-6 flex flex-col justify-between">
+                              <div>
+                                <div className="flex items-center gap-3 mb-3">
+                                  <h3 className="text-xl font-bold">{project.title}</h3>
+                                  {statusBadge()}
+                                </div>
+                                <p className="text-muted-foreground line-clamp-2 mb-3">{project.tagline || project.description}</p>
+                                <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span>{project.backers_count || 0} backers</span>
+                                  </div>
+                                  {project.status === 'active' && (
+                                    <div className="flex items-center gap-2">
+                                      <Clock className="h-4 w-4 text-accent" />
+                                      <span>{daysLeft} days left</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="space-y-4 mt-4">
+                                <div>
+                                  <div className="flex justify-between text-sm mb-2">
+                                    <span className="font-semibold text-lg">${(project.raised || 0).toLocaleString()}</span>
+                                    <span className="text-muted-foreground">of ${(project.goal || 0).toLocaleString()}</span>
+                                  </div>
+                                  <Progress value={progress || 0} className="h-3" />
+                                  <p className="text-xs text-muted-foreground mt-1">{Math.round(progress || 0)}% funded</p>
+                                </div>
+
+                                <div className="flex gap-3">
+                                  <Button variant="outline" size="sm" className="flex-1 bg-transparent" asChild>
+                                    <Link href={`/project/${project.id}`}>
+                                      <Edit className="h-4 w-4 mr-2" />
+                                      View
+                                    </Link>
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </Card>
+                      )
+                    })}
+                  </div>
+                )}
+              </TabsContent>
 
               <TabsContent value="active" className="space-y-6">
                 {projects.filter((p) => p.status === "active").length === 0 ? (
@@ -203,6 +300,52 @@ export default function CreatorDashboardPage() {
                           </Card>
                         )
                       })}
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="queue" className="space-y-6">
+                {projects.filter((p) => p.status === "queue" || p.status === "pending").length === 0 ? (
+                  <Card className="p-12 text-center">
+                    <p className="text-muted-foreground">No projects in review</p>
+                  </Card>
+                ) : (
+                  <div className="grid gap-6">
+                    {projects
+                      .filter((p) => p.status === "queue" || p.status === "pending")
+                      .map((project) => (
+                        <Card key={project.id} className="hover:border-yellow-500/50 transition-all border-yellow-500/20">
+                          <div className="grid md:grid-cols-[200px_1fr] gap-6">
+                            <div className="aspect-video md:aspect-auto bg-muted rounded-lg overflow-hidden">
+                              <img
+                                src={project.image_url || "/placeholder.svg"}
+                                alt={project.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div className="p-6 flex flex-col justify-between">
+                              <div>
+                                <div className="flex items-center gap-3 mb-3">
+                                  <h3 className="text-xl font-bold">{project.title}</h3>
+                                  <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+                                    <Clock className="h-3 w-3 mr-1" />
+                                    In Review
+                                  </Badge>
+                                </div>
+                                <p className="text-muted-foreground mb-4">{project.tagline}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  Submitted {new Date(project.created_at).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <div className="mt-4">
+                                <p className="text-sm text-muted-foreground">
+                                  Goal: <span className="font-semibold text-foreground">${project.goal?.toLocaleString()}</span>
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
                   </div>
                 )}
               </TabsContent>

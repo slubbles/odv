@@ -2,15 +2,16 @@
 
 import { FC, ReactNode, useMemo } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import { clusterApiUrl } from '@solana/web3.js';
+
+// SOON Testnet RPC endpoint
+const SOON_TESTNET_RPC = 'https://rpc.testnet.soo.network/rpc';
 
 export const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
-    // Use custom RPC endpoint from environment (SOON Network or Solana)
+    // Use SOON Testnet RPC as default
     const endpoint = useMemo(() => {
-        return process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
+        return process.env.NEXT_PUBLIC_SOLANA_RPC_URL || SOON_TESTNET_RPC;
     }, []);
 
     // Phantom is auto-detected via Standard Wallet protocol, only include non-standard wallets

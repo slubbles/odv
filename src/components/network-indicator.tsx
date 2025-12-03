@@ -18,21 +18,40 @@ export function NetworkIndicator() {
     const checkNetwork = async () => {
       setStatus('checking')
       try {
-        const endpoint = (connection as any)._rpcEndpoint || (connection as any).rpcEndpoint || ''
-        const isSOON = endpoint.includes('soo.network') || endpoint.includes('soon')
+        // Get RPC endpoint from connection
+        const endpoint = (connection as any)._rpcEndpoint || 
+                        (connection as any).rpcEndpoint || 
+                        (connection as any)._rpcWsEndpoint ||
+                        ''
+        
+        // Log for debugging
+        console.log('[NetworkIndicator] RPC Endpoint:', endpoint)
+        
+        // Check if connected to SOON Network
+        const isSOON = endpoint.toLowerCase().includes('soo.network') || 
+                       endpoint.toLowerCase().includes('soon')
         
         if (isSOON) {
-          // Measure latency
+          // Measure latency by making a simple RPC call
           const start = Date.now()
-          await connection.getSlot()
-          const end = Date.now()
-          setLatency(end - start)
-          setStatus('connected')
+          try {
+            await connection.getSlot()
+            const end = Date.now()
+            setLatency(end - start)
+            setStatus('connected')
+            console.log('[NetworkIndicator] Connected to SOON Testnet, latency:', end - start, 'ms')
+          } catch (rpcError) {
+            console.warn('[NetworkIndicator] RPC call failed:', rpcError)
+            // Still consider connected if endpoint is SOON
+            setStatus('connected')
+            setLatency(null)
+          }
         } else {
+          console.warn('[NetworkIndicator] Not connected to SOON Network. Current endpoint:', endpoint)
           setStatus('wrong-network')
         }
       } catch (error) {
-        console.error('Network check failed:', error)
+        console.error('[NetworkIndicator] Network check failed:', error)
         setStatus('error')
       }
     }

@@ -1,12 +1,36 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextRequest, NextResponse } from "next/server"
 
+// Check if Supabase is configured
+const isSupabaseConfigured = () => {
+  return !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+}
+
+// Mock transactions for development
+const getMockTransactions = (wallet: string) => {
+  // Return empty transactions in mock mode
+  return {
+    transactions: [],
+    stats: {
+      total_backed: 0,
+      projects_backed: 0,
+      transaction_count: 0,
+    },
+  }
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const wallet = searchParams.get("wallet")
 
   if (!wallet) {
     return NextResponse.json({ error: "Wallet address is required" }, { status: 400 })
+  }
+
+  // Use mock data if Supabase is not configured
+  if (!isSupabaseConfigured()) {
+    console.log("Supabase not configured - returning mock wallet transactions")
+    return NextResponse.json(getMockTransactions(wallet))
   }
 
   try {

@@ -1,13 +1,14 @@
 import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, Users, DollarSign, Award, Clock } from "lucide-react"
 
 export default function StatsPage() {
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container py-12">
+      <div className="container py-12 flex-1">
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">The Numbers</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -183,6 +184,7 @@ export default function StatsPage() {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </div>
   )
 }

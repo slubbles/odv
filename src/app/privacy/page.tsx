@@ -1,12 +1,13 @@
 import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container py-12 max-w-4xl">
+      <div className="container py-12 max-w-4xl flex-1">
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Your Data. Your Business.</h1>
           <p className="text-muted-foreground">Last updated: January 2025. We don't sell your info. Period.</p>
@@ -81,6 +82,7 @@ export default function PrivacyPage() {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </div>
   )
 }

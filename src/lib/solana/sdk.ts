@@ -7,9 +7,9 @@ import { PROGRAM_ID, RPC_ENDPOINT, PLATFORM_CONFIG_SEED, PLATFORM_ADMIN } from '
 import IDL from './idl/odv_escrow.json';
 import { getExplorerTransactionUrl } from './network-utils';
 
-// USDC Mint on SOON Testnet (use env var or fallback)
+// USDC Mint on SOON Testnet (Test USDC - use env var or fallback)
 export const USDC_MINT = new PublicKey(
-  process.env.NEXT_PUBLIC_USDC_MINT || '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU'
+  process.env.NEXT_PUBLIC_USDC_MINT || '3PNhmxDckddYL24zEfrsHLFLXXvrdzBBoZgfRW8rruDs'
 );
 
 /**

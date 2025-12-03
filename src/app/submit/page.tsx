@@ -12,8 +12,9 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Upload, CheckCircle2, AlertCircle, Loader2 } from "lucide-react"
+import { Upload, CheckCircle2, AlertCircle, Loader2, Clock, ExternalLink } from "lucide-react"
 import { toast } from "sonner"
+import Link from "next/link"
 
 interface MilestoneInput {
   title: string
@@ -21,9 +22,18 @@ interface MilestoneInput {
   deadline: string
 }
 
+interface SubmittedProject {
+  id: string
+  title: string
+  category: string
+  goal: number
+  status: string
+}
+
 export default function SubmitPage() {
   const [step, setStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submittedProject, setSubmittedProject] = useState<SubmittedProject | null>(null)
   const { publicKey, connected } = useWallet()
   const router = useRouter()
 
@@ -136,10 +146,16 @@ export default function SubmitPage() {
         throw new Error(data.error || 'Failed to create project')
       }
 
-      toast.success("Project created successfully!")
+      // Show success state with project details
+      setSubmittedProject({
+        id: data.project?.id || data.id,
+        title: formData.title,
+        category: formData.category,
+        goal: parseFloat(formData.goal),
+        status: 'queue'
+      })
 
-      // Redirect to project page or dashboard
-      router.push(`/dashboard/creator`)
+      toast.success("Project submitted for review!")
 
     } catch (error: any) {
       console.error('Failed to create project:', error)
@@ -191,6 +207,67 @@ export default function SubmitPage() {
     }
 
     setStep(prev => Math.min(prev + 1, 4))
+  }
+
+  // Success screen after submission
+  if (submittedProject) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <div className="flex-1 container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-2xl flex items-center justify-center">
+          <Card className="w-full p-8 text-center">
+            <div className="mb-6">
+              <div className="h-16 w-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle2 className="h-8 w-8 text-green-500" />
+              </div>
+              <h1 className="text-2xl font-bold mb-2">Project Submitted!</h1>
+              <p className="text-muted-foreground">Your project is now in the review queue</p>
+            </div>
+
+            <div className="bg-muted/50 rounded-lg p-6 mb-6 text-left space-y-3">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Title</span>
+                <span className="font-semibold">{submittedProject.title}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Category</span>
+                <Badge variant="outline">{submittedProject.category}</Badge>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Goal</span>
+                <span className="font-semibold">${submittedProject.goal.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Status</span>
+                <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+                  <Clock className="h-3 w-3 mr-1" />
+                  In Review Queue
+                </Badge>
+              </div>
+            </div>
+
+            <p className="text-sm text-muted-foreground mb-6">
+              Our team will review your project shortly. You&apos;ll be notified once it&apos;s approved and live.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button variant="outline" className="flex-1" asChild>
+                <Link href={`/project/${submittedProject.id}`}>
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  View Project
+                </Link>
+              </Button>
+              <Button className="flex-1 bg-accent text-accent-foreground" asChild>
+                <Link href="/dashboard/creator">
+                  Go to Dashboard
+                </Link>
+              </Button>
+            </div>
+          </Card>
+        </div>
+        <Footer />
+      </div>
+    )
   }
 
   return (
