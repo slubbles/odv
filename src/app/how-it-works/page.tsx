@@ -10,21 +10,21 @@ export default function HowItWorksPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container py-12">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">How This Works</h1>
+      <div className="container px-4 sm:px-6 py-8 sm:py-12">
+        <div className="text-center mb-10 sm:mb-16">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6">How This Works</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             No VC meetings. No pitch decks to billionaires. Just your idea, their $1, and the internet.
           </p>
         </div>
 
         {/* For Backers */}
-        <div className="mb-20">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-accent/20 mb-4">
-              <Users className="h-8 w-8 text-accent" />
+        <div className="mb-12 sm:mb-20">
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="inline-flex items-center justify-center h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-accent/20 mb-4">
+              <Users className="h-7 w-7 sm:h-8 sm:w-8 text-accent" />
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Got $1? You're In.</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Got $1? You're In.</h2>
             <p className="text-lg text-muted-foreground">No minimum investment. No accredited investor BS.</p>
           </div>
 
@@ -82,23 +82,23 @@ export default function HowItWorksPage() {
         </div>
 
         {/* For Creators */}
-        <div className="mb-20">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-accent/20 mb-4">
-              <Rocket className="h-8 w-8 text-accent" />
+        <div className="mb-12 sm:mb-20">
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="inline-flex items-center justify-center h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-accent/20 mb-4">
+              <Rocket className="h-7 w-7 sm:h-8 sm:w-8 text-accent" />
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Built Something? Show Us.</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Built Something? Show Us.</h2>
             <p className="text-lg text-muted-foreground">Skip the gatekeepers. Pitch the internet instead.</p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 max-w-6xl mx-auto">
             <Card className="text-center border-accent/30">
-              <CardContent className="p-8">
-                <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+              <CardContent className="p-4 sm:p-8">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-lg sm:text-xl font-bold">
                   1
                 </div>
-                <h3 className="font-bold text-lg mb-2">Submit Your Thing</h3>
-                <p className="text-sm text-muted-foreground">Tell us what you're building. Keep it real.</p>
+                <h3 className="font-bold text-sm sm:text-lg mb-2">Submit Your Thing</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">Tell us what you're building. Keep it real.</p>
               </CardContent>
             </Card>
 

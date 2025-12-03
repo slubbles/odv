@@ -37,11 +37,11 @@ export default function AboutPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container mx-auto py-12 flex-1">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 pb-24 md:pb-12">
         {/* Hero */}
-        <div className="text-center mb-20">
+        <div className="text-center mb-12 sm:mb-20">
           <Badge className="mb-4 bg-accent/20 text-accent-foreground border-accent/30">Who We Are</Badge>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6">
             VCs Won't Fund You?
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent/60">
@@ -55,11 +55,11 @@ export default function AboutPage() {
         </div>
 
         {/* Mission & Vision */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-20">
+        <div className="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto mb-12 sm:mb-20">
           <Card className="border-accent/30">
-            <CardContent className="p-8">
-              <div className="h-14 w-14 rounded-lg bg-accent/20 flex items-center justify-center mb-4">
-                <Target className="h-7 w-7 text-accent" />
+            <CardContent className="p-6 sm:p-8">
+              <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-lg bg-accent/20 flex items-center justify-center mb-4">
+                <Target className="h-6 w-6 sm:h-7 sm:w-7 text-accent" />
               </div>
               <h2 className="text-2xl font-bold mb-4">Mission</h2>
               <p className="text-muted-foreground leading-relaxed">

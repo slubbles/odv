@@ -7,15 +7,15 @@ export default function TermsPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container py-12 max-w-4xl flex-1">
-        <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">The Fine Print</h1>
+      <div className="container px-4 sm:px-6 py-8 sm:py-12 max-w-4xl flex-1 pb-24 md:pb-12">
+        <div className="mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">The Fine Print</h1>
           <p className="text-muted-foreground">Last updated: January 2025. Read it. We mean it.</p>
         </div>
 
         <Card className="mb-8">
-          <CardContent className="p-8 prose prose-invert max-w-none">
-            <h2 className="text-2xl font-bold mb-4">1. Acceptance of Terms</h2>
+          <CardContent className="p-4 sm:p-8 prose prose-invert max-w-none">
+            <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">1. Acceptance of Terms</h2>
             <p className="text-muted-foreground leading-relaxed mb-6">
               By accessing and using OneDollarVentures, you accept and agree to be bound by the terms and provision of
               this agreement. If you do not agree to abide by these terms, please do not use this service.

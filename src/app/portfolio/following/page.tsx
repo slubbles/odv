@@ -42,33 +42,33 @@ export default function PortfolioFollowingPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="container mx-auto px-4 py-8 flex-1">
-        <Button variant="ghost" className="mb-6" asChild>
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1 pb-24 md:pb-8">
+        <Button variant="ghost" className="mb-4 sm:mb-6" asChild>
           <Link href="/portfolio">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Portfolio
           </Link>
         </Button>
 
-        <div className="mb-8">
-          <h1 className="font-sans text-4xl font-semibold mb-2 text-balance">Following</h1>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="font-sans text-3xl sm:text-4xl font-semibold mb-2 text-balance">Following</h1>
           <p className="text-muted-foreground text-lg">Creators you're following and their latest projects</p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3 mb-8">
-          <Card className="p-6">
-            <p className="text-sm text-muted-foreground mb-2">Following</p>
-            <p className="text-3xl font-semibold">{following.length}</p>
+        <div className="grid gap-4 sm:gap-6 grid-cols-3 mb-6 sm:mb-8">
+          <Card className="p-4 sm:p-6">
+            <p className="text-xs sm:text-sm text-muted-foreground mb-2">Following</p>
+            <p className="text-2xl sm:text-3xl font-semibold">{following.length}</p>
           </Card>
 
-          <Card className="p-6">
-            <p className="text-sm text-muted-foreground mb-2">Active Projects</p>
-            <p className="text-3xl font-semibold">{following.reduce((sum, c) => sum + c.projects, 0)}</p>
+          <Card className="p-4 sm:p-6">
+            <p className="text-xs sm:text-sm text-muted-foreground mb-2">Active Projects</p>
+            <p className="text-2xl sm:text-3xl font-semibold">{following.reduce((sum, c) => sum + c.projects, 0)}</p>
           </Card>
 
-          <Card className="p-6">
-            <p className="text-sm text-muted-foreground mb-2">Notifications On</p>
-            <p className="text-3xl font-semibold">{following.filter((c) => c.notifications).length}</p>
+          <Card className="p-4 sm:p-6">
+            <p className="text-xs sm:text-sm text-muted-foreground mb-2">Notifications On</p>
+            <p className="text-2xl sm:text-3xl font-semibold">{following.filter((c) => c.notifications).length}</p>
           </Card>
         </div>
 

@@ -22,10 +22,10 @@ export default function CreatorOnboardingPage() {
   return (
     <div className="min-h-screen">
       <Header />
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4 pb-24 md:pb-4">
         <div className="w-full max-w-2xl">
-          <div className="text-center mb-8">
-            <h1 className="font-sans text-4xl font-semibold mb-2 text-balance">Ready to Build?</h1>
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="font-sans text-3xl sm:text-4xl font-semibold mb-2 text-balance">Ready to Build?</h1>
             <p className="text-muted-foreground text-lg">Set up your profile. Start shipping.</p>
           </div>
 

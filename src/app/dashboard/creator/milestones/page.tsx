@@ -71,29 +71,29 @@ export default function CreatorMilestonesPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="container mx-auto px-4 py-8 flex-1">
-        <div className="mb-8">
-          <h1 className="font-sans text-4xl font-semibold mb-2 text-balance">Your Promises</h1>
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1 pb-24 md:pb-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="font-sans text-3xl sm:text-4xl font-semibold mb-2 text-balance">Your Promises</h1>
           <p className="text-muted-foreground text-lg">You said you'd build. Now prove it.</p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-4 mb-8">
-          <Card className="p-6">
+        <div className="grid gap-4 sm:gap-6 grid-cols-2 md:grid-cols-4 mb-6 sm:mb-8">
+          <Card className="p-4 sm:p-6">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-muted-foreground">Total</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Total</p>
               <TrendingUp className="h-4 w-4 text-accent" />
             </div>
-            <p className="text-3xl font-semibold">12</p>
-            <p className="text-xs text-muted-foreground mt-1">Across 3 projects</p>
+            <p className="text-2xl sm:text-3xl font-semibold">12</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Across 3 projects</p>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-muted-foreground">Shipped</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Shipped</p>
               <CheckCircle2 className="h-4 w-4 text-green-500" />
             </div>
-            <p className="text-3xl font-semibold">7</p>
-            <p className="text-xs text-muted-foreground mt-1">58% delivery rate</p>
+            <p className="text-2xl sm:text-3xl font-semibold">7</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">58% delivery rate</p>
           </Card>
 
           <Card className="p-6">

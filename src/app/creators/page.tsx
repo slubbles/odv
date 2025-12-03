@@ -109,9 +109,9 @@ export default function CreatorsPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container mx-auto py-12 flex-1">
-        <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Builders who actually ship</h1>
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 pb-24 md:pb-12">
+        <div className="mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">Builders who actually ship</h1>
           <p className="text-lg text-muted-foreground max-w-2xl">
             No fluff. No vaporware. These are the solo founders and small teams getting it done. Follow them. Back their
             next thing.
@@ -119,10 +119,10 @@ export default function CreatorsPage() {
         </div>
 
         {/* Featured Creators */}
-        <div className="mb-16">
-          <div className="flex items-center gap-2 mb-6">
-            <Star className="h-6 w-6 text-accent" />
-            <h2 className="text-2xl md:text-3xl font-bold">Proven track record</h2>
+        <div className="mb-10 sm:mb-16">
+          <div className="flex items-center gap-2 mb-4 sm:mb-6">
+            <Star className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">Proven track record</h2>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

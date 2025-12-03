@@ -37,8 +37,8 @@ export default function SearchResultsPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <div className="container mx-auto px-4 py-8 flex-1">
-        <div className="mb-8">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1 pb-24 md:pb-8">
+        <div className="mb-6 sm:mb-8">
           <div className="relative max-w-2xl mx-auto mb-6">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input placeholder="Search projects..." className="pl-12 h-14 text-lg" defaultValue="AI" />

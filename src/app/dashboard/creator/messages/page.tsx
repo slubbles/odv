@@ -77,11 +77,11 @@ export default function CreatorMessagesPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="container mx-auto px-4 py-8 flex-1">
-        <h1 className="font-sans text-4xl font-semibold mb-8 text-balance">Your Backers</h1>
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1 pb-24 md:pb-8">
+        <h1 className="font-sans text-3xl sm:text-4xl font-semibold mb-6 sm:mb-8 text-balance">Your Backers</h1>
 
-        <div className="grid md:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
-          <Card className="md:col-span-1 p-4 overflow-hidden flex flex-col">
+        <div className="grid md:grid-cols-3 gap-4 sm:gap-6 h-[calc(100vh-200px)]">
+          <Card className="md:col-span-1 p-3 sm:p-4 overflow-hidden flex flex-col">
             <div className="mb-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

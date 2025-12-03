@@ -7,29 +7,29 @@ export default function AdminAnalyticsPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="container mx-auto px-4 py-8 flex-1">
-        <div className="mb-8">
-          <h1 className="font-sans text-4xl font-semibold mb-2 text-balance">The Numbers</h1>
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1 pb-24 md:pb-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="font-sans text-3xl sm:text-4xl font-semibold mb-2 text-balance">The Numbers</h1>
           <p className="text-muted-foreground text-lg">What's working. What's not.</p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-4 mb-8">
-          <Card className="p-6">
+        <div className="grid gap-4 sm:gap-6 grid-cols-2 md:grid-cols-4 mb-6 sm:mb-8">
+          <Card className="p-4 sm:p-6">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-muted-foreground">Total Revenue</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Total Revenue</p>
               <DollarSign className="h-4 w-4 text-accent" />
             </div>
-            <p className="text-3xl font-semibold">$245,670</p>
-            <p className="text-xs text-green-400 mt-1">+18.2% from last month</p>
+            <p className="text-xl sm:text-3xl font-semibold">$245,670</p>
+            <p className="text-[10px] sm:text-xs text-green-400 mt-1">+18.2% from last month</p>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-muted-foreground">Active Projects</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Active Projects</p>
               <Zap className="h-4 w-4 text-accent" />
             </div>
-            <p className="text-3xl font-semibold">87</p>
-            <p className="text-xs text-green-400 mt-1">+12 this week</p>
+            <p className="text-xl sm:text-3xl font-semibold">87</p>
+            <p className="text-[10px] sm:text-xs text-green-400 mt-1">+12 this week</p>
           </Card>
 
           <Card className="p-6">

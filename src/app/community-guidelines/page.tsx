@@ -8,26 +8,26 @@ export default function CommunityGuidelinesPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container py-12 max-w-4xl flex-1">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-accent/20 mb-4">
-            <Shield className="h-8 w-8 text-accent" />
+      <div className="container px-4 sm:px-6 py-8 sm:py-12 max-w-4xl flex-1 pb-24 md:pb-12">
+        <div className="text-center mb-8 sm:mb-12">
+          <div className="inline-flex items-center justify-center h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-accent/20 mb-4">
+            <Shield className="h-7 w-7 sm:h-8 sm:w-8 text-accent" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Community Guidelines</h1>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">Community Guidelines</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Don't be a jerk. Support builders. That's it.
           </p>
         </div>
 
         {/* Core Principles */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-8 sm:mb-12">
           <Card className="border-accent/30 text-center">
-            <CardContent className="p-6">
-              <div className="h-12 w-12 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-4">
-                <Heart className="h-6 w-6 text-accent" />
+            <CardContent className="p-3 sm:p-6">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
               </div>
-              <h3 className="font-bold mb-2">Be Respectful</h3>
-              <p className="text-sm text-muted-foreground">Builders are people. Treat them like it.</p>
+              <h3 className="font-bold mb-1 sm:mb-2 text-sm sm:text-base">Be Respectful</h3>
+              <p className="text-[10px] sm:text-sm text-muted-foreground">Builders are people. Treat them like it.</p>
             </CardContent>
           </Card>
 

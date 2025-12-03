@@ -48,9 +48,9 @@ export default function SettingsHubPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="container mx-auto px-4 py-8 max-w-4xl flex-1">
-        <div className="mb-8">
-          <h1 className="font-sans text-4xl font-semibold mb-2 text-balance">Settings</h1>
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-4xl flex-1 pb-24 md:pb-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="font-sans text-3xl sm:text-4xl font-semibold mb-2 text-balance">Settings</h1>
           <p className="text-muted-foreground text-lg">Manage your account and preferences</p>
         </div>
 
@@ -60,10 +60,10 @@ export default function SettingsHubPage() {
             return (
               <Card key={section.title} className="hover:border-accent/50 transition-colors">
                 <Link href={section.href}>
-                  <Button variant="ghost" className="w-full h-auto p-6 justify-start">
-                    <div className="flex items-center gap-4 w-full">
-                      <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
-                        <Icon className="h-6 w-6 text-accent" />
+                  <Button variant="ghost" className="w-full h-auto p-4 sm:p-6 justify-start">
+                    <div className="flex items-center gap-3 sm:gap-4 w-full">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
+                        <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
                       </div>
                       <div className="flex-1 text-left">
                         <p className="font-semibold text-base mb-1">{section.title}</p>

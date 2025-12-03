@@ -97,7 +97,7 @@ export default function PortfolioActivityPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="container mx-auto px-4 py-8 flex-1">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1 pb-24 md:pb-8">
         <Button variant="ghost" className="mb-6" asChild>
           <Link href="/portfolio">
             <ArrowLeft className="h-4 w-4 mr-2" />

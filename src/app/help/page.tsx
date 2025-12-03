@@ -48,12 +48,12 @@ export default function HelpPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container mx-auto py-12 max-w-5xl flex-1">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-accent/20 mb-4">
-            <HelpCircle className="h-8 w-8 text-accent" />
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-5xl flex-1 pb-24 md:pb-12">
+        <div className="text-center mb-10 sm:mb-16">
+          <div className="inline-flex items-center justify-center h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-accent/20 mb-4">
+            <HelpCircle className="h-7 w-7 sm:h-8 sm:w-8 text-accent" />
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">Need Help?</h1>
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6">Need Help?</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
             Questions answered. Problems solved. No corporate jargon.
           </p>
@@ -86,10 +86,10 @@ export default function HelpPage() {
           ))}
         </div>
 
-        <Card className="mt-16 bg-gradient-to-br from-accent/10 to-accent/5 border-accent/30">
-          <CardContent className="p-12 text-center">
-            <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-accent/20 mb-4">
-              <MessageCircle className="h-8 w-8 text-accent" />
+        <Card className="mt-10 sm:mt-16 bg-gradient-to-br from-accent/10 to-accent/5 border-accent/30">
+          <CardContent className="p-6 sm:p-12 text-center">
+            <div className="inline-flex items-center justify-center h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-accent/20 mb-4">
+              <MessageCircle className="h-7 w-7 sm:h-8 sm:w-8 text-accent" />
             </div>
             <h2 className="text-3xl font-bold mb-4">Still Stuck?</h2>
             <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">

@@ -134,9 +134,9 @@ export default function ProjectsPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container mx-auto py-12 flex-1">
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Browse Projects</h1>
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 pb-24 md:pb-12">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">Browse Projects</h1>
           <p className="text-lg text-muted-foreground">
             1,247 projects backed. Some will be huge. Most will be useful.
           </p>

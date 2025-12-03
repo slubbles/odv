@@ -244,19 +244,19 @@ export default function AdminMilestonesPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="container mx-auto px-4 py-8 flex-1">
-        <div className="mb-8">
-          <h1 className="font-sans text-4xl font-semibold mb-2 text-balance">Did They Ship?</h1>
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1 pb-24 md:pb-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="font-sans text-3xl sm:text-4xl font-semibold mb-2 text-balance">Did They Ship?</h1>
           <p className="text-muted-foreground text-lg">Check proof. Approve or reject. Simple.</p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-4 mb-8">
-          <Card className="p-6 cursor-pointer hover:border-yellow-500/50 transition-all" onClick={() => setFilter("pending-review")}>
+        <div className="grid gap-4 sm:gap-6 grid-cols-2 md:grid-cols-4 mb-6 sm:mb-8">
+          <Card className="p-4 sm:p-6 cursor-pointer hover:border-yellow-500/50 transition-all" onClick={() => setFilter("pending-review")}>
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-muted-foreground">Pending Review</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Pending</p>
               <Clock className="h-4 w-4 text-yellow-500" />
             </div>
-            <p className="text-3xl font-semibold">{stats.pending_review}</p>
+            <p className="text-2xl sm:text-3xl font-semibold">{stats.pending_review}</p>
           </Card>
 
           <Card className="p-6 cursor-pointer hover:border-red-500/50 transition-all" onClick={() => setFilter("overdue")}>

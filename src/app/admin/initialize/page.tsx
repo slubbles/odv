@@ -97,7 +97,7 @@ export default function InitializePlatformPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
       
-      <main className="flex-1 container mx-auto max-w-2xl px-4 py-12">
+      <main className="flex-1 container mx-auto max-w-2xl px-4 sm:px-6 py-8 sm:py-12 pb-24 md:pb-12">
         <div className="text-center mb-8">
           <Badge className="mb-4 bg-accent/20 text-accent-foreground border-accent/30">
             Admin Only

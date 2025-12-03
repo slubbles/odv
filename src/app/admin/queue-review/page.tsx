@@ -132,27 +132,27 @@ export default function AdminQueueReviewPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="container mx-auto px-4 py-8 flex-1">
-        <div className="mb-8">
-          <h1 className="font-sans text-4xl font-semibold mb-2 text-balance">Queue Review</h1>
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1 pb-24 md:pb-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="font-sans text-3xl sm:text-4xl font-semibold mb-2 text-balance">Queue Review</h1>
           <p className="text-muted-foreground text-lg">Review and approve submitted projects</p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3 mb-8">
-          <Card className="p-6">
+        <div className="grid gap-4 sm:gap-6 grid-cols-3 mb-6 sm:mb-8">
+          <Card className="p-4 sm:p-6">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-muted-foreground">In Queue</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">In Queue</p>
               <Clock className="h-4 w-4 text-yellow-500" />
             </div>
-            <p className="text-3xl font-semibold">{projects.length}</p>
+            <p className="text-2xl sm:text-3xl font-semibold">{projects.length}</p>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-muted-foreground">Needs Review</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Needs Review</p>
               <AlertTriangle className="h-4 w-4 text-orange-500" />
             </div>
-            <p className="text-3xl font-semibold">{projects.length}</p>
+            <p className="text-2xl sm:text-3xl font-semibold">{projects.length}</p>
           </Card>
 
           <Card className="p-6">

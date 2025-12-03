@@ -8,27 +8,27 @@ export default function StatsPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container py-12 flex-1">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">The Numbers</h1>
+      <div className="container px-4 sm:px-6 py-8 sm:py-12 flex-1 pb-24 md:pb-12">
+        <div className="text-center mb-10 sm:mb-16">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6">The Numbers</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Real data. No fluff. This is what happens when you let the internet decide.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
           <Card className="border-accent/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-muted-foreground font-normal">Dollars Raised</CardTitle>
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm text-muted-foreground font-normal">Dollars Raised</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                  <DollarSign className="h-6 w-6 text-accent" />
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center">
+                  <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
                 </div>
                 <div>
-                  <p className="text-3xl font-bold">$2.3M</p>
-                  <p className="text-xs text-muted-foreground">+12.5% this month</p>
+                  <p className="text-xl sm:text-3xl font-bold">$2.3M</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">+12.5% this month</p>
                 </div>
               </div>
             </CardContent>

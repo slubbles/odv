@@ -29,12 +29,12 @@ export default function EditProjectPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container py-12 max-w-5xl flex-1">
+      <div className="container px-4 sm:px-6 py-8 sm:py-12 max-w-5xl flex-1 pb-24 md:pb-12">
         {/* Header */}
-        <div className="mb-12 flex items-center justify-between">
+        <div className="mb-8 sm:mb-12 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <Badge className="mb-4 bg-accent/20 text-accent-foreground border-accent/30">Edit Mode</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Fix Your Stuff</h1>
+            <Badge className="mb-3 sm:mb-4 bg-accent/20 text-accent-foreground border-accent/30 text-xs sm:text-sm">Edit Mode</Badge>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">Fix Your Stuff</h1>
             <p className="text-xl text-muted-foreground">Made a mistake? Change it here.</p>
           </div>
           <Button className="bg-accent text-accent-foreground hover:bg-accent/90">

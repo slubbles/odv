@@ -7,15 +7,15 @@ export default function PrivacyPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container py-12 max-w-4xl flex-1">
-        <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Your Data. Your Business.</h1>
+      <div className="container px-4 sm:px-6 py-8 sm:py-12 max-w-4xl flex-1 pb-24 md:pb-12">
+        <div className="mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">Your Data. Your Business.</h1>
           <p className="text-muted-foreground">Last updated: January 2025. We don't sell your info. Period.</p>
         </div>
 
         <Card className="mb-8">
-          <CardContent className="p-8 prose prose-invert max-w-none">
-            <h2 className="text-2xl font-bold mb-4">1. Information We Collect</h2>
+          <CardContent className="p-4 sm:p-8 prose prose-invert max-w-none">
+            <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">1. Information We Collect</h2>
             <p className="text-muted-foreground leading-relaxed mb-6">
               We collect information you provide directly to us, including wallet addresses, project submissions,
               comments, and profile information. We also collect usage data and analytics to improve our platform.

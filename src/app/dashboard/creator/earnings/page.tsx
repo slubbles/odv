@@ -17,10 +17,10 @@ export default function CreatorEarningsPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="container mx-auto px-4 py-8 flex-1">
-        <div className="flex items-center justify-between mb-8">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1 pb-24 md:pb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
           <div>
-            <h1 className="font-sans text-4xl font-semibold mb-2 text-balance">Your Money</h1>
+            <h1 className="font-sans text-3xl sm:text-4xl font-semibold mb-2 text-balance">Your Money</h1>
             <p className="text-muted-foreground text-lg">You earned it. Now cash out.</p>
           </div>
           <Button className="bg-accent hover:bg-accent/90">
@@ -29,14 +29,14 @@ export default function CreatorEarningsPage() {
           </Button>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3 mb-8">
-          <Card className="p-6">
+        <div className="grid gap-4 sm:gap-6 grid-cols-3 mb-6 sm:mb-8">
+          <Card className="p-4 sm:p-6">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-muted-foreground">Ready to Withdraw</p>
+              <p className="text-[10px] sm:text-sm text-muted-foreground">Ready</p>
               <DollarSign className="h-4 w-4 text-accent" />
             </div>
-            <p className="text-3xl font-semibold">$8,450.00</p>
-            <p className="text-xs text-muted-foreground mt-1">It's yours</p>
+            <p className="text-xl sm:text-3xl font-semibold">$8,450</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 hidden sm:block">It's yours</p>
           </Card>
 
           <Card className="p-6">

@@ -40,14 +40,14 @@ export default function CreatorProfilePage() {
 
       {/* Hero Section */}
       <div className="border-b border-border">
-        <div className="container py-12">
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-            <img src="/the-creator.png" alt="Sarah Chen" className="h-32 w-32 rounded-full border-4 border-accent/30" />
+        <div className="container px-4 sm:px-6 py-8 sm:py-12">
+          <div className="flex flex-col md:flex-row gap-6 sm:gap-8 items-start">
+            <img src="/the-creator.png" alt="Sarah Chen" className="h-24 w-24 sm:h-32 sm:w-32 rounded-full border-4 border-accent/30" />
 
             <div className="flex-1">
-              <div className="flex items-start justify-between mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                 <div>
-                  <h1 className="text-4xl font-bold mb-2">Sarah Chen</h1>
+                  <h1 className="text-3xl sm:text-4xl font-bold mb-2">Sarah Chen</h1>
                   <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4" />
@@ -85,15 +85,15 @@ export default function CreatorProfilePage() {
       </div>
 
       {/* Stats Section */}
-      <div className="container py-12">
-        <div className="grid md:grid-cols-4 gap-6 mb-12">
+      <div className="container px-4 sm:px-6 py-8 sm:py-12 pb-24 md:pb-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
           <Card className="border-accent/30">
-            <CardContent className="p-6 text-center">
-              <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center mx-auto mb-3">
-                <TrendingUp className="h-6 w-6 text-accent" />
+            <CardContent className="p-4 sm:p-6 text-center">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center mx-auto mb-2 sm:mb-3">
+                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
               </div>
-              <p className="text-2xl font-bold mb-1">2</p>
-              <p className="text-sm text-muted-foreground">Projects Launched</p>
+              <p className="text-xl sm:text-2xl font-bold mb-1">2</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Projects Launched</p>
             </CardContent>
           </Card>
 

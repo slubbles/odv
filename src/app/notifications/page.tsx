@@ -169,11 +169,11 @@ export default function NotificationsPage() {
     return (
       <div className="min-h-screen">
         <Header />
-        <div className="container py-12 max-w-4xl">
+        <div className="container px-4 sm:px-6 py-8 sm:py-12 max-w-4xl pb-24 md:pb-12">
           <Card className="border-yellow-500/30 bg-yellow-500/10">
-            <CardContent className="p-8 text-center">
-              <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold mb-2">Wallet Not Connected</h2>
+            <CardContent className="p-6 sm:p-8 text-center">
+              <AlertCircle className="h-10 w-10 sm:h-12 sm:w-12 text-yellow-500 mx-auto mb-4" />
+              <h2 className="text-xl sm:text-2xl font-bold mb-2">Wallet Not Connected</h2>
               <p className="text-muted-foreground">
                 Please connect your wallet to view your notifications.
               </p>
@@ -188,10 +188,10 @@ export default function NotificationsPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container py-12 max-w-4xl">
-        <div className="mb-12">
-          <div className="flex items-center gap-3 mb-4">
-            <h1 className="text-4xl md:text-5xl font-bold">What's Happening</h1>
+      <div className="container px-4 sm:px-6 py-8 sm:py-12 max-w-4xl pb-24 md:pb-12">
+        <div className="mb-8 sm:mb-12">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">What's Happening</h1>
             {unreadCount > 0 && <Badge className="bg-accent text-accent-foreground">{unreadCount} new</Badge>}
           </div>
           <p className="text-lg text-muted-foreground">Projects you backed. People who need you.</p>
