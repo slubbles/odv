@@ -6,29 +6,25 @@ export async function GET(request: Request) {
     const supabase = await createClient()
     const { searchParams } = new URL(request.url)
 
-    const status = searchParams.get("status") || "pending"
+    const statusParam = searchParams.get("status") || "pending"
     const category = searchParams.get("category")
     const dateFrom = searchParams.get("dateFrom")
     const dateTo = searchParams.get("dateTo")
     const sort = searchParams.get("sort") || "newest"
 
-    // Check if Supabase is configured (mock check)
-    const isMockMode = !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder")
-
-    if (isMockMode) {
-      const { mockDb } = await import("@/lib/mock-db")
-      const projects = mockDb.getProjects({
-        status,
-        category: category || undefined,
-        sort
-      })
-      return NextResponse.json({ projects })
+    // Map UI status names to database status values
+    // UI uses "pending" but database uses "queue" for pending projects
+    const statusMap: Record<string, string> = {
+      pending: "queue",
+      approved: "active",
+      rejected: "rejected",
     }
+    const dbStatus = statusMap[statusParam] || statusParam
 
     let query = supabase
       .from("projects")
-      .select("id, title, creator_id, category, community_votes, status, created_at, updated_at")
-      .eq("status", status)
+      .select("id, title, creator_wallet, category, community_votes, status, goal, deadline, created_at, updated_at")
+      .eq("status", dbStatus)
 
     if (category && category !== "all") {
       query = query.eq("category", category)

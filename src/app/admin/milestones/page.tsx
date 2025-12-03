@@ -24,14 +24,13 @@ interface Milestone {
   creator_wallet?: string
   title: string
   description: string
-  due_date: string
+  deadline: string
+  percentage: number
+  amount: number
   status: string
-  evidence_url: string | null
+  proof_url: string | null
+  proof_description: string | null
   evidence_submitted: boolean
-  votes: {
-    approve: number
-    reject: number
-  }
 }
 
 interface Stats {
@@ -323,16 +322,15 @@ export default function AdminMilestonesPage() {
                       <div className="flex items-center gap-6 text-sm flex-wrap">
                         <div>
                           <span className="text-muted-foreground">Due: </span>
-                          <span className="text-foreground">{new Date(milestone.due_date).toLocaleDateString()}</span>
+                          <span className="text-foreground">{new Date(milestone.deadline).toLocaleDateString()}</span>
                         </div>
                         <div>
-                          <span className="text-muted-foreground">Votes: </span>
-                          <span className="text-green-400">{milestone.votes.approve} approve</span>
-                          <span className="text-muted-foreground"> / </span>
-                          <span className="text-red-400">{milestone.votes.reject} reject</span>
+                          <span className="text-muted-foreground">Amount: </span>
+                          <span className="text-foreground">${milestone.amount?.toLocaleString() || 0}</span>
+                          <span className="text-muted-foreground"> ({milestone.percentage}%)</span>
                         </div>
                         <div>
-                          <span className="text-muted-foreground">Evidence: </span>
+                          <span className="text-muted-foreground">Proof: </span>
                           <span className={milestone.evidence_submitted ? "text-green-400" : "text-muted-foreground"}>
                             {milestone.evidence_submitted ? "Submitted" : "Not submitted"}
                           </span>
@@ -341,17 +339,17 @@ export default function AdminMilestonesPage() {
                     </div>
                   </div>
                   <div className="flex gap-2 shrink-0">
-                    {milestone.evidence_url && (
+                    {milestone.proof_url && (
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => window.open(milestone.evidence_url!, "_blank")}
+                        onClick={() => window.open(milestone.proof_url!, "_blank")}
                       >
                         <ExternalLink className="h-4 w-4 mr-2" />
-                        View Evidence
+                        View Proof
                       </Button>
                     )}
-                    {milestone.status === "pending-review" && (
+                    {(milestone.status === "pending_review" || milestone.status === "active") && (
                       <>
                         <Button
                           variant="outline"

@@ -37,7 +37,14 @@ export default function SubmitPage() {
   const { publicKey, connected } = useWallet()
   const router = useRouter()
 
-  // Form state
+  // Get minimum date for milestone deadlines (tomorrow)
+  const getMinDate = () => {
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    return tomorrow.toISOString().split('T')[0]
+  }
+
+  // Form state - initialize with one empty milestone
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -49,7 +56,7 @@ export default function SubmitPage() {
     videoUrl: "",
     goal: "",
     duration: "30",
-    milestones: [] as MilestoneInput[]
+    milestones: [{ title: "", percentage: 0, deadline: "" }] as MilestoneInput[]
   })
 
   const handleInputChange = (field: string, value: any) => {
@@ -297,11 +304,11 @@ export default function SubmitPage() {
               </div>
             ))}
           </div>
-          <div className="flex justify-between text-xs sm:text-sm text-muted-foreground px-2">
-            <span>Basic Info</span>
-            <span>Details</span>
-            <span>Funding</span>
-            <span>Review</span>
+          <div className="flex text-xs sm:text-sm text-muted-foreground">
+            <span className="flex-1 text-center">Basic Info</span>
+            <span className="flex-1 text-center">Details</span>
+            <span className="flex-1 text-center">Funding</span>
+            <span className="flex-1 text-center">Review</span>
           </div>
         </div>
 
@@ -422,9 +429,12 @@ export default function SubmitPage() {
 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <Label>Milestones *</Label>
+                    <div>
+                      <Label>Milestones *</Label>
+                      <p className="text-xs text-muted-foreground mt-1">Define how you&apos;ll deliver value. Percentages must total 100%.</p>
+                    </div>
                     <Button type="button" variant="outline" size="sm" onClick={addMilestone}>
-                      + Add Milestone
+                      + Add Another
                     </Button>
                   </div>
 
@@ -467,9 +477,12 @@ export default function SubmitPage() {
                           <Label>Deadline</Label>
                           <Input
                             type="date"
+                            min={getMinDate()}
                             value={milestone.deadline}
                             onChange={(e) => updateMilestone(index, 'deadline', e.target.value)}
+                            className="cursor-pointer"
                           />
+                          <p className="text-xs text-muted-foreground">Must be a future date</p>
                         </div>
                       </CardContent>
                     </Card>
