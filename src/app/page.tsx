@@ -14,6 +14,8 @@ import { LiveTicker } from "@/components/live-ticker"
 import { RecentlyFundedBanner } from "@/components/recently-funded-banner"
 import { Footer } from "@/components/footer"
 import { useProjects } from "@/lib/hooks/use-projects"
+import { TestnetBanner } from "@/components/testnet-banner"
+import { ODVFeaturedCampaign } from "@/components/odv-featured-campaign"
 
 export default function Home() {
   const { projects, loading, error } = useProjects({
@@ -24,6 +26,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
+      <TestnetBanner />
       <Header />
 
       <LiveTicker />
@@ -109,6 +112,17 @@ export default function Home() {
               </CardContent>
             </Card>
           </div>
+        </section>
+
+        {/* Featured ODV Campaign - The Meta Campaign */}
+        <section className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+          <div className="text-center mb-6">
+            <Badge className="mb-2 bg-accent/10 text-accent border-accent/20">
+              🔥 Featured Campaign
+            </Badge>
+            <h2 className="text-xl sm:text-2xl font-bold">The First Project on ODV? ODV Itself.</h2>
+          </div>
+          <ODVFeaturedCampaign raised={0} backersCount={0} />
         </section>
 
         <section
