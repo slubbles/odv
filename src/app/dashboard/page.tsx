@@ -1,281 +1,149 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useWallet } from "@solana/wallet-adapter-react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button, buttonVariants } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Progress } from "@/components/ui/progress"
-import { DollarSign, Users, FolderOpen, Plus, Edit, BarChart3 } from "lucide-react"
+import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Loader2, Rocket, Heart } from "lucide-react"
 import Link from "next/link"
-import { cn } from "@/lib/utils"
-
-const creatorStats = {
-  totalRaised: 45000,
-  totalBackers: 1247,
-  activeProjects: 3,
-}
-
-const backedProjects = [
-  {
-    id: "1",
-    title: "AI-Powered Recipe Discovery Platform",
-    creator: "Sarah Chen",
-    thumbnail: "/placeholder.svg?key=594bv",
-    investment: 25,
-    status: "Active",
-    progress: 84,
-    raised: 8450,
-    goal: 10000,
-    nftBadge: "Gold Supporter",
-    hasPendingVote: true,
-  },
-  {
-    id: "2",
-    title: "Sustainable Fashion Marketplace",
-    creator: "Maya Rodriguez",
-    thumbnail: "/placeholder.svg?key=2and1",
-    investment: 10,
-    status: "Active",
-    progress: 65,
-    raised: 5200,
-    goal: 8000,
-    nftBadge: "Silver Supporter",
-    hasPendingVote: false,
-  },
-]
-
-const myProjects = [
-  {
-    id: "1",
-    title: "AI-Powered Recipe Discovery Platform",
-    thumbnail: "/placeholder.svg?key=594bv",
-    status: "Live",
-    raised: 8450,
-    goal: 10000,
-    backers: 423,
-    daysLeft: 12,
-  },
-  {
-    id: "2",
-    title: "Smart Home Energy Optimizer",
-    thumbnail: "/placeholder.svg?key=nbz03",
-    status: "Featured",
-    raised: 15200,
-    goal: 20000,
-    backers: 678,
-    daysLeft: 8,
-  },
-  {
-    id: "3",
-    title: "Blockchain Supply Chain Tracker",
-    thumbnail: "/placeholder.svg?key=49gn7",
-    status: "Completed",
-    raised: 21350,
-    goal: 20000,
-    backers: 892,
-    daysLeft: 0,
-  },
-  {
-    id: "4",
-    title: "Voice Assistant for Seniors",
-    thumbnail: "/placeholder.svg?key=lp8s2",
-    status: "Draft",
-    raised: 0,
-    goal: 12000,
-    backers: 0,
-    daysLeft: 0,
-  },
-]
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState("backed")
+  const router = useRouter()
+  const { publicKey, connected } = useWallet()
+  const [checking, setChecking] = useState(true)
+  const [hasProjects, setHasProjects] = useState<boolean | null>(null)
 
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+  useEffect(() => {
+    async function checkUserType() {
+      if (!connected || !publicKey) {
+        setChecking(false)
+        return
+      }
 
-      <div className="flex-1 container mx-auto px-4 py-12 max-w-7xl">
-        <div className="mb-12">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">Your Command Center</h1>
-              <p className="text-lg text-muted-foreground">What you backed. What you built.</p>
-            </div>
-            <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90" asChild>
-              <Link href="/submit">
-                <Plus className="mr-2 h-5 w-5" />
-                Submit New Project
-              </Link>
-            </Button>
+      try {
+        // Check if user has created any projects
+        const response = await fetch(`/api/projects?creator=${publicKey.toString()}&limit=1`)
+        const data = await response.json()
+        
+        if (data.projects && data.projects.length > 0) {
+          // User is a creator - redirect to creator dashboard
+          router.replace('/dashboard/creator')
+        } else {
+          // Check if user has backed any projects
+          const backingResponse = await fetch(`/api/backing?wallet=${publicKey.toString()}&limit=1`)
+          const backingData = await backingResponse.json()
+          
+          if (backingData.backings && backingData.backings.length > 0) {
+            // User is a backer - redirect to backer dashboard
+            router.replace('/dashboard/backer')
+          } else {
+            // New user - show choice
+            setHasProjects(false)
+            setChecking(false)
+          }
+        }
+      } catch (error) {
+        // On error, show choice screen
+        setChecking(false)
+        setHasProjects(false)
+      }
+    }
+
+    checkUserType()
+  }, [connected, publicKey, router])
+
+  // Not connected - prompt to connect
+  if (!connected) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <div className="flex-1 flex items-center justify-center px-4 pb-24 md:pb-12">
+          <Card className="p-8 sm:p-12 text-center max-w-md">
+            <h1 className="text-2xl font-bold mb-4">Welcome to Your Dashboard</h1>
+            <p className="text-muted-foreground mb-6">
+              Connect your wallet to view your projects and backed campaigns.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Use the wallet button in the header to get started.
+            </p>
+          </Card>
+        </div>
+        <Footer />
+      </div>
+    )
+  }
+
+  // Still checking user type
+  if (checking) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-accent mx-auto mb-4" />
+            <p className="text-muted-foreground">Loading your dashboard...</p>
           </div>
         </div>
-
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList>
-            <TabsTrigger value="backed">Backed Projects</TabsTrigger>
-            <TabsTrigger value="my-projects">My Projects</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="backed" className="mt-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              {backedProjects.map((project) => (
-                <Card key={project.id} className="overflow-hidden hover:border-accent/50 transition-all">
-                  <div className="grid md:grid-cols-5 gap-0">
-                    <div className="md:col-span-2 aspect-video md:aspect-auto bg-muted">
-                      <img
-                        src={project.thumbnail || "/placeholder.svg"}
-                        alt={project.title}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                    <div className="md:col-span-3 p-6">
-                      <div className="flex items-start justify-between gap-2 mb-3">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-lg font-bold line-clamp-2 mb-1">{project.title}</h3>
-                          <p className="text-sm text-muted-foreground">by {project.creator}</p>
-                        </div>
-                        <Badge>{project.status}</Badge>
-                      </div>
-
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Your investment</span>
-                          <span className="font-bold text-accent">${project.investment}</span>
-                        </div>
-
-                        <div>
-                          <div className="flex justify-between text-sm mb-2">
-                            <span>Progress</span>
-                            <span>{project.progress}%</span>
-                          </div>
-                          <Progress value={project.progress} className="h-2" />
-                        </div>
-
-                        <Link
-                          href={`/project/${project.id}`}
-                          className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-full bg-transparent")}
-                        >
-                          View Project
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="my-projects" className="mt-6">
-            {/* Creator Stats */}
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="h-10 w-10 rounded-lg bg-accent/20 flex items-center justify-center">
-                      <DollarSign className="h-5 w-5 text-accent" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold">${creatorStats.totalRaised.toLocaleString()}</p>
-                      <p className="text-sm text-muted-foreground">Total Raised</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="h-10 w-10 rounded-lg bg-accent/20 flex items-center justify-center">
-                      <Users className="h-5 w-5 text-accent" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold">{creatorStats.totalBackers}</p>
-                      <p className="text-sm text-muted-foreground">Total Backers</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="h-10 w-10 rounded-lg bg-accent/20 flex items-center justify-center">
-                      <FolderOpen className="h-5 w-5 text-accent" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold">{creatorStats.activeProjects}</p>
-                      <p className="text-sm text-muted-foreground">Active Projects</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Project Cards */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {myProjects.map((project) => (
-                <Card key={project.id} className="overflow-hidden hover:border-accent/50 transition-all">
-                  <div className="aspect-video bg-muted">
-                    <img
-                      src={project.thumbnail || "/placeholder.svg"}
-                      alt={project.title}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between gap-2 mb-4">
-                      <h3 className="text-lg font-bold line-clamp-2 flex-1">{project.title}</h3>
-                      <Badge
-                        variant={
-                          project.status === "Live" || project.status === "Featured"
-                            ? "default"
-                            : project.status === "Completed"
-                              ? "secondary"
-                              : "outline"
-                        }
-                      >
-                        {project.status}
-                      </Badge>
-                    </div>
-
-                    {project.status !== "Draft" && (
-                      <>
-                        <div className="mb-4">
-                          <div className="flex justify-between text-sm mb-2">
-                            <span className="font-semibold">${project.raised.toLocaleString()}</span>
-                            <span className="text-muted-foreground">of ${project.goal.toLocaleString()}</span>
-                          </div>
-                          <Progress value={(project.raised / project.goal) * 100} className="h-2" />
-                        </div>
-
-                        <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                          <span>{project.backers} backers</span>
-                          {project.daysLeft > 0 && <span>{project.daysLeft} days left</span>}
-                        </div>
-                      </>
-                    )}
-
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="flex-1 bg-transparent">
-                        <Edit className="h-4 w-4 mr-1" />
-                        Edit
-                      </Button>
-                      <Button size="sm" variant="outline" className="flex-1 bg-transparent">
-                        <BarChart3 className="h-4 w-4 mr-1" />
-                        Analytics
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+        <Footer />
       </div>
+    )
+  }
 
+  // New user - show choice
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <div className="flex-1 flex items-center justify-center px-4 pb-24 md:pb-12">
+        <div className="max-w-3xl w-full">
+          <div className="text-center mb-12">
+            <h1 className="text-3xl sm:text-4xl font-bold mb-4">Welcome!</h1>
+            <p className="text-lg text-muted-foreground">
+              What brings you to OneDollarVote today?
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Creator Option */}
+            <Card className="p-8 hover:border-accent/50 transition-all cursor-pointer group">
+              <Link href="/dashboard/creator" className="block">
+                <div className="h-16 w-16 rounded-2xl bg-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent/30 transition-colors">
+                  <Rocket className="h-8 w-8 text-accent" />
+                </div>
+                <h2 className="text-2xl font-bold mb-3">I'm a Creator</h2>
+                <p className="text-muted-foreground mb-6">
+                  Submit projects, track milestones, and connect with your backers.
+                </p>
+                <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                  Go to Creator Dashboard
+                </Button>
+              </Link>
+            </Card>
+
+            {/* Backer Option */}
+            <Card className="p-8 hover:border-accent/50 transition-all cursor-pointer group">
+              <Link href="/dashboard/backer" className="block">
+                <div className="h-16 w-16 rounded-2xl bg-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent/30 transition-colors">
+                  <Heart className="h-8 w-8 text-accent" />
+                </div>
+                <h2 className="text-2xl font-bold mb-3">I'm a Backer</h2>
+                <p className="text-muted-foreground mb-6">
+                  Track your $1 bets, collect NFTs, and discover new projects.
+                </p>
+                <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                  Go to Backer Dashboard
+                </Button>
+              </Link>
+            </Card>
+          </div>
+
+          <p className="text-center text-sm text-muted-foreground mt-8">
+            You can always switch between dashboards using the sidebar navigation.
+          </p>
+        </div>
+      </div>
       <Footer />
     </div>
   )
