@@ -317,7 +317,9 @@ function AdminPageContent() {
                               {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
                             </Badge>
                           </div>
-                          <p className="text-sm text-muted-foreground mb-2">by {project.creator}</p>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            by <span className="font-mono">{project.creator.slice(0, 4)}...{project.creator.slice(-4)}</span>
+                          </p>
                           <div className="flex items-center gap-6 text-sm">
                             <div className="flex items-center gap-2">
                               <Users className="h-4 w-4 text-accent" />

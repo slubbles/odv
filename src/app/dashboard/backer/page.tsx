@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { DollarSign, TrendingUp, Award, Clock, ExternalLink, Loader2 } from "lucide-react"
+import { DollarSign, TrendingUp, Award, Clock, ExternalLink, Loader2, Rocket, ArrowRight } from "lucide-react"
 import { Footer } from "@/components/footer"
 import { DashboardSidebar } from "@/components/dashboard-sidebar"
 import { useBackerDashboard } from "@/lib/hooks/use-dashboard"
@@ -266,6 +266,33 @@ export default function BackerDashboardPage() {
               </div>
             </TabsContent>
           </Tabs>
+
+          {/* Discover More Section */}
+          <div className="mt-12 border-t pt-12">
+            <Card className="bg-gradient-to-r from-accent/10 via-accent/5 to-transparent border-accent/30">
+              <CardContent className="p-6 sm:p-8">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                  <div className="flex items-start gap-4">
+                    <div className="h-12 w-12 rounded-xl bg-accent/20 flex items-center justify-center flex-shrink-0">
+                      <Rocket className="h-6 w-6 text-accent" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold mb-2">Discover More Projects</h3>
+                      <p className="text-muted-foreground max-w-md">
+                        Browse trending projects and find your next $1 bet. Every backing helps creators bring ideas to life.
+                      </p>
+                    </div>
+                  </div>
+                  <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
+                    <Link href="/discover">
+                      Explore Projects
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </>
       )}
         </div>
