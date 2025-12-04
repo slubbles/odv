@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DollarSign, TrendingUp, Users, Clock, Edit, BarChart, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { Footer } from "@/components/footer"
+import { DashboardSidebar } from "@/components/dashboard-sidebar"
 import { useCreatorDashboard } from "@/lib/hooks/use-dashboard"
 import { useWallet } from "@solana/wallet-adapter-react"
 
@@ -34,20 +35,23 @@ export default function CreatorDashboardPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 pb-24 md:pb-12">
-        <div className="mb-8 sm:mb-12 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-4">What you're building</h1>
-            <p className="text-lg sm:text-xl text-muted-foreground">Your projects. Your people. All here.</p>
+      <div className="flex flex-1">
+        <DashboardSidebar type="creator" />
+        
+        <div className="flex-1 px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pb-24 md:pb-12">
+          <div className="mb-8 sm:mb-12 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-4">What you're building</h1>
+              <p className="text-lg sm:text-xl text-muted-foreground">Your projects. Your people. All here.</p>
+            </div>
+            <Button className="bg-accent text-accent-foreground hover:bg-accent/90 w-full sm:w-auto" asChild>
+              <Link href="/submit">+ Start Building</Link>
+            </Button>
           </div>
-          <Button className="bg-accent text-accent-foreground hover:bg-accent/90 w-full sm:w-auto" asChild>
-            <Link href="/submit">+ Start Building</Link>
-          </Button>
-        </div>
 
-        {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 className="h-8 w-8 animate-spin text-accent" />
+          {loading ? (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="h-8 w-8 animate-spin text-accent" />
           </div>
         ) : error ? (
           <div className="text-center py-16">
@@ -401,6 +405,7 @@ export default function CreatorDashboardPage() {
             </Tabs>
           </>
         )}
+        </div>
       </div>
 
       <Footer />

@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DollarSign, TrendingUp, Award, Clock, ExternalLink, Loader2 } from "lucide-react"
 import { Footer } from "@/components/footer"
+import { DashboardSidebar } from "@/components/dashboard-sidebar"
 import { useBackerDashboard } from "@/lib/hooks/use-dashboard"
 import { useWallet } from "@solana/wallet-adapter-react"
 import Link from "next/link"
@@ -34,20 +35,23 @@ export default function BackerDashboardPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 pb-24 md:pb-12">
-        <div className="mb-8 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-4">What you backed</h1>
-          <p className="text-lg sm:text-xl text-muted-foreground">Your $1 bets. Track them all here.</p>
-        </div>
-
-        {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 className="h-8 w-8 animate-spin text-accent" />
+      <div className="flex flex-1">
+        <DashboardSidebar type="backer" />
+        
+        <div className="flex-1 px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pb-24 md:pb-12">
+          <div className="mb-8 sm:mb-12">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-4">What you backed</h1>
+            <p className="text-lg sm:text-xl text-muted-foreground">Your $1 bets. Track them all here.</p>
           </div>
-        ) : error ? (
-          <div className="text-center py-16">
-            <Card className="p-12">
-              <p className="text-muted-foreground mb-4">Failed to load dashboard data</p>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="h-8 w-8 animate-spin text-accent" />
+            </div>
+          ) : error ? (
+            <div className="text-center py-16">
+              <Card className="p-12">
+                <p className="text-muted-foreground mb-4">Failed to load dashboard data</p>
               <Button variant="outline" onClick={() => window.location.reload()}>
                 Try Again
               </Button>
@@ -264,6 +268,7 @@ export default function BackerDashboardPage() {
           </Tabs>
         </>
       )}
+        </div>
       </div>
 
       <Footer />

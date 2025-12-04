@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { CheckCircle2, XCircle, Clock, TrendingUp, Users, Shield, Filter } from "lucide-react"
 import { Footer } from "@/components/footer"
+import { DashboardSidebar } from "@/components/dashboard-sidebar"
 import { useAdminQueue } from "@/lib/hooks/use-admin-queue"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { RejectProjectDialog } from "@/components/reject-project-dialog"
@@ -76,8 +77,11 @@ function AdminPageContent() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 pb-24 md:pb-12">
-        {/* Header */}
+      <div className="flex flex-1">
+        <DashboardSidebar type="admin" />
+        
+        <div className="flex-1 px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pb-24 md:pb-12">
+          {/* Header */}
         <div className="mb-8 sm:mb-12">
           <div className="flex items-center gap-3 mb-4">
             <Shield className="h-8 w-8 text-accent" />
@@ -362,6 +366,7 @@ function AdminPageContent() {
             )}
           </TabsContent>
         </Tabs>
+        </div>
       </div>
 
       <RejectProjectDialog
