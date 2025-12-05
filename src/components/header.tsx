@@ -53,6 +53,9 @@ function HeaderContent() {
                 <DropdownMenuItem asChild className="py-2 px-3">
                   <Link href="/stats">Platform Stats</Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild className="py-2 px-3">
+                  <Link href="/faucet">Test USDC Faucet</Link>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -108,12 +111,13 @@ function HeaderContent() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <ClientOnly>
             <NotificationBell />
           </ClientOnly>
+          {/* Wallet button hidden on mobile - available in mobile sidebar */}
           <ClientOnly>
-            <div className="wallet-button-wrapper">
+            <div className="wallet-button-wrapper hidden md:block">
               <WalletButton />
             </div>
           </ClientOnly>

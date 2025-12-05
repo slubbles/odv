@@ -198,7 +198,7 @@ export default function NotificationsPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList>
+          <TabsList className="w-full overflow-x-auto flex-nowrap">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="milestones">Milestones</TabsTrigger>
             <TabsTrigger value="comments">Comments</TabsTrigger>

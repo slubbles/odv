@@ -211,12 +211,14 @@ export default function ProjectDetailPage() {
 
             {/* Tabs */}
             <Tabs defaultValue="description" className="w-full">
-              <TabsList className="w-full justify-start">
-                <TabsTrigger value="description">What's This?</TabsTrigger>
-                <TabsTrigger value="milestones">Progress ({milestones.length})</TabsTrigger>
-                <TabsTrigger value="updates">Updates</TabsTrigger>
-                <TabsTrigger value="backers">Backers ({project.backers_count})</TabsTrigger>
-              </TabsList>
+              <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+                <TabsList className="w-full justify-start min-w-max sm:min-w-0">
+                  <TabsTrigger value="description" className="text-xs sm:text-sm">What's This?</TabsTrigger>
+                  <TabsTrigger value="milestones" className="text-xs sm:text-sm">Progress ({milestones.length})</TabsTrigger>
+                  <TabsTrigger value="updates" className="text-xs sm:text-sm">Updates</TabsTrigger>
+                  <TabsTrigger value="backers" className="text-xs sm:text-sm">Backers ({project.backers_count})</TabsTrigger>
+                </TabsList>
+              </div>
 
               <TabsContent value="description" className="space-y-6 mt-6">
                 <Card>

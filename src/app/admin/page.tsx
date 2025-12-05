@@ -152,17 +152,18 @@ function AdminPageContent() {
 
         {/* Filters & Bulk Actions */}
         <Card className="p-6 mb-6">
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">Filters:</span>
             </div>
             
+            <div className="flex flex-wrap gap-2">
             <Select
               value={filters.category}
               onValueChange={(value) => setFilters({ ...filters, category: value })}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[140px] sm:w-[180px]">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
@@ -176,7 +177,7 @@ function AdminPageContent() {
             </Select>
 
             <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[140px] sm:w-[180px]">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
@@ -187,20 +188,20 @@ function AdminPageContent() {
               </SelectContent>
             </Select>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Input
                 type="date"
                 placeholder="From"
                 value={filters.dateFrom}
                 onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
-                className="w-[150px]"
+                className="w-[130px] sm:w-[150px]"
               />
               <Input
                 type="date"
                 placeholder="To"
                 value={filters.dateTo}
                 onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
-                className="w-[150px]"
+                className="w-[130px] sm:w-[150px]"
               />
             </div>
 
@@ -232,6 +233,7 @@ function AdminPageContent() {
                   </Button>
                 </>
               )}
+            </div>
             </div>
           </div>
         </Card>

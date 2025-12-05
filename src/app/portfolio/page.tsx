@@ -20,7 +20,7 @@ export default function PortfolioPage() {
     return (
       <div className="flex flex-col min-h-screen">
         <Header />
-        <div className="container py-12 flex items-center justify-center flex-1 pb-24 md:pb-12">
+        <div className="container px-4 sm:px-6 py-12 flex items-center justify-center flex-1 pb-24 md:pb-12">
           <Card className="p-12 text-center max-w-md">
             <h2 className="text-xl font-bold mb-4">Your Portfolio</h2>
             <p className="text-muted-foreground mb-4">Connect your wallet to view your backed projects</p>
@@ -172,7 +172,7 @@ export default function PortfolioPage() {
 
         {/* Tabs */}
         <Tabs defaultValue="all" className="w-full">
-          <TabsList>
+          <TabsList className="w-full overflow-x-auto flex-nowrap">
             <TabsTrigger value="all">All ({portfolioProjects.length})</TabsTrigger>
             <TabsTrigger value="active">Building ({activeProjectsCount})</TabsTrigger>
             <TabsTrigger value="completed">Shipped ({completedProjectsCount})</TabsTrigger>

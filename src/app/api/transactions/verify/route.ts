@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseClient } from '@/lib/supabase/api-client'
 import { Connection } from '@solana/web3.js'
+import { RPC_ENDPOINT } from '@/lib/solana/config'
 
 // POST /api/transactions/verify - Verify blockchain transaction
 export async function POST(request: NextRequest) {
@@ -23,9 +24,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Connect to Solana
+    // Connect to SOON Testnet
     const connection = new Connection(
-      process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com'
+      process.env.NEXT_PUBLIC_SOLANA_RPC_URL || RPC_ENDPOINT,
+      'confirmed'
     )
 
     try {

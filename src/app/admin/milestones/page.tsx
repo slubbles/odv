@@ -284,7 +284,7 @@ export default function AdminMilestonesPage() {
         </div>
 
         <Tabs value={filter} onValueChange={setFilter} className="mb-6">
-          <TabsList>
+          <TabsList className="w-full overflow-x-auto flex-nowrap">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="pending-review">Pending</TabsTrigger>
             <TabsTrigger value="overdue">Overdue</TabsTrigger>

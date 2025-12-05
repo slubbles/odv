@@ -55,8 +55,8 @@ export default function DiscoverPage() {
         </div>
 
         {/* Search & Filters */}
-        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row gap-3 sm:gap-4">
-          <div className="relative flex-1">
+        <div className="mb-6 sm:mb-8 space-y-3">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search projects..."
@@ -77,9 +77,9 @@ export default function DiscoverPage() {
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible">
             <Select value={status} onValueChange={(value) => { setStatus(value); setPage(1); }}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-[120px] sm:w-[140px] flex-shrink-0">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -91,7 +91,7 @@ export default function DiscoverPage() {
             </Select>
 
             <Select value={sortBy} onValueChange={(value) => { setSortBy(value); setPage(1); }}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-[120px] sm:w-[140px] flex-shrink-0">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>

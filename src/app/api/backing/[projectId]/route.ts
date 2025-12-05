@@ -3,6 +3,7 @@ import { getSupabaseClient } from '@/lib/supabase/api-client'
 import { Connection, PublicKey } from '@solana/web3.js'
 import { createFundCampaignTransaction } from '@/lib/solana/transaction'
 import { notifyNewBacker, notifyProjectFunded } from '@/lib/notifications'
+import { RPC_ENDPOINT } from '@/lib/solana/config'
 
 export async function POST(
   request: NextRequest,
@@ -54,10 +55,10 @@ export async function POST(
       )
     }
 
-    // Verify transaction on Solana (optional but recommended)
+    // Verify transaction on SOON Testnet (optional but recommended)
     try {
       const connection = new Connection(
-        process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com',
+        process.env.NEXT_PUBLIC_SOLANA_RPC_URL || RPC_ENDPOINT,
         'confirmed'
       )
       

@@ -123,7 +123,7 @@ export default function CreatorDashboardPage() {
             </div>
 
             <Tabs defaultValue="all" className="space-y-6">
-              <TabsList>
+              <TabsList className="w-full overflow-x-auto flex-nowrap">
                 <TabsTrigger value="all">All Projects</TabsTrigger>
                 <TabsTrigger value="active">Live</TabsTrigger>
                 <TabsTrigger value="queue">In Review</TabsTrigger>

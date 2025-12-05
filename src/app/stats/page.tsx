@@ -35,51 +35,51 @@ export default function StatsPage() {
           </Card>
 
           <Card className="border-accent/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-muted-foreground font-normal">Projects Funded</CardTitle>
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm text-muted-foreground font-normal">Projects Funded</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                  <TrendingUp className="h-6 w-6 text-accent" />
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center">
+                  <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
                 </div>
                 <div>
-                  <p className="text-3xl font-bold">1,247</p>
-                  <p className="text-xs text-muted-foreground">892 shipped successfully</p>
+                  <p className="text-xl sm:text-3xl font-bold">1,247</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">892 shipped successfully</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-accent/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-muted-foreground font-normal">Believers</CardTitle>
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm text-muted-foreground font-normal">Believers</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                  <Users className="h-6 w-6 text-accent" />
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center">
+                  <Users className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
                 </div>
                 <div>
-                  <p className="text-3xl font-bold">45,234</p>
-                  <p className="text-xs text-muted-foreground">+1,203 this week</p>
+                  <p className="text-xl sm:text-3xl font-bold">45,234</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">+1,203 this week</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-accent/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-muted-foreground font-normal">Ship Rate</CardTitle>
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm text-muted-foreground font-normal">Ship Rate</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                  <Award className="h-6 w-6 text-accent" />
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center">
+                  <Award className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
                 </div>
                 <div>
-                  <p className="text-3xl font-bold">89%</p>
-                  <p className="text-xs text-muted-foreground">Creators who deliver</p>
+                  <p className="text-xl sm:text-3xl font-bold">89%</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">Creators who deliver</p>
                 </div>
               </div>
             </CardContent>

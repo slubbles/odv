@@ -169,7 +169,7 @@ export default function WalletPage() {
         </Card>
 
         <Tabs defaultValue="transactions" className="w-full">
-          <TabsList>
+          <TabsList className="w-full overflow-x-auto flex-nowrap">
             <TabsTrigger value="transactions">Transactions ({transactions.length})</TabsTrigger>
             <TabsTrigger value="nfts">Badges ({badges.length})</TabsTrigger>
           </TabsList>
