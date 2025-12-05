@@ -273,6 +273,92 @@ export default function FaucetPage() {
           </CardContent>
         </Card>
 
+        {/* Add Token to Wallet Instructions */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Wallet className="w-5 h-5 text-accent" />
+              Add Token to Your Wallet
+            </CardTitle>
+            <CardDescription>
+              Follow these steps to see Test USDC in your wallet
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Phantom Instructions */}
+            <div className="space-y-3">
+              <h4 className="font-semibold text-sm flex items-center gap-2">
+                <span className="w-6 h-6 rounded bg-purple-500/20 flex items-center justify-center text-xs">👻</span>
+                Phantom Wallet
+              </h4>
+              <ol className="space-y-2 text-sm text-muted-foreground ml-8">
+                <li>1. Open Phantom and go to your token list</li>
+                <li>2. Scroll down and click <strong className="text-foreground">&quot;Manage token list&quot;</strong></li>
+                <li>3. Click the <strong className="text-foreground">&quot;+&quot;</strong> button or search icon</li>
+                <li>4. Paste the mint address below and click <strong className="text-foreground">&quot;Add&quot;</strong></li>
+              </ol>
+            </div>
+
+            {/* Solflare Instructions */}
+            <div className="space-y-3">
+              <h4 className="font-semibold text-sm flex items-center gap-2">
+                <span className="w-6 h-6 rounded bg-orange-500/20 flex items-center justify-center text-xs">🔥</span>
+                Solflare Wallet
+              </h4>
+              <ol className="space-y-2 text-sm text-muted-foreground ml-8">
+                <li>1. Open Solflare and go to your portfolio</li>
+                <li>2. Click <strong className="text-foreground">&quot;Add Token&quot;</strong> or the <strong className="text-foreground">&quot;+&quot;</strong> icon</li>
+                <li>3. Select <strong className="text-foreground">&quot;Add manually&quot;</strong></li>
+                <li>4. Paste the mint address below and confirm</li>
+              </ol>
+            </div>
+
+            {/* Token Details to Copy */}
+            <div className="p-4 rounded-lg bg-muted/50 space-y-3">
+              <h4 className="font-semibold text-sm">Token Details</h4>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Token Name:</span>
+                  <span className="font-mono">Test USDC</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Symbol:</span>
+                  <span className="font-mono">USDC</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Decimals:</span>
+                  <span className="font-mono">6</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Network:</span>
+                  <Badge variant="outline" className="text-xs">SOON Testnet</Badge>
+                </div>
+              </div>
+              <div className="pt-3 border-t">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-muted-foreground text-sm">Mint Address (copy this):</span>
+                  <Button variant="ghost" size="sm" onClick={copyMintAddress}>
+                    {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                  </Button>
+                </div>
+                <code className="text-xs font-mono text-accent break-all block p-2 bg-background rounded border">
+                  {faucetInfo?.mint || "3PNhmxDckddYL24zEfrsHLFLXXvrdzBBoZgfRW8rruDs"}
+                </code>
+              </div>
+            </div>
+
+            {/* Note about SOON Testnet */}
+            <div className="flex gap-2 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+              <AlertCircle className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" />
+              <p className="text-xs text-muted-foreground">
+                <strong className="text-foreground">Important:</strong> Make sure your wallet is connected to{" "}
+                <strong className="text-foreground">SOON Testnet</strong> (not Solana Mainnet or Devnet). 
+                The token will only appear when on the correct network.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* How It Works */}
         <Card>
           <CardHeader>
