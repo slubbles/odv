@@ -1,16 +1,90 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useWallet } from "@solana/wallet-adapter-react"
+import { useWalletModal } from "@solana/wallet-adapter-react-ui"
 import { Header } from "@/components/header"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { CheckCircle2, User, Briefcase, Wallet, Sparkles } from "lucide-react"
+import { CheckCircle2, User, Briefcase, Wallet, Sparkles, Loader2 } from "lucide-react"
+import { toast } from "sonner"
+import Link from "next/link"
+
+interface FormData {
+  displayName: string
+  bio: string
+  website: string
+  skills: string
+  experience: string
+  portfolio: string
+  wallet: string
+}
 
 export default function CreatorOnboardingPage() {
   const [step, setStep] = useState(1)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { publicKey, connected } = useWallet()
+  const { setVisible: openWalletModal } = useWalletModal()
+  const router = useRouter()
+  
+  const [formData, setFormData] = useState<FormData>({
+    displayName: "",
+    bio: "",
+    website: "",
+    skills: "",
+    experience: "",
+    portfolio: "",
+    wallet: ""
+  })
+
+  // Auto-fill wallet address when connected
+  useEffect(() => {
+    if (connected && publicKey) {
+      setFormData(prev => ({ ...prev, wallet: publicKey.toString() }))
+    }
+  }, [connected, publicKey])
+
+  const handleInputChange = (field: keyof FormData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleNext = () => {
+    // Validate current step
+    if (step === 1) {
+      if (!formData.displayName.trim()) {
+        toast.error("Please enter your display name")
+        return
+      }
+    }
+    
+    if (step === 3) {
+      if (!formData.wallet) {
+        toast.error("Please connect your wallet or enter a wallet address")
+        return
+      }
+    }
+    
+    setStep(Math.min(4, step + 1))
+  }
+
+  const handleComplete = async () => {
+    setIsSubmitting(true)
+    try {
+      // In a real app, this would save to the backend
+      // For now, just simulate a save and redirect
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      toast.success("Profile created successfully!")
+      router.push("/submit")
+    } catch (error) {
+      toast.error("Failed to save profile")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   const steps = [
     { number: 1, title: "Profile", icon: User },
@@ -60,18 +134,34 @@ export default function CreatorOnboardingPage() {
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="displayName">Display Name</Label>
-                    <Input id="displayName" placeholder="Your name or brand" />
+                    <Label htmlFor="displayName">Display Name *</Label>
+                    <Input 
+                      id="displayName" 
+                      placeholder="Your name or brand"
+                      value={formData.displayName}
+                      onChange={(e) => handleInputChange("displayName", e.target.value)}
+                    />
                   </div>
 
                   <div>
                     <Label htmlFor="bio">Bio</Label>
-                    <Textarea id="bio" placeholder="Tell backers about yourself and your vision..." rows={4} />
+                    <Textarea 
+                      id="bio" 
+                      placeholder="Tell backers about yourself and your vision..." 
+                      rows={4}
+                      value={formData.bio}
+                      onChange={(e) => handleInputChange("bio", e.target.value)}
+                    />
                   </div>
 
                   <div>
                     <Label htmlFor="website">Website (optional)</Label>
-                    <Input id="website" placeholder="https://yourwebsite.com" />
+                    <Input 
+                      id="website" 
+                      placeholder="https://yourwebsite.com"
+                      value={formData.website}
+                      onChange={(e) => handleInputChange("website", e.target.value)}
+                    />
                   </div>
                 </div>
               </div>
@@ -86,7 +176,12 @@ export default function CreatorOnboardingPage() {
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="skills">Skills & Expertise</Label>
-                    <Input id="skills" placeholder="e.g., Software Development, Design, Marketing" />
+                    <Input 
+                      id="skills" 
+                      placeholder="e.g., Software Development, Design, Marketing"
+                      value={formData.skills}
+                      onChange={(e) => handleInputChange("skills", e.target.value)}
+                    />
                   </div>
 
                   <div>
@@ -95,12 +190,19 @@ export default function CreatorOnboardingPage() {
                       id="experience"
                       placeholder="Share your relevant experience and past projects..."
                       rows={4}
+                      value={formData.experience}
+                      onChange={(e) => handleInputChange("experience", e.target.value)}
                     />
                   </div>
 
                   <div>
                     <Label htmlFor="portfolio">Portfolio Links (optional)</Label>
-                    <Input id="portfolio" placeholder="GitHub, Behance, LinkedIn, etc." />
+                    <Input 
+                      id="portfolio" 
+                      placeholder="GitHub, Behance, LinkedIn, etc."
+                      value={formData.portfolio}
+                      onChange={(e) => handleInputChange("portfolio", e.target.value)}
+                    />
                   </div>
                 </div>
               </div>
@@ -114,13 +216,32 @@ export default function CreatorOnboardingPage() {
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="wallet">Wallet Address</Label>
-                    <Input id="wallet" placeholder="Connect your wallet or enter address" />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="bank">Bank Account (optional)</Label>
-                    <Input id="bank" placeholder="For fiat withdrawals" />
+                    <Label htmlFor="wallet">Wallet Address *</Label>
+                    <div className="flex gap-2">
+                      <Input 
+                        id="wallet" 
+                        placeholder="Your Solana wallet address"
+                        value={formData.wallet}
+                        onChange={(e) => handleInputChange("wallet", e.target.value)}
+                        className="font-mono text-sm"
+                      />
+                      {!connected && (
+                        <Button 
+                          variant="outline" 
+                          onClick={() => openWalletModal(true)}
+                          className="shrink-0"
+                        >
+                          <Wallet className="h-4 w-4 mr-2" />
+                          Connect
+                        </Button>
+                      )}
+                    </div>
+                    {connected && publicKey && formData.wallet === publicKey.toString() && (
+                      <p className="text-sm text-green-500 mt-1 flex items-center gap-1">
+                        <CheckCircle2 className="h-4 w-4" />
+                        Wallet connected
+                      </p>
+                    )}
                   </div>
 
                   <div className="p-4 bg-muted rounded-lg">
@@ -139,9 +260,50 @@ export default function CreatorOnboardingPage() {
                   <Sparkles className="h-10 w-10 text-accent" />
                 </div>
                 <h2 className="font-sans text-3xl font-semibold mb-4">You're In.</h2>
-                <p className="text-muted-foreground mb-8">Profile complete. Now go build something worth backing.</p>
-                <Button size="lg" className="bg-accent hover:bg-accent/90">
-                  Submit Your First Project
+                <p className="text-muted-foreground mb-6">Profile complete. Now go build something worth backing.</p>
+                
+                {/* Summary */}
+                <div className="text-left bg-muted/50 rounded-lg p-6 mb-8 space-y-3">
+                  <h3 className="font-semibold mb-4">Your Profile Summary</h3>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Name</span>
+                    <span className="font-medium">{formData.displayName || "Not set"}</span>
+                  </div>
+                  {formData.bio && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Bio</span>
+                      <span className="font-medium truncate max-w-[200px]">{formData.bio}</span>
+                    </div>
+                  )}
+                  {formData.skills && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Skills</span>
+                      <span className="font-medium truncate max-w-[200px]">{formData.skills}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Wallet</span>
+                    <span className="font-mono text-sm truncate max-w-[200px]">
+                      {formData.wallet ? `${formData.wallet.slice(0, 8)}...${formData.wallet.slice(-8)}` : "Not set"}
+                    </span>
+                  </div>
+                </div>
+                
+                <Button 
+                  size="lg" 
+                  className="bg-accent hover:bg-accent/90"
+                  onClick={handleComplete}
+                  disabled={isSubmitting}
+                  asChild={!isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <Link href="/submit">Submit Your First Project</Link>
+                  )}
                 </Button>
               </div>
             )}
@@ -151,7 +313,7 @@ export default function CreatorOnboardingPage() {
                 <Button variant="outline" onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1}>
                   Back
                 </Button>
-                <Button onClick={() => setStep(Math.min(4, step + 1))} className="bg-accent hover:bg-accent/90">
+                <Button onClick={handleNext} className="bg-accent hover:bg-accent/90">
                   Continue
                 </Button>
               </div>

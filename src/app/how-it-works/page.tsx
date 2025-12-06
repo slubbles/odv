@@ -1,9 +1,36 @@
+"use client"
+
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Users, Rocket, TrendingUp, Shield, Play } from "lucide-react"
 import Link from "next/link"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+
+const faqItems = [
+  {
+    question: "What if the project tanks?",
+    answer: "Projects keep what they raise. But milestone voting means creators only get paid when they ship. Incentives aligned."
+  },
+  {
+    question: "How do milestone votes work?",
+    answer: "You backed it? You get to vote. Creators need majority approval before they see a dime."
+  },
+  {
+    question: "What's the NFT badge for?",
+    answer: "Proof you were early. Flex it. Maybe creators give perks. Maybe not. Either way, you were here first."
+  },
+  {
+    question: "Can I get my dollar back?",
+    answer: "Nope. All bets are final. But you control fund releases with your vote. That's better than a refund."
+  },
+]
 
 export default function HowItWorksPage() {
   return (
@@ -203,44 +230,22 @@ export default function HowItWorksPage() {
         <div className="max-w-3xl mx-auto mt-20">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Questions Everyone Asks</h2>
 
-          <div className="space-y-6">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-bold mb-2">What if the project tanks?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Projects keep what they raise. But milestone voting means creators only get paid when they ship.
-                  Incentives aligned.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-bold mb-2">How do milestone votes work?</h3>
-                <p className="text-sm text-muted-foreground">
-                  You backed it? You get to vote. Creators need majority approval before they see a dime.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-bold mb-2">What's the NFT badge for?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Proof you were early. Flex it. Maybe creators give perks. Maybe not. Either way, you were here first.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-bold mb-2">Can I get my dollar back?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Nope. All bets are final. But you control fund releases with your vote. That's better than a refund.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+          <Accordion type="single" collapsible className="space-y-4">
+            {faqItems.map((item, idx) => (
+              <AccordionItem
+                key={idx}
+                value={`faq-${idx}`}
+                className="border border-border rounded-lg px-6 data-[state=open]:bg-accent/5"
+              >
+                <AccordionTrigger className="text-left font-bold hover:no-underline py-5">
+                  {item.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed pb-5">
+                  {item.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
 
           <div className="text-center mt-12">
             <Button variant="outline" size="lg" asChild>

@@ -118,10 +118,16 @@ export default function BackerDashboardPage() {
             </div>
 
         <Tabs defaultValue="active" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="active">Still Building</TabsTrigger>
-            <TabsTrigger value="funded">Made It</TabsTrigger>
-            <TabsTrigger value="nfts">My Proof</TabsTrigger>
+          <TabsList className="h-auto flex-wrap gap-1 p-1 sm:p-[3px]">
+            <TabsTrigger value="active" className="px-4 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base">
+              Still Building
+            </TabsTrigger>
+            <TabsTrigger value="funded" className="px-4 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base">
+              Made It
+            </TabsTrigger>
+            <TabsTrigger value="nfts" className="px-4 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base">
+              My Proof
+            </TabsTrigger>
           </TabsList>
 
             <TabsContent value="active" className="space-y-6">

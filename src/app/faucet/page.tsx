@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
+import { useWalletModal } from "@solana/wallet-adapter-react-ui"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -32,6 +33,7 @@ interface FaucetInfo {
 
 export default function FaucetPage() {
   const { publicKey, connected } = useWallet()
+  const { setVisible: openWalletModal } = useWalletModal()
   const [walletAddress, setWalletAddress] = useState("")
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -187,34 +189,45 @@ export default function FaucetPage() {
             </div>
 
             {/* Request Button */}
-            <Button
-              onClick={handleRequest}
-              disabled={loading || !walletAddress || !!cooldownRemaining}
-              className="w-full"
-              size="lg"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Sending tokens...
-                </>
-              ) : cooldownRemaining ? (
-                <>
-                  <Clock className="w-4 h-4 mr-2" />
-                  Wait {formatCooldown(cooldownRemaining)}
-                </>
-              ) : success ? (
-                <>
-                  <CheckCircle2 className="w-4 h-4 mr-2" />
-                  Request More
-                </>
-              ) : (
-                <>
-                  <Droplets className="w-4 h-4 mr-2" />
-                  Request {faucetInfo?.amountPerRequest || 100} Test USDC
-                </>
-              )}
-            </Button>
+            {!connected ? (
+              <Button
+                onClick={() => openWalletModal(true)}
+                className="w-full"
+                size="lg"
+              >
+                <Wallet className="w-4 h-4 mr-2" />
+                Connect Wallet to Get Tokens
+              </Button>
+            ) : (
+              <Button
+                onClick={handleRequest}
+                disabled={loading || !walletAddress || !!cooldownRemaining}
+                className="w-full"
+                size="lg"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Sending tokens...
+                  </>
+                ) : cooldownRemaining ? (
+                  <>
+                    <Clock className="w-4 h-4 mr-2" />
+                    Wait {formatCooldown(cooldownRemaining)}
+                  </>
+                ) : success ? (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 mr-2" />
+                    Request More
+                  </>
+                ) : (
+                  <>
+                    <Droplets className="w-4 h-4 mr-2" />
+                    Request {faucetInfo?.amountPerRequest || 100} Test USDC
+                  </>
+                )}
+              </Button>
+            )}
 
             {/* Success Message */}
             {success && lastTx && (
@@ -344,6 +357,37 @@ export default function FaucetPage() {
                 <code className="text-xs font-mono text-accent break-all block p-2 bg-background rounded border">
                   {faucetInfo?.mint || "3PNhmxDckddYL24zEfrsHLFLXXvrdzBBoZgfRW8rruDs"}
                 </code>
+              </div>
+            </div>
+
+            {/* Network Configuration Instructions */}
+            <div className="space-y-4 pt-4 border-t">
+              <h4 className="font-semibold text-sm">Configure Your Wallet for SOON Testnet</h4>
+              
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium flex items-center gap-2">
+                    <span className="w-6 h-6 rounded bg-purple-500/20 flex items-center justify-center text-xs">👻</span>
+                    Phantom: Add Custom Network
+                  </p>
+                  <ol className="space-y-1 text-xs text-muted-foreground ml-8">
+                    <li>1. Settings → Developer Settings → Enable</li>
+                    <li>2. Settings → Network → Custom RPC</li>
+                    <li>3. Enter: <code className="text-accent">https://rpc.testnet.soo.network/rpc</code></li>
+                  </ol>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-sm font-medium flex items-center gap-2">
+                    <span className="w-6 h-6 rounded bg-orange-500/20 flex items-center justify-center text-xs">🔥</span>
+                    Solflare: Add Custom Network
+                  </p>
+                  <ol className="space-y-1 text-xs text-muted-foreground ml-8">
+                    <li>1. Settings → Network → Add Network</li>
+                    <li>2. Name: <code className="text-foreground">SOON Testnet</code></li>
+                    <li>3. RPC: <code className="text-accent">https://rpc.testnet.soo.network/rpc</code></li>
+                  </ol>
+                </div>
               </div>
             </div>
 

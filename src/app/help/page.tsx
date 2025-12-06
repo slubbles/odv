@@ -1,9 +1,17 @@
+"use client"
+
 import { Header } from "@/components/header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, HelpCircle, MessageCircle } from "lucide-react"
+import { Search, HelpCircle, MessageCircle, ChevronDown } from "lucide-react"
 import { Footer } from "@/components/footer"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 
 const faqCategories = [
   {
@@ -69,19 +77,25 @@ export default function HelpPage() {
 
         {/* FAQ Categories */}
         <div className="space-y-12">
-          {faqCategories.map((category) => (
+          {faqCategories.map((category, categoryIdx) => (
             <div key={category.title}>
               <h2 className="text-2xl font-bold mb-6">{category.title}</h2>
-              <div className="space-y-4">
+              <Accordion type="single" collapsible className="space-y-3">
                 {category.questions.map((item, idx) => (
-                  <Card key={idx} className="border-accent/30">
-                    <CardContent className="p-6">
-                      <h3 className="font-semibold text-lg mb-2">{item.q}</h3>
-                      <p className="text-muted-foreground leading-relaxed">{item.a}</p>
-                    </CardContent>
-                  </Card>
+                  <AccordionItem
+                    key={`${categoryIdx}-${idx}`}
+                    value={`${categoryIdx}-${idx}`}
+                    className="border border-accent/30 rounded-lg px-6 data-[state=open]:bg-accent/5"
+                  >
+                    <AccordionTrigger className="text-left font-semibold text-lg hover:no-underline py-5">
+                      {item.q}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground leading-relaxed pb-5 text-base">
+                      {item.a}
+                    </AccordionContent>
+                  </AccordionItem>
                 ))}
-              </div>
+              </Accordion>
             </div>
           ))}
         </div>

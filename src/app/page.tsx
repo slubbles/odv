@@ -2,33 +2,20 @@
 
 import Link from "next/link"
 import { Header } from "@/components/header"
-import { ProjectCard } from "@/components/project-card"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { TrendingUp, Trophy, Users, DollarSign, ArrowRight, Loader2 } from "lucide-react"
+import { TrendingUp, Users, DollarSign, ArrowRight } from "lucide-react"
 import { Hero3DScene } from "@/components/hero-3d-scene"
-import { ActivityFeed } from "@/components/activity-feed"
 import { AnimatedCounter } from "@/components/animated-counter"
-import { LiveTicker } from "@/components/live-ticker"
-import { RecentlyFundedBanner } from "@/components/recently-funded-banner"
 import { Footer } from "@/components/footer"
-import { useProjects } from "@/lib/hooks/use-projects"
 
 export default function Home() {
-  const { projects, loading, error } = useProjects({
-    status: "active",
-    sort: "trending",
-    limit: 6,
-  })
-
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col min-h-screen">
       <Header />
 
-      <LiveTicker />
-
-      <main id="main-content">
+      <main id="main-content" className="flex-1">
         <section
           className="relative container mx-auto px-4 sm:px-6 py-16 sm:py-20 md:py-32 overflow-hidden"
           aria-labelledby="hero-heading"
@@ -52,21 +39,21 @@ export default function Home() {
               className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 text-balance leading-tight"
             >
               Shark Tank if{" "}
-              <span className="bg-gradient-to-r from-[#e84c27] to-[#f4a127] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">
                 sharks were $1
               </span>
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-6 sm:mb-8 text-balance px-4">
-              Builders pitch. You back. Everyone wins.
+            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-6 sm:mb-8 text-balance max-w-3xl mx-auto">
+              No VC meetings. No pitch decks to billionaires. Just your idea, their $1, and the internet.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Button
                 size="lg"
                 className="bg-accent text-accent-foreground hover:bg-accent/90 w-full sm:w-auto"
                 asChild
               >
                 <Link href="/discover">
-                  See what's building
+                  Find Projects
                   <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
                 </Link>
               </Button>
@@ -111,119 +98,180 @@ export default function Home() {
           </div>
         </section>
 
+        {/* How It Works Section */}
         <section
-          className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 pb-24 md:pb-16"
-          aria-labelledby="projects-heading"
+          className="container mx-auto px-4 sm:px-6 py-16 sm:py-20 pb-24 md:pb-16"
+          aria-labelledby="how-it-works-heading"
         >
-          <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
-            <div className="lg:col-span-2">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
-                <div>
-                  <h2 id="projects-heading" className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2">
-                    See what's building
-                  </h2>
-                  <p className="text-sm sm:text-base text-muted-foreground">Devs who ship</p>
-                </div>
-                <Button variant="outline" size="sm" className="w-full sm:w-auto bg-transparent" asChild>
-                  <Link href="/discover">
-                    Show me all
-                    <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
-                  </Link>
-                </Button>
-              </div>
-
-              <div className="mb-6">
-                <RecentlyFundedBanner projectName="Smart Home Energy Monitor" fundedAmount={8500} />
-              </div>
-
-              {loading ? (
-                <div className="flex items-center justify-center py-16">
-                  <Loader2 className="h-8 w-8 animate-spin text-accent" />
-                </div>
-              ) : error ? (
-                <div className="text-center py-16">
-                  <p className="text-muted-foreground mb-4">Failed to load projects</p>
-                  <Button variant="outline" onClick={() => window.location.reload()}>
-                    Try Again
-                  </Button>
-                </div>
-              ) : projects.length === 0 ? (
-                <div className="text-center py-16">
-                  <p className="text-muted-foreground">No active projects yet. Be the first to launch!</p>
-                  <Button className="mt-4" asChild>
-                    <Link href="/submit">Submit Your Project</Link>
-                  </Button>
-                </div>
-              ) : (
-                <div className="grid md:grid-cols-2 gap-6" role="list" aria-label="Featured projects">
-                  {projects.map((project) => {
-                    const daysLeft = project.deadline
-                      ? Math.max(0, Math.ceil((new Date(project.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
-                      : 0
-
-                    return (
-                      <div role="listitem" key={project.id}>
-                        <ProjectCard
-                          id={project.id}
-                          title={project.title}
-                          description={project.description}
-                          creator={{
-                            name: project.creator_name || "Anonymous",
-                            avatar: project.creator_avatar || "/default-avatar.png",
-                          }}
-                          category={project.category}
-                          image={project.image_url || "/placeholder-project.png"}
-                          raised={project.raised}
-                          goal={project.goal}
-                          backers={project.backers_count}
-                          daysLeft={daysLeft}
-                          trending={project.status === "active"}
-                        />
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12 sm:mb-16">
+              <h2 id="how-it-works-heading" className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+                How This Works
+              </h2>
+              <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
+                Two paths. Same goal. Building cool stuff.
+              </p>
             </div>
 
-            <div className="lg:col-span-1" role="complementary" aria-label="Recent activity">
-              <ActivityFeed />
+            {/* For Backers */}
+            <div className="mb-16 sm:mb-20">
+              <h3 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">
+                Got $1? You're In.
+              </h3>
+              <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <Card className="text-center border-accent/30 hover:border-accent/50 transition-colors">
+                  <CardContent className="p-6">
+                    <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                      1
+                    </div>
+                    <h4 className="font-bold text-base mb-2">Find Something Cool</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Browse projects. No BS.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="text-center border-accent/30 hover:border-accent/50 transition-colors">
+                  <CardContent className="p-6">
+                    <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                      2
+                    </div>
+                    <h4 className="font-bold text-base mb-2">Drop Your Dollar</h4>
+                    <p className="text-sm text-muted-foreground">
+                      One buck in USDC. Done.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="text-center border-accent/30 hover:border-accent/50 transition-colors">
+                  <CardContent className="p-6">
+                    <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                      3
+                    </div>
+                    <h4 className="font-bold text-base mb-2">Get Your Badge</h4>
+                    <p className="text-sm text-muted-foreground">
+                      NFT proof you were first.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="text-center border-accent/30 hover:border-accent/50 transition-colors">
+                  <CardContent className="p-6">
+                    <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                      4
+                    </div>
+                    <h4 className="font-bold text-base mb-2">Vote on Milestones</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Make sure they ship.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* For Creators */}
+            <div className="mb-12">
+              <h3 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">
+                Built Something? Show Us.
+              </h3>
+              <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <Card className="text-center border-accent/30 hover:border-accent/50 transition-colors">
+                  <CardContent className="p-6">
+                    <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                      1
+                    </div>
+                    <h4 className="font-bold text-base mb-2">Submit Your Thing</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Tell us what you're building.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="text-center border-accent/30 hover:border-accent/50 transition-colors">
+                  <CardContent className="p-6">
+                    <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                      2
+                    </div>
+                    <h4 className="font-bold text-base mb-2">Pass the Vibe Check</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Community votes. No suits.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="text-center border-accent/30 hover:border-accent/50 transition-colors">
+                  <CardContent className="p-6">
+                    <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                      3
+                    </div>
+                    <h4 className="font-bold text-base mb-2">Go Live 24hrs</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Collect backers. Clock starts.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="text-center border-accent/30 hover:border-accent/50 transition-colors">
+                  <CardContent className="p-6">
+                    <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                      4
+                    </div>
+                    <h4 className="font-bold text-base mb-2">Ship or Die</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Complete milestones. Get paid.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <div className="text-center mt-12">
+              <Button size="lg" variant="outline" className="bg-transparent" asChild>
+                <Link href="/how-it-works">Learn More</Link>
+              </Button>
             </div>
           </div>
         </section>
 
+        {/* CTA Section */}
         <section
-          className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 mb-12 sm:mb-16 pb-24 md:pb-16"
+          className="container mx-auto px-4 sm:px-6 py-16 sm:py-20 pb-24 md:pb-16"
           aria-labelledby="cta-heading"
         >
-          <Card className="relative overflow-hidden border-accent/50">
-            <div
-              className="absolute inset-0 opacity-10"
-              style={{
-                background: "linear-gradient(135deg, #e84c27 0%, #f4a127 100%)",
-              }}
-              aria-hidden="true"
-            />
-            <CardContent className="relative p-6 sm:p-12 text-center">
-              <Trophy className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-3 sm:mb-4 text-accent" aria-hidden="true" />
-              <h2 id="cta-heading" className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
-                Stop shouting into the void
-              </h2>
-              <p className="text-base sm:text-lg text-muted-foreground mb-4 sm:mb-6 max-w-2xl mx-auto px-4">
-                Show us what you built. Get seen. Get backed.
-              </p>
-              <Button
-                size="lg"
-                className="bg-accent text-accent-foreground hover:bg-accent/90 w-full sm:w-auto"
-                asChild
-              >
-                <Link href="/submit">
-                  I built something
-                  <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="max-w-4xl mx-auto">
+            <Card className="relative overflow-hidden border-accent/30">
+              <div
+                className="absolute inset-0 opacity-5"
+                style={{
+                  background: "radial-gradient(ellipse at center, oklch(0.55 0.22 25) 0%, transparent 70%)",
+                }}
+                aria-hidden="true"
+              />
+              <CardContent className="relative p-8 sm:p-12 text-center">
+                <h2 id="cta-heading" className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
+                  Stop shouting into the void
+                </h2>
+                <p className="text-lg sm:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto">
+                  Show us what you built. Get seen. Get backed. No gatekeepers. No BS.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button
+                    size="lg"
+                    className="bg-accent text-accent-foreground hover:bg-accent/90 w-full sm:w-auto"
+                    asChild
+                  >
+                    <Link href="/submit">
+                      I built something
+                      <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
+                    </Link>
+                  </Button>
+                  <Button size="lg" variant="outline" className="bg-transparent w-full sm:w-auto" asChild>
+                    <Link href="/discover">Browse Projects</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </section>
       </main>
 

@@ -2,15 +2,19 @@
 
 import { useState, useEffect } from "react"
 import { useWallet, useConnection } from "@solana/wallet-adapter-react"
-import { LAMPORTS_PER_SOL } from "@solana/web3.js"
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { TrendingUp, TrendingDown, Award, Loader2, AlertCircle, ExternalLink, Copy, Check } from "lucide-react"
+import { TrendingUp, TrendingDown, Award, Loader2, AlertCircle, ExternalLink, Copy, Check, Coins, DollarSign } from "lucide-react"
 import { toast } from "sonner"
+import Link from "next/link"
+
+// Test USDC Mint on SOON Testnet
+const USDC_MINT = "3PNhmxDckddYL24zEfrsHLFLXXvrdzBBoZgfRW8rruDs"
 
 interface Transaction {
   id: string
@@ -33,6 +37,7 @@ export default function WalletPage() {
   const { publicKey, connected } = useWallet()
   const { connection } = useConnection()
   const [solBalance, setSolBalance] = useState<number | null>(null)
+  const [usdcBalance, setUsdcBalance] = useState<number | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [badges, setBadges] = useState<NFTBadge[]>([])
   const [loading, setLoading] = useState(true)
@@ -50,6 +55,24 @@ export default function WalletPage() {
         // Fetch SOL balance
         const balance = await connection.getBalance(publicKey)
         setSolBalance(balance / LAMPORTS_PER_SOL)
+
+        // Fetch USDC balance
+        try {
+          const tokenAccounts = await connection.getParsedTokenAccountsByOwner(publicKey, {
+            mint: new PublicKey(USDC_MINT)
+          })
+          
+          if (tokenAccounts.value.length > 0) {
+            const usdcAccount = tokenAccounts.value[0].account.data.parsed.info
+            // USDC has 6 decimals
+            setUsdcBalance(usdcAccount.tokenAmount.uiAmount || 0)
+          } else {
+            setUsdcBalance(0)
+          }
+        } catch (e) {
+          console.log("No USDC token account found")
+          setUsdcBalance(0)
+        }
 
         // Fetch backing history (transactions)
         const txResponse = await fetch(`/api/wallet/transactions?wallet=${publicKey.toString()}`)
@@ -139,10 +162,28 @@ export default function WalletPage() {
             }}
           />
           <CardContent className="relative p-8">
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-4 gap-8">
+              {/* USDC Balance - Primary */}
               <div>
-                <p className="text-sm text-muted-foreground mb-2">SOL Balance</p>
-                <p className="text-4xl font-bold mb-4">{solBalance?.toFixed(4) || "0"} SOL</p>
+                <p className="text-sm text-muted-foreground mb-2 flex items-center gap-1">
+                  <DollarSign className="h-4 w-4" />
+                  Test USDC Balance
+                </p>
+                <p className="text-4xl font-bold mb-2 text-accent">${usdcBalance?.toFixed(2) || "0.00"}</p>
+                {usdcBalance === 0 && (
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/faucet">Get Test USDC</Link>
+                  </Button>
+                )}
+              </div>
+
+              {/* SOL Balance - Secondary */}
+              <div>
+                <p className="text-sm text-muted-foreground mb-2 flex items-center gap-1">
+                  <Coins className="h-4 w-4" />
+                  SOL Balance
+                </p>
+                <p className="text-2xl font-bold mb-2">{solBalance?.toFixed(4) || "0"} SOL</p>
                 <div className="flex items-center gap-2">
                   <code className="text-xs bg-muted px-2 py-1 rounded font-mono">
                     {publicKey?.toString().slice(0, 8)}...{publicKey?.toString().slice(-6)}

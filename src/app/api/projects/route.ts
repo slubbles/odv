@@ -19,67 +19,175 @@ export async function GET(request: NextRequest) {
     let count = 0
     let isMockMode = false
 
+    // Comprehensive mock data for development/fallback
+    const mockProjects = [
+      {
+        id: '1',
+        title: 'Decentralized Social Network',
+        tagline: 'Web3 social media without the drama',
+        description: 'Building the next generation of social networking on Solana. Connect with your community without intermediaries.',
+        category: 'Technology',
+        goal: 10000,
+        raised: 3500,
+        backers_count: 45,
+        status: 'active',
+        creator_wallet: 'ABC123',
+        creator_name: 'Alice Builder',
+        creator_avatar: '/default-avatar.png',
+        image_url: '/placeholder-project.png',
+        deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '2',
+        title: 'NFT Marketplace for Artists',
+        tagline: 'Empowering creators worldwide',
+        description: 'A commission-free NFT marketplace built for artists. Mint, sell, and collect digital art with zero fees.',
+        category: 'Art & Design',
+        goal: 15000,
+        raised: 8200,
+        backers_count: 89,
+        status: 'active',
+        creator_wallet: 'DEF456',
+        creator_name: 'Bob Creator',
+        creator_avatar: '/default-avatar.png',
+        image_url: '/placeholder-project.png',
+        deadline: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '3',
+        title: 'Eco-Friendly Smart Gardens',
+        tagline: 'Grow organic food at home',
+        description: 'IoT-powered indoor garden system for urban dwellers. Fresh vegetables and herbs year-round.',
+        category: 'Social Impact',
+        goal: 8000,
+        raised: 4200,
+        backers_count: 67,
+        status: 'active',
+        creator_wallet: 'GHI789',
+        creator_name: 'Charlie Green',
+        creator_avatar: '/default-avatar.png',
+        image_url: '/placeholder-project.png',
+        deadline: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '4',
+        title: 'DeFi Education Platform',
+        tagline: 'Learn crypto, earn rewards',
+        description: 'Interactive courses teaching DeFi, blockchain, and Web3 development. Learn-to-earn model.',
+        category: 'Innovation',
+        goal: 12000,
+        raised: 12000,
+        backers_count: 156,
+        status: 'funded',
+        creator_wallet: 'JKL012',
+        creator_name: 'Diana Teacher',
+        creator_avatar: '/default-avatar.png',
+        image_url: '/placeholder-project.png',
+        deadline: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '5',
+        title: 'Community Health Initiative',
+        tagline: 'Healthcare for everyone',
+        description: 'Mobile health clinics serving underserved communities. Providing free checkups and medicine.',
+        category: 'Health & Wellness',
+        goal: 20000,
+        raised: 22500,
+        backers_count: 234,
+        status: 'completed',
+        creator_wallet: 'MNO345',
+        creator_name: 'Dr. Evan Health',
+        creator_avatar: '/default-avatar.png',
+        image_url: '/placeholder-project.png',
+        deadline: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '6',
+        title: 'Indie Game: Space Quest',
+        tagline: 'Explore the cosmos',
+        description: 'Open-world space exploration game with NFT collectibles. Build your spaceship, discover new worlds.',
+        category: 'Gaming',
+        goal: 25000,
+        raised: 5600,
+        backers_count: 78,
+        status: 'active',
+        creator_wallet: 'PQR678',
+        creator_name: 'Frank Developer',
+        creator_avatar: '/default-avatar.png',
+        image_url: '/placeholder-project.png',
+        deadline: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+    ]
+
+    // Helper function to filter and sort mock data
+    const filterMockProjects = (data: typeof mockProjects) => {
+      let filtered = [...data]
+
+      // Status filter
+      if (status && status !== 'all') {
+        filtered = filtered.filter(p => p.status === status)
+      }
+
+      // Category filter
+      if (category && category !== 'all') {
+        filtered = filtered.filter(p => p.category.toLowerCase() === category.toLowerCase())
+      }
+
+      // Creator filter
+      if (creator) {
+        filtered = filtered.filter(p => p.creator_wallet === creator)
+      }
+
+      // Search filter
+      if (search) {
+        const searchLower = search.toLowerCase()
+        filtered = filtered.filter(p =>
+          p.title.toLowerCase().includes(searchLower) ||
+          p.description.toLowerCase().includes(searchLower) ||
+          p.tagline.toLowerCase().includes(searchLower) ||
+          p.category.toLowerCase().includes(searchLower) ||
+          p.creator_name.toLowerCase().includes(searchLower)
+        )
+      }
+
+      // Sorting
+      switch (sort) {
+        case 'trending':
+          filtered.sort((a, b) => b.backers_count - a.backers_count)
+          break
+        case 'newest':
+          filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          break
+        case 'ending':
+          filtered.sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
+          break
+        case 'funded':
+          filtered.sort((a, b) => b.raised - a.raised)
+          break
+        default:
+          filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      }
+
+      // Pagination
+      const from = (page - 1) * limit
+      const to = from + limit
+      const paginated = filtered.slice(from, to)
+
+      return { paginated, total: filtered.length }
+    }
+
     // Use mock data if Supabase is not available
     if (!supabase) {
       isMockMode = true
-
-      // Mock data for development
-      const mockProjects = [
-        {
-          id: '1',
-          title: 'Decentralized Social Network',
-          tagline: 'Web3 social media without the drama',
-          description: 'Building the next generation of social networking on Solana',
-          category: 'Technology',
-          goal: 10000,
-          raised: 3500,
-          backers_count: 45,
-          status: 'active',
-          creator_wallet: 'ABC123',
-          creator_name: 'Alice Builder',
-          creator_avatar: '/default-avatar.png',
-          image_url: '/placeholder-project.png',
-          deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-          created_at: new Date().toISOString(),
-        },
-        {
-          id: '2',
-          title: 'NFT Marketplace for Artists',
-          tagline: 'Empowering creators worldwide',
-          description: 'A commission-free NFT marketplace built for artists',
-          category: 'Art',
-          goal: 15000,
-          raised: 8200,
-          backers_count: 89,
-          status: 'active',
-          creator_wallet: 'DEF456',
-          creator_name: 'Bob Creator',
-          creator_avatar: '/default-avatar.png',
-          image_url: '/placeholder-project.png',
-          deadline: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000).toISOString(),
-          created_at: new Date().toISOString(),
-        },
-        {
-          id: '3',
-          title: 'Eco-Friendly Smart Gardens',
-          tagline: 'Grow organic food at home',
-          description: 'IoT-powered indoor garden system for urban dwellers',
-          category: 'Technology',
-          goal: 8000,
-          raised: 4200,
-          backers_count: 67,
-          status: 'active',
-          creator_wallet: 'GHI789',
-          creator_name: 'Charlie Green',
-          creator_avatar: '/default-avatar.png',
-          image_url: '/placeholder-project.png',
-          deadline: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(),
-          created_at: new Date().toISOString(),
-        },
-      ]
-
-      projects = mockProjects.filter(p => !status || status === 'all' || p.status === status)
-      count = projects.length
+      const { paginated, total } = filterMockProjects(mockProjects)
+      projects = paginated
+      count = total
     } else {
       // Start query
       let query = supabase
@@ -136,29 +244,10 @@ export async function GET(request: NextRequest) {
         console.warn('Supabase query failed, using mock data:', error.message)
         isMockMode = true
 
-        // Same mock data as above (fallback if query fails)
-        const mockProjects = [
-          {
-            id: '1',
-            title: 'Decentralized Social Network',
-            tagline: 'Web3 social media without the drama',
-            description: 'Building the next generation of social networking on Solana',
-            category: 'Technology',
-            goal: 10000,
-            raised: 3500,
-            backers_count: 45,
-            status: 'active',
-            creator_wallet: 'ABC123',
-            creator_name: 'Alice Builder',
-            creator_avatar: '/default-avatar.png',
-            image_url: '/placeholder-project.png',
-            deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            created_at: new Date().toISOString(),
-          },
-        ]
-
-        projects = mockProjects.filter(p => !status || p.status === status)
-        count = projects.length
+        // Use the shared filter function with mock data
+        const { paginated, total } = filterMockProjects(mockProjects)
+        projects = paginated
+        count = total
       }
     }
 

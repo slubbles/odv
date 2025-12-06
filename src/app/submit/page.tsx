@@ -291,24 +291,35 @@ export default function SubmitPage() {
         </div>
 
         <div className="mb-8 sm:mb-12">
-          <div className="flex items-center justify-between mb-3 sm:mb-4">
+          {/* Step Progress Indicator */}
+          <div className="flex items-center justify-center mb-4 sm:mb-6 max-w-2xl mx-auto">
             {[1, 2, 3, 4].map((s) => (
-              <div key={s} className="flex-1 flex items-center">
+              <div key={s} className="flex items-center flex-1 last:flex-none">
                 <div
-                  className={`h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center font-bold text-sm sm:text-base ${s <= step ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"
-                    }`}
+                  className={`h-10 w-10 sm:h-12 sm:w-12 rounded-full flex items-center justify-center font-bold text-sm sm:text-base shrink-0 ${
+                    s <= step 
+                      ? "bg-accent text-accent-foreground" 
+                      : "bg-muted text-muted-foreground"
+                  }`}
                 >
-                  {s < step ? <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5" /> : s}
+                  {s < step ? <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6" /> : s}
                 </div>
-                {s < 4 && <div className={`h-1 flex-1 mx-1 sm:mx-2 ${s < step ? "bg-accent" : "bg-muted"}`} />}
+                {s < 4 && (
+                  <div 
+                    className={`h-1 flex-1 mx-2 sm:mx-3 ${
+                      s < step ? "bg-accent" : "bg-muted"
+                    }`} 
+                  />
+                )}
               </div>
             ))}
           </div>
-          <div className="flex text-xs sm:text-sm text-muted-foreground">
-            <span className="flex-1 text-center">Basic Info</span>
-            <span className="flex-1 text-center">Details</span>
-            <span className="flex-1 text-center">Funding</span>
-            <span className="flex-1 text-center">Review</span>
+          {/* Step Labels */}
+          <div className="grid grid-cols-4 gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto">
+            <span className={`text-center ${step >= 1 ? 'text-foreground font-medium' : ''}`}>Basic Info</span>
+            <span className={`text-center ${step >= 2 ? 'text-foreground font-medium' : ''}`}>Details</span>
+            <span className={`text-center ${step >= 3 ? 'text-foreground font-medium' : ''}`}>Funding</span>
+            <span className={`text-center ${step >= 4 ? 'text-foreground font-medium' : ''}`}>Review</span>
           </div>
         </div>
 
@@ -383,9 +394,31 @@ export default function SubmitPage() {
                   <Textarea
                     id="description"
                     placeholder="Pitch it in plain English. Be real."
-                    rows={8}
+                    rows={6}
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="problem">What problem does this solve?</Label>
+                  <Textarea
+                    id="problem"
+                    placeholder="What's broken that needs fixing?"
+                    rows={3}
+                    value={formData.problem}
+                    onChange={(e) => handleInputChange('problem', e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="solution">How will you solve it?</Label>
+                  <Textarea
+                    id="solution"
+                    placeholder="Your approach. Keep it simple."
+                    rows={3}
+                    value={formData.solution}
+                    onChange={(e) => handleInputChange('solution', e.target.value)}
                   />
                 </div>
 
@@ -397,6 +430,7 @@ export default function SubmitPage() {
                     value={formData.videoUrl}
                     onChange={(e) => handleInputChange('videoUrl', e.target.value)}
                   />
+                  <p className="text-xs text-muted-foreground">A short video explaining your project can help get more backers</p>
                 </div>
               </>
             )}
@@ -416,14 +450,24 @@ export default function SubmitPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="duration">Campaign Duration (Days) *</Label>
-                    <Input
-                      id="duration"
-                      type="number"
-                      placeholder="30"
-                      value={formData.duration}
-                      onChange={(e) => handleInputChange('duration', e.target.value)}
-                    />
+                    <Label htmlFor="duration">Campaign Duration *</Label>
+                    <Select 
+                      value={formData.duration} 
+                      onValueChange={(value) => handleInputChange('duration', value)}
+                    >
+                      <SelectTrigger id="duration">
+                        <SelectValue placeholder="Select duration" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="7">7 days</SelectItem>
+                        <SelectItem value="14">14 days</SelectItem>
+                        <SelectItem value="21">21 days</SelectItem>
+                        <SelectItem value="30">30 days</SelectItem>
+                        <SelectItem value="45">45 days</SelectItem>
+                        <SelectItem value="60">60 days</SelectItem>
+                        <SelectItem value="90">90 days</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
@@ -431,11 +475,24 @@ export default function SubmitPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <Label>Milestones *</Label>
-                      <p className="text-xs text-muted-foreground mt-1">Define how you&apos;ll deliver value. Percentages must total 100%.</p>
+                      <p className="text-xs text-muted-foreground mt-1">Define how you&apos;ll deliver value.</p>
                     </div>
                     <Button type="button" variant="outline" size="sm" onClick={addMilestone}>
                       + Add Another
                     </Button>
+                  </div>
+
+                  {/* Milestone percentage notice */}
+                  <div className="p-4 rounded-lg bg-accent/10 border border-accent/30">
+                    <p className="text-sm font-medium text-accent-foreground flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 text-accent" />
+                      All milestone percentages must add up to exactly 100%
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Current total: <span className={`font-bold ${formData.milestones.reduce((sum, m) => sum + m.percentage, 0) === 100 ? 'text-green-500' : 'text-yellow-500'}`}>
+                        {formData.milestones.reduce((sum, m) => sum + m.percentage, 0)}%
+                      </span>
+                    </p>
                   </div>
 
                   {formData.milestones.map((milestone, index) => (

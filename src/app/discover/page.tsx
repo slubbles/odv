@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Header } from "@/components/header"
 import { ProjectCard } from "@/components/project-card"
 import { Button } from "@/components/ui/button"
@@ -15,9 +15,22 @@ import { useProjects } from "@/lib/hooks/use-projects"
 
 const categories = ["all", "Technology", "Art & Design", "Gaming", "Social Impact", "Food & Beverage", "Innovation", "Health & Wellness"]
 
+// Debounce hook for search
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay)
+    return () => clearTimeout(timer)
+  }, [value, delay])
+
+  return debouncedValue
+}
+
 export default function DiscoverPage() {
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
+  const debouncedSearch = useDebounce(searchQuery, 300) // 300ms debounce
   const [sortBy, setSortBy] = useState("trending")
   const [status, setStatus] = useState("active")
   const [page, setPage] = useState(1)
@@ -25,7 +38,7 @@ export default function DiscoverPage() {
   const { projects, loading, error, pagination } = useProjects({
     category: selectedCategory,
     status: status,
-    search: searchQuery,
+    search: debouncedSearch, // Use debounced search
     sort: sortBy,
     page,
     limit: 12
@@ -235,7 +248,9 @@ export default function DiscoverPage() {
                     goal={project.goal}
                     backers={project.backers_count}
                     daysLeft={daysLeft}
-                    trending={project.backers_count > 200}
+                    trending={project.backers_count > 50}
+                    status={project.status}
+                    showBackButton={true}
                   />
                 );
               })}
