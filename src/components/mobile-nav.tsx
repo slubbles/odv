@@ -107,32 +107,38 @@ export function MobileNav() {
                 <div className="flex flex-col gap-1">
                   <Link
                     href="/discover"
-                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm"
+                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
                   >
-                    Discover Projects
+                    <span className="font-medium">Discover Projects</span>
+                    <span className="text-xs text-muted-foreground">Browse all active campaigns</span>
                   </Link>
                   <Link
                     href="/creators"
-                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm"
+                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
                   >
-                    Creators
+                    <span className="font-medium">Creators</span>
+                    <span className="text-xs text-muted-foreground">Meet the people behind the projects</span>
                   </Link>
                   <Link
                     href="/stats"
-                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm"
+                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
                   >
-                    Platform Stats
+                    <span className="font-medium">Platform Stats</span>
+                    <span className="text-xs text-muted-foreground">View platform performance metrics</span>
                   </Link>
                   <Link
                     href="/faucet"
-                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex items-center gap-2"
+                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
                   >
-                    <Droplets className="h-4 w-4 text-accent" />
-                    Test USDC Faucet
+                    <div className="flex items-center gap-2 font-medium">
+                      <Droplets className="h-4 w-4 text-accent" />
+                      Test USDC Faucet
+                    </div>
+                    <span className="text-xs text-muted-foreground">Get test tokens for development</span>
                   </Link>
                 </div>
               </AccordionContent>
@@ -144,24 +150,27 @@ export function MobileNav() {
                 <div className="flex flex-col gap-1">
                   <Link
                     href="/portfolio"
-                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm"
+                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
                   >
-                    Backed Projects
+                    <span className="font-medium">Backed Projects</span>
+                    <span className="text-xs text-muted-foreground">View projects you have supported</span>
                   </Link>
                   <Link
                     href="/dashboard/backer"
-                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm"
+                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
                   >
-                    Backer Dashboard
+                    <span className="font-medium">Backer Dashboard</span>
+                    <span className="text-xs text-muted-foreground">Manage your contributions and rewards</span>
                   </Link>
                   <Link
                     href="/dashboard/creator"
-                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm"
+                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
                   >
-                    Creator Dashboard
+                    <span className="font-medium">Creator Dashboard</span>
+                    <span className="text-xs text-muted-foreground">Manage your own projects</span>
                   </Link>
                 </div>
               </AccordionContent>
@@ -173,31 +182,35 @@ export function MobileNav() {
                 <div className="flex flex-col gap-1">
                   <Link
                     href="/wallet"
-                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm"
+                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
                   >
-                    Wallet & Earnings
+                    <span className="font-medium">Wallet & Earnings</span>
+                    <span className="text-xs text-muted-foreground">View your wallet balance and earnings</span>
                   </Link>
                   <Link
                     href="/notifications"
-                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm"
+                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
                   >
-                    Notifications
+                    <span className="font-medium">Notifications</span>
+                    <span className="text-xs text-muted-foreground">View your latest updates</span>
                   </Link>
                   <Link
                     href="/settings"
-                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm"
+                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
                   >
-                    Settings
+                    <span className="font-medium">Settings</span>
+                    <span className="text-xs text-muted-foreground">Manage your account settings</span>
                   </Link>
                   <Link
                     href="/profile"
-                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm"
+                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
                   >
-                    Profile
+                    <span className="font-medium">Profile</span>
+                    <span className="text-xs text-muted-foreground">View and edit your public profile</span>
                   </Link>
                 </div>
               </AccordionContent>

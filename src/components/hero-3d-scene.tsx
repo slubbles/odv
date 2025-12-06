@@ -115,7 +115,9 @@ export function Hero3DScene() {
     if (typeof window !== "undefined") {
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
       const cores = navigator.hardwareConcurrency || 2
-      setIsLowPerf(isMobile || cores < 4)
+      if (isMobile || cores < 4) {
+        setIsLowPerf(true)
+      }
     }
   }, [])
 
@@ -128,7 +130,7 @@ export function Hero3DScene() {
           <pointLight position={[-10, -10, -5]} intensity={0.6} color="#e84c27" />
           <pointLight position={[5, 5, 5]} intensity={0.4} color="#f4a127" />
 
-          <Stars radius={50} depth={50} count={isLowPerf ? 500 : 1000} factor={2} saturation={0} fade speed={0.5} />
+          <Stars radius={50} depth={50} count={isLowPerf ? 200 : 1000} factor={2} saturation={0} fade speed={0.5} />
 
           <CentralSphere />
 
@@ -139,7 +141,7 @@ export function Hero3DScene() {
           <FloatingTorus position={[0, -1.5, 1]} />
           <FloatingTorus position={[-2.5, 0.5, -1.5]} />
 
-          <Environment preset="city" />
+          {!isLowPerf && <Environment preset="city" />}
         </Suspense>
       </Canvas>
     </div>

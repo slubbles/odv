@@ -10,6 +10,7 @@ import { Users, Clock, CheckCircle, Circle, Github, Globe, Twitter, ExternalLink
 import { SocialShare } from "@/components/social-share"
 import { BackProjectButton } from "@/components/back-project-button"
 import Link from "next/link"
+import { useState, useEffect } from "react"
 
 // ODV Platform Campaign Data
 const ODV_CAMPAIGN = {
@@ -119,8 +120,14 @@ But hey, it's $1 (test dollars). WAGMI.
 `
 
 export default function ODVCampaignPage() {
+  const [now, setNow] = useState<number | null>(null)
+
+  useEffect(() => {
+    setNow(Date.now())
+  }, [])
+
   const progress = (ODV_CAMPAIGN.raised / ODV_CAMPAIGN.goal) * 100
-  const daysLeft = Math.max(0, Math.ceil((new Date(ODV_CAMPAIGN.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+  const daysLeft = now ? Math.max(0, Math.ceil((new Date(ODV_CAMPAIGN.deadline).getTime() - now) / (1000 * 60 * 60 * 24))) : 0
 
   return (
     <div className="flex flex-col min-h-screen">

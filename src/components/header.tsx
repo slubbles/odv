@@ -42,19 +42,39 @@ function HeaderContent() {
               <DropdownMenuTrigger className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:ring-0 focus-visible:outline-none">
                 Explore <ChevronDown className="h-4 w-4" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="py-2">
-                <DropdownMenuItem asChild className="py-2 px-3">
-                  <Link href="/discover">Discover Projects</Link>
+              <DropdownMenuContent align="start" className="w-[240px] p-2">
+                <DropdownMenuItem asChild className="p-2 cursor-pointer">
+                  <Link href="/discover" className="flex flex-col items-start gap-1">
+                    <div className="font-medium leading-none">Discover Projects</div>
+                    <div className="text-xs text-muted-foreground line-clamp-2">
+                      Browse all active campaigns
+                    </div>
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="py-2 px-3">
-                  <Link href="/creators">Creators</Link>
+                <DropdownMenuItem asChild className="p-2 cursor-pointer">
+                  <Link href="/creators" className="flex flex-col items-start gap-1">
+                    <div className="font-medium leading-none">Creators</div>
+                    <div className="text-xs text-muted-foreground line-clamp-2">
+                      Meet the people behind the projects
+                    </div>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="py-2 px-3">
-                  <Link href="/stats">Platform Stats</Link>
+                <DropdownMenuItem asChild className="p-2 cursor-pointer">
+                  <Link href="/stats" className="flex flex-col items-start gap-1">
+                    <div className="font-medium leading-none">Platform Stats</div>
+                    <div className="text-xs text-muted-foreground line-clamp-2">
+                      View platform performance metrics
+                    </div>
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="py-2 px-3">
-                  <Link href="/faucet">Test USDC Faucet</Link>
+                <DropdownMenuItem asChild className="p-2 cursor-pointer">
+                  <Link href="/faucet" className="flex flex-col items-start gap-1">
+                    <div className="font-medium leading-none">Test USDC Faucet</div>
+                    <div className="text-xs text-muted-foreground line-clamp-2">
+                      Get test tokens for development
+                    </div>
+                  </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -63,16 +83,31 @@ function HeaderContent() {
               <DropdownMenuTrigger className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:ring-0 focus-visible:outline-none">
                 My Portfolio <ChevronDown className="h-4 w-4" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="py-2">
-                <DropdownMenuItem asChild className="py-2 px-3">
-                  <Link href="/portfolio">Backed Projects</Link>
+              <DropdownMenuContent align="start" className="w-[240px] p-2">
+                <DropdownMenuItem asChild className="p-2 cursor-pointer">
+                  <Link href="/portfolio" className="flex flex-col items-start gap-1">
+                    <div className="font-medium leading-none">Backed Projects</div>
+                    <div className="text-xs text-muted-foreground line-clamp-2">
+                      View projects you have supported
+                    </div>
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="py-2 px-3">
-                  <Link href="/dashboard/backer">Backer Dashboard</Link>
+                <DropdownMenuItem asChild className="p-2 cursor-pointer">
+                  <Link href="/dashboard/backer" className="flex flex-col items-start gap-1">
+                    <div className="font-medium leading-none">Backer Dashboard</div>
+                    <div className="text-xs text-muted-foreground line-clamp-2">
+                      Manage your contributions and rewards
+                    </div>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="py-2 px-3">
-                  <Link href="/dashboard/creator">Creator Dashboard</Link>
+                <DropdownMenuItem asChild className="p-2 cursor-pointer">
+                  <Link href="/dashboard/creator" className="flex flex-col items-start gap-1">
+                    <div className="font-medium leading-none">Creator Dashboard</div>
+                    <div className="text-xs text-muted-foreground line-clamp-2">
+                      Manage your own projects
+                    </div>
+                  </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -88,22 +123,47 @@ function HeaderContent() {
                   <Shield className="h-4 w-4" />
                   Admin <ChevronDown className="h-4 w-4" />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="py-2">
-                  <DropdownMenuItem asChild className="py-2 px-3">
-                    <Link href="/admin">Queue Review</Link>
+                <DropdownMenuContent align="start" className="w-[240px] p-2">
+                  <DropdownMenuItem asChild className="p-2 cursor-pointer">
+                    <Link href="/admin" className="flex flex-col items-start gap-1">
+                      <div className="font-medium leading-none">Queue Review</div>
+                      <div className="text-xs text-muted-foreground line-clamp-2">
+                        Review pending project submissions
+                      </div>
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="py-2 px-3">
-                    <Link href="/admin/milestones">Milestones</Link>
+                  <DropdownMenuItem asChild className="p-2 cursor-pointer">
+                    <Link href="/admin/milestones" className="flex flex-col items-start gap-1">
+                      <div className="font-medium leading-none">Milestones</div>
+                      <div className="text-xs text-muted-foreground line-clamp-2">
+                        Manage project milestones
+                      </div>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild className="py-2 px-3">
-                    <Link href="/admin/analytics">Analytics</Link>
+                  <DropdownMenuItem asChild className="p-2 cursor-pointer">
+                    <Link href="/admin/analytics" className="flex flex-col items-start gap-1">
+                      <div className="font-medium leading-none">Analytics</div>
+                      <div className="text-xs text-muted-foreground line-clamp-2">
+                        Platform-wide analytics
+                      </div>
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="py-2 px-3">
-                    <Link href="/admin/users">Users</Link>
+                  <DropdownMenuItem asChild className="p-2 cursor-pointer">
+                    <Link href="/admin/users" className="flex flex-col items-start gap-1">
+                      <div className="font-medium leading-none">Users</div>
+                      <div className="text-xs text-muted-foreground line-clamp-2">
+                        Manage platform users
+                      </div>
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="py-2 px-3">
-                    <Link href="/admin/initialize">Initialize Platform</Link>
+                  <DropdownMenuItem asChild className="p-2 cursor-pointer">
+                    <Link href="/admin/initialize" className="flex flex-col items-start gap-1">
+                      <div className="font-medium leading-none">Initialize Platform</div>
+                      <div className="text-xs text-muted-foreground line-clamp-2">
+                        Setup platform configuration
+                      </div>
+                    </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

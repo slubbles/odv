@@ -28,10 +28,20 @@ export async function POST(
     }
 
     if (!supabase) {
-      return NextResponse.json(
-        { error: 'Database connection failed' },
-        { status: 500 }
-      )
+      // Mock mode for development without DB
+      console.warn('Mock mode: Simulating successful backing')
+      return NextResponse.json({
+        success: true,
+        backing: {
+          id: 'mock-backing-id',
+          project_id: projectId,
+          wallet_address: walletAddress,
+          amount,
+          transaction_signature: transactionSignature,
+          created_at: new Date().toISOString()
+        },
+        message: 'Successfully backed project! (Mock Mode)'
+      }, { status: 201 })
     }
 
     // Fetch project to get creator wallet
@@ -186,10 +196,14 @@ export async function GET(
     const walletAddress = searchParams.get('wallet')
 
     if (!supabase) {
-      return NextResponse.json(
-        { error: 'Database connection failed' },
-        { status: 500 }
-      )
+      // Mock mode for development without DB
+      if (!walletAddress) {
+        return NextResponse.json({ backers: [] })
+      }
+      return NextResponse.json({
+        hasBacked: false, // Default to false in mock mode
+        backing: null
+      })
     }
 
     if (!walletAddress) {

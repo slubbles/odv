@@ -12,10 +12,16 @@ import { Footer } from "@/components/footer"
 import { DashboardSidebar } from "@/components/dashboard-sidebar"
 import { useCreatorDashboard } from "@/lib/hooks/use-dashboard"
 import { useWallet } from "@solana/wallet-adapter-react"
+import { useState, useEffect } from "react"
 
 export default function CreatorDashboardPage() {
   const { connected } = useWallet()
   const { projects, stats, loading, error } = useCreatorDashboard()
+  const [now, setNow] = useState<number | null>(null)
+
+  useEffect(() => {
+    setNow(Date.now())
+  }, [])
 
   if (!connected) {
     return (
@@ -143,10 +149,10 @@ export default function CreatorDashboardPage() {
                   <div className="grid gap-6">
                     {projects.map((project) => {
                       const progress = (project.raised / project.goal) * 100
-                      const daysLeft = project.deadline
+                      const daysLeft = project.deadline && now
                         ? Math.max(
                             0,
-                            Math.ceil((new Date(project.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                            Math.ceil((new Date(project.deadline).getTime() - now) / (1000 * 60 * 60 * 24))
                           )
                         : 0
                       
@@ -240,10 +246,10 @@ export default function CreatorDashboardPage() {
                       .filter((p) => p.status === "active")
                       .map((project) => {
                         const progress = (project.raised / project.goal) * 100
-                        const daysLeft = project.deadline
+                        const daysLeft = project.deadline && now
                           ? Math.max(
                               0,
-                              Math.ceil((new Date(project.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                              Math.ceil((new Date(project.deadline).getTime() - now) / (1000 * 60 * 60 * 24))
                             )
                           : 0
                         return (

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Users, Clock, Sparkles, ExternalLink, Github, ArrowRight } from "lucide-react"
 import { BackProjectButton } from "@/components/back-project-button"
+import { useState, useEffect } from "react"
 
 // This is the ODV platform's own campaign - hardcoded as the flagship project
 const ODV_CAMPAIGN = {
@@ -49,8 +50,14 @@ interface ODVFeaturedCampaignProps {
 }
 
 export function ODVFeaturedCampaign({ raised = 0, backersCount = 0 }: ODVFeaturedCampaignProps) {
+  const [now, setNow] = useState<number | null>(null)
+
+  useEffect(() => {
+    setNow(Date.now())
+  }, [])
+
   const progress = (raised / ODV_CAMPAIGN.goal) * 100
-  const daysLeft = Math.max(0, Math.ceil((new Date(ODV_CAMPAIGN.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+  const daysLeft = now ? Math.max(0, Math.ceil((new Date(ODV_CAMPAIGN.deadline).getTime() - now) / (1000 * 60 * 60 * 24))) : 0
 
   return (
     <Card className="relative overflow-hidden border-accent/50 bg-gradient-to-br from-accent/5 to-transparent">

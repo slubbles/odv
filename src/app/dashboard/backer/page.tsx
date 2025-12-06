@@ -12,10 +12,16 @@ import { DashboardSidebar } from "@/components/dashboard-sidebar"
 import { useBackerDashboard } from "@/lib/hooks/use-dashboard"
 import { useWallet } from "@solana/wallet-adapter-react"
 import Link from "next/link"
+import { useState, useEffect } from "react"
 
 export default function BackerDashboardPage() {
   const { connected } = useWallet()
   const { backedProjects, stats, loading, error } = useBackerDashboard()
+  const [now, setNow] = useState<number | null>(null)
+
+  useEffect(() => {
+    setNow(Date.now())
+  }, [])
 
   if (!connected) {
     return (
@@ -144,10 +150,10 @@ export default function BackerDashboardPage() {
                     .filter((p) => p.status === "active")
                     .map((project) => {
                       const progress = (project.raised / project.goal) * 100
-                      const daysLeft = project.deadline
+                      const daysLeft = project.deadline && now
                         ? Math.max(
                             0,
-                            Math.ceil((new Date(project.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                            Math.ceil((new Date(project.deadline).getTime() - now) / (1000 * 60 * 60 * 24))
                           )
                         : 0
                       return (

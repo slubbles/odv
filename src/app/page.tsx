@@ -6,9 +6,14 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { TrendingUp, Users, DollarSign, ArrowRight } from "lucide-react"
-import { Hero3DScene } from "@/components/hero-3d-scene"
 import { AnimatedCounter } from "@/components/animated-counter"
 import { Footer } from "@/components/footer"
+import dynamic from "next/dynamic"
+
+const Hero3DScene = dynamic(() => import("@/components/hero-3d-scene").then((mod) => mod.Hero3DScene), {
+  ssr: false,
+  loading: () => <div className="absolute inset-0 opacity-30 bg-gradient-to-b from-accent/5 to-transparent" />,
+})
 
 export default function Home() {
   return (
@@ -119,53 +124,40 @@ export default function Home() {
                 Got $1? You're In.
               </h3>
               <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
-                <Card className="text-center border-accent/30 hover:border-accent/50 transition-colors">
-                  <CardContent className="p-6">
-                    <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                      1
-                    </div>
-                    <h4 className="font-bold text-base mb-2">Find Something Cool</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Browse projects. No BS.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="text-center border-accent/30 hover:border-accent/50 transition-colors">
-                  <CardContent className="p-6">
-                    <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                      2
-                    </div>
-                    <h4 className="font-bold text-base mb-2">Drop Your Dollar</h4>
-                    <p className="text-sm text-muted-foreground">
-                      One buck in USDC. Done.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="text-center border-accent/30 hover:border-accent/50 transition-colors">
-                  <CardContent className="p-6">
-                    <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                      3
-                    </div>
-                    <h4 className="font-bold text-base mb-2">Get Your Badge</h4>
-                    <p className="text-sm text-muted-foreground">
-                      NFT proof you were first.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="text-center border-accent/30 hover:border-accent/50 transition-colors">
-                  <CardContent className="p-6">
-                    <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                      4
-                    </div>
-                    <h4 className="font-bold text-base mb-2">Vote on Milestones</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Make sure they ship.
-                    </p>
-                  </CardContent>
-                </Card>
+                {[
+                  {
+                    step: 1,
+                    title: "Find Something Cool",
+                    desc: "Browse projects. No BS."
+                  },
+                  {
+                    step: 2,
+                    title: "Drop Your Dollar",
+                    desc: "One buck in USDC. Done."
+                  },
+                  {
+                    step: 3,
+                    title: "Get Your Badge",
+                    desc: "NFT proof you were first."
+                  },
+                  {
+                    step: 4,
+                    title: "Vote on Milestones",
+                    desc: "Make sure they ship."
+                  }
+                ].map((item) => (
+                  <Card key={item.step} className="text-center bg-card border-accent/20 hover:border-accent transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(201,64,50,0.3)] group">
+                    <CardContent className="p-8 flex flex-col items-center h-full">
+                      <div className="h-14 w-14 rounded-full bg-accent text-accent-foreground flex items-center justify-center mb-6 text-2xl font-bold shadow-lg shadow-accent/20 group-hover:scale-110 transition-transform duration-300">
+                        {item.step}
+                      </div>
+                      <h4 className="font-bold text-lg mb-3 group-hover:text-accent transition-colors">{item.title}</h4>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {item.desc}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </div>
 
@@ -174,54 +166,43 @@ export default function Home() {
               <h3 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">
                 Built Something? Show Us.
               </h3>
-              <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
-                <Card className="text-center border-accent/30 hover:border-accent/50 transition-colors">
-                  <CardContent className="p-6">
-                    <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                      1
-                    </div>
-                    <h4 className="font-bold text-base mb-2">Submit Your Thing</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Tell us what you're building.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="text-center border-accent/30 hover:border-accent/50 transition-colors">
-                  <CardContent className="p-6">
-                    <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                      2
-                    </div>
-                    <h4 className="font-bold text-base mb-2">Pass the Vibe Check</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Community votes. No suits.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="text-center border-accent/30 hover:border-accent/50 transition-colors">
-                  <CardContent className="p-6">
-                    <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                      3
-                    </div>
-                    <h4 className="font-bold text-base mb-2">Go Live 24hrs</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Collect backers. Clock starts.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="text-center border-accent/30 hover:border-accent/50 transition-colors">
-                  <CardContent className="p-6">
-                    <div className="h-12 w-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                      4
-                    </div>
-                    <h4 className="font-bold text-base mb-2">Ship or Die</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Complete milestones. Get paid.
-                    </p>
-                  </CardContent>
-                </Card>
+              <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                {[
+                  {
+                    step: 1,
+                    title: "Submit Your Thing",
+                    desc: "Tell us what you're building. No pitch decks, just code and vision."
+                  },
+                  {
+                    step: 2,
+                    title: "Pass the Vibe Check",
+                    desc: "Community votes on your project. If they like it, you're in."
+                  },
+                  {
+                    step: 3,
+                    title: "Go Live 24hrs",
+                    desc: "The clock starts. You have 24 hours to hit your funding goal."
+                  },
+                  {
+                    step: 4,
+                    title: "Ship or Die",
+                    desc: "Hit your milestones to unlock funds. Don't ghost your backers."
+                  }
+                ].map((item) => (
+                  <Card key={item.step} className="bg-card border-accent/20 hover:border-accent transition-all duration-300 group overflow-hidden">
+                    <CardContent className="p-6 flex items-start gap-6">
+                      <div className="shrink-0 h-12 w-12 rounded-lg bg-accent/10 text-accent flex items-center justify-center text-xl font-bold border border-accent/20 group-hover:bg-accent group-hover:text-accent-foreground transition-colors duration-300">
+                        {item.step}
+                      </div>
+                      <div className="text-left">
+                        <h4 className="font-bold text-lg mb-2 group-hover:text-accent transition-colors">{item.title}</h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {item.desc}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </div>
 

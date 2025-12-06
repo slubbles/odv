@@ -1,90 +1,135 @@
 import Link from "next/link"
-import { Shield } from "lucide-react"
+import { Shield, Twitter, Github, Disc } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 export function Footer() {
   return (
-    <footer className="border-t border-border py-16" role="contentinfo">
+    <footer className="border-t border-border bg-card/50 py-16" role="contentinfo">
       <div className="container mx-auto max-w-7xl px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12 mb-12">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent" aria-hidden="true">
-                <Shield className="h-5 w-5 text-accent-foreground" />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+          <div className="md:col-span-1">
+            <div className="flex items-center gap-2 mb-6">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent shadow-lg shadow-accent/20" aria-hidden="true">
+                <Shield className="h-6 w-6 text-accent-foreground" />
               </div>
-              <span className="text-lg font-semibold">OneDollarVentures</span>
+              <span className="text-xl font-bold tracking-tight">OneDollarVentures</span>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Your $1 might fund the next big thing. Or at least something really cool.
+            <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+              The anti-VC platform. Your $1 might fund the next unicorn. Or at least a really cool sandwich shop.
             </p>
+            <div className="flex gap-4">
+              <Button variant="ghost" size="icon" className="hover:text-accent hover:bg-accent/10">
+                <Twitter className="h-5 w-5" />
+                <span className="sr-only">Twitter</span>
+              </Button>
+              <Button variant="ghost" size="icon" className="hover:text-accent hover:bg-accent/10">
+                <Github className="h-5 w-5" />
+                <span className="sr-only">GitHub</span>
+              </Button>
+              <Button variant="ghost" size="icon" className="hover:text-accent hover:bg-accent/10">
+                <Disc className="h-5 w-5" />
+                <span className="sr-only">Discord</span>
+              </Button>
+            </div>
           </div>
-          <nav aria-label="Platform links">
-            <h4 className="font-semibold mb-4 text-sm">Platform</h4>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <Link href="/discover" className="text-muted-foreground hover:text-accent transition-colors duration-300">
-                  Discover
-                </Link>
-              </li>
-              <li>
-                <Link href="/creators" className="text-muted-foreground hover:text-accent transition-colors duration-300">
-                  Creators
-                </Link>
-              </li>
-              <li>
-                <Link href="/submit" className="text-muted-foreground hover:text-accent transition-colors duration-300">
-                  Submit Project
-                </Link>
-              </li>
-            </ul>
-          </nav>
-          <nav aria-label="Resource links">
-            <h4 className="font-semibold mb-4 text-sm">Resources</h4>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <Link href="/how-it-works" className="text-muted-foreground hover:text-accent transition-colors duration-300">
-                  How It Works
-                </Link>
-              </li>
-              <li>
-                <Link href="/help" className="text-muted-foreground hover:text-accent transition-colors duration-300">
-                  Help
-                </Link>
-              </li>
-              <li>
-                <Link href="/community-guidelines" className="text-muted-foreground hover:text-accent transition-colors duration-300">
-                  Guidelines
-                </Link>
-              </li>
-              <li>
-                <Link href="/stats" className="text-muted-foreground hover:text-accent transition-colors duration-300">
-                  Stats
-                </Link>
-              </li>
-            </ul>
-          </nav>
-          <nav aria-label="Company links">
-            <h4 className="font-semibold mb-4 text-sm">Company</h4>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <Link href="/about" className="text-muted-foreground hover:text-accent transition-colors duration-300">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="text-muted-foreground hover:text-accent transition-colors duration-300">
-                  Terms
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="text-muted-foreground hover:text-accent transition-colors duration-300">
-                  Privacy
-                </Link>
-              </li>
-            </ul>
-          </nav>
+          
+          <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-8">
+            <nav aria-label="Platform links">
+              <h4 className="font-bold mb-6 text-sm uppercase tracking-wider text-foreground/80">Platform</h4>
+              <ul className="space-y-4 text-sm">
+                <li>
+                  <Link href="/discover" className="text-muted-foreground hover:text-accent transition-colors duration-200">
+                    Discover Projects
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/creators" className="text-muted-foreground hover:text-accent transition-colors duration-200">
+                    Meet Creators
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/submit" className="text-muted-foreground hover:text-accent transition-colors duration-200">
+                    Start Building
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/faucet" className="text-muted-foreground hover:text-accent transition-colors duration-200">
+                    Testnet Faucet
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+            <nav aria-label="Resource links">
+              <h4 className="font-bold mb-6 text-sm uppercase tracking-wider text-foreground/80">Resources</h4>
+              <ul className="space-y-4 text-sm">
+                <li>
+                  <Link href="/how-it-works" className="text-muted-foreground hover:text-accent transition-colors duration-200">
+                    How It Works
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/help" className="text-muted-foreground hover:text-accent transition-colors duration-200">
+                    Help Center
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/community-guidelines" className="text-muted-foreground hover:text-accent transition-colors duration-200">
+                    Guidelines
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/stats" className="text-muted-foreground hover:text-accent transition-colors duration-200">
+                    Platform Stats
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+            <nav aria-label="Company links">
+              <h4 className="font-bold mb-6 text-sm uppercase tracking-wider text-foreground/80">Legal</h4>
+              <ul className="space-y-4 text-sm">
+                <li>
+                  <Link href="/terms" className="text-muted-foreground hover:text-accent transition-colors duration-200">
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/privacy" className="text-muted-foreground hover:text-accent transition-colors duration-200">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about" className="text-muted-foreground hover:text-accent transition-colors duration-200">
+                    About Us
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+          </div>
+
+          <div className="md:col-span-1">
+            <h4 className="font-bold mb-6 text-sm uppercase tracking-wider text-foreground/80">Stay in the loop</h4>
+            <p className="text-sm text-muted-foreground mb-4">
+              Get the daily drop of new projects. No spam, just alpha.
+            </p>
+            <div className="flex gap-2">
+              <Input placeholder="Enter your email" className="bg-background border-accent/20 focus-visible:ring-accent" />
+              <Button size="icon" className="bg-accent text-accent-foreground hover:bg-accent/90 shrink-0">
+                <Shield className="h-4 w-4" />
+                <span className="sr-only">Subscribe</span>
+              </Button>
+            </div>
+          </div>
         </div>
-        <div className="pt-8 border-t border-border text-center">
-          <p className="text-sm text-muted-foreground">&copy; 2025 OneDollarVentures. Built for builders who ship.</p>
+        
+        <div className="pt-8 border-t border-border/50 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+          <p className="text-sm text-muted-foreground">
+            &copy; 2025 OneDollarVentures. Built on SOON Network.
+          </p>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+            Operational
+          </div>
         </div>
       </div>
     </footer>

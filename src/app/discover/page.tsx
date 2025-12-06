@@ -34,6 +34,11 @@ export default function DiscoverPage() {
   const [sortBy, setSortBy] = useState("trending")
   const [status, setStatus] = useState("active")
   const [page, setPage] = useState(1)
+  const [now, setNow] = useState<number | null>(null)
+
+  useEffect(() => {
+    setNow(Date.now())
+  }, [])
 
   const { projects, loading, error, pagination } = useProjects({
     category: selectedCategory,
@@ -228,8 +233,8 @@ export default function DiscoverPage() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {projects.map((project: any) => {
                 // Transform database fields to match ProjectCard props
-                const daysLeft = project.deadline
-                  ? Math.max(0, Math.ceil((new Date(project.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+                const daysLeft = project.deadline && now
+                  ? Math.max(0, Math.ceil((new Date(project.deadline).getTime() - now) / (1000 * 60 * 60 * 24)))
                   : 0;
 
                 return (

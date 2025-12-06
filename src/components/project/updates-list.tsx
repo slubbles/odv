@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { CalendarDays } from "lucide-react"
+import { useState, useEffect } from "react"
 
 interface Update {
   id: string
@@ -29,12 +30,14 @@ export function UpdatesList({
   creatorName = "Creator",
   creatorAvatar
 }: UpdatesListProps) {
-  // Mock data for demonstration - will be replaced with API data
-  const mockUpdates: Update[] = [
-    {
-      id: "1",
-      title: "MVP Launch Complete! 🚀",
-      content: `We're thrilled to announce that the platform MVP is now live! After weeks of hard work, we've deployed the core features including:
+  const [mockUpdates, setMockUpdates] = useState<Update[]>([])
+
+  useEffect(() => {
+    setMockUpdates([
+      {
+        id: "1",
+        title: "MVP Launch Complete! 🚀",
+        content: `We're thrilled to announce that the platform MVP is now live! After weeks of hard work, we've deployed the core features including:
 
 • AI-powered recipe recommendations
 • User profiles and preferences
@@ -44,14 +47,14 @@ export function UpdatesList({
 Thank you to all our backers for your incredible support. We couldn't have done this without you!
 
 Next up: We're diving into the recipe database expansion. Stay tuned for more updates!`,
-      created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      creator_name: creatorName,
-      creator_avatar: creatorAvatar,
-    },
-    {
-      id: "2",
-      title: "Development Update - Week 4",
-      content: `Quick update on what we've been working on:
+        created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        creator_name: creatorName,
+        creator_avatar: creatorAvatar,
+      },
+      {
+        id: "2",
+        title: "Development Update - Week 4",
+        content: `Quick update on what we've been working on:
 
 ✅ Completed user authentication system
 ✅ Integrated AI recommendation engine
@@ -59,23 +62,24 @@ Next up: We're diving into the recipe database expansion. Stay tuned for more up
 ⏳ Testing mobile app beta version
 
 We're on track for our next milestone! Expect another update next week with demo videos.`,
-      created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      creator_name: creatorName,
-      creator_avatar: creatorAvatar,
-    },
-    {
-      id: "3",
-      title: "Thank You for Your Support! 🎉",
-      content: `We hit our funding goal! Thank you to all 423 backers who believed in our vision.
+        created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        creator_name: creatorName,
+        creator_avatar: creatorAvatar,
+      },
+      {
+        id: "3",
+        title: "Thank You for Your Support! 🎉",
+        content: `We hit our funding goal! Thank you to all 423 backers who believed in our vision.
 
 Your support means everything to us. We're committed to delivering an amazing product and keeping you updated every step of the way.
 
 Development officially starts this week. Let's build something amazing together! 💪`,
-      created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-      creator_name: creatorName,
-      creator_avatar: creatorAvatar,
-    },
-  ]
+        created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+        creator_name: creatorName,
+        creator_avatar: creatorAvatar,
+      },
+    ])
+  }, [creatorName, creatorAvatar])
 
   const displayUpdates = updates.length > 0 ? updates : mockUpdates
 
