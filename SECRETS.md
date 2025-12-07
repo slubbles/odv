@@ -254,4 +254,4 @@ const DISCRIMINATORS = {
 
 ---
 
-*Last Updated: December 5, 2025*
+*Last Updated: December 7, 2025*

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Loader2, Heart, CheckCircle2, Clock, XCircle } from "lucide-react"
 import { useBackProject } from "@/lib/hooks/use-back-project"
 import { toast } from "sonner"
+import { SuccessModal } from "@/components/success-modal"
 
 interface BackProjectButtonProps {
   projectId: string
@@ -32,6 +33,9 @@ export function BackProjectButton({
   const { backProject, checkBackingStatus, isSubmitting } = useBackProject()
   const [hasBacked, setHasBacked] = useState(false)
   const [isChecking, setIsChecking] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [txSignature, setTxSignature] = useState<string>("")
+  const [explorerUrl, setExplorerUrl] = useState<string>("")
 
   // Check if project can be backed
   const canBeBacked = projectStatus === "active"
@@ -78,6 +82,13 @@ export function BackProjectButton({
     
     if (result.success) {
       setHasBacked(true)
+      if (result.signature) {
+        setTxSignature(result.signature)
+      }
+      if (result.explorerUrl) {
+        setExplorerUrl(result.explorerUrl)
+      }
+      setShowSuccessModal(true)
       onSuccess?.()
     }
   }
@@ -155,24 +166,35 @@ export function BackProjectButton({
   }
 
   return (
-    <Button
-      variant={variant}
-      size={size}
-      className={className}
-      onClick={handleBack}
-      disabled={isSubmitting}
-    >
-      {isSubmitting ? (
-        <>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Processing...
-        </>
-      ) : (
-        <>
-          <Heart className="mr-2 h-4 w-4" />
-          Fund for ${amount}
-        </>
-      )}
-    </Button>
+    <>
+      <Button
+        variant={variant}
+        size={size}
+        className={className}
+        onClick={handleBack}
+        disabled={isSubmitting || !connected}
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Processing...
+          </>
+        ) : (
+          <>
+            <Heart className="mr-2 h-4 w-4 fill-current" />
+            Back this Project
+          </>
+        )}
+      </Button>
+
+      <SuccessModal 
+        open={showSuccessModal}
+        onOpenChange={setShowSuccessModal}
+        title="Project Backed Successfully!"
+        description={`You have successfully backed this project with ${amount} USDC. Your contribution helps bring this idea to life.`}
+        txSignature={txSignature}
+        explorerUrl={explorerUrl}
+      />
+    </>
   )
 }

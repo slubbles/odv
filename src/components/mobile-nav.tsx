@@ -127,14 +127,7 @@ export function MobileNav() {
                     <span className="font-medium">Creators</span>
                     <span className="text-xs text-muted-foreground">Meet the people behind the projects</span>
                   </Link>
-                  <Link
-                    href="/stats"
-                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
-                    onClick={() => setOpen(false)}
-                  >
-                    <span className="font-medium">Platform Stats</span>
-                    <span className="text-xs text-muted-foreground">View platform performance metrics</span>
-                  </Link>
+
                   <Link
                     href="/faucet"
                     className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
@@ -155,14 +148,6 @@ export function MobileNav() {
               <AccordionContent>
                 <div className="flex flex-col gap-1">
                   <Link
-                    href="/dashboard/backer"
-                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
-                    onClick={() => setOpen(false)}
-                  >
-                    <span className="font-medium">Backer Dashboard</span>
-                    <span className="text-xs text-muted-foreground">Track your contributions</span>
-                  </Link>
-                  <Link
                     href="/portfolio"
                     className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
@@ -170,14 +155,7 @@ export function MobileNav() {
                     <span className="font-medium">Funded Projects</span>
                     <span className="text-xs text-muted-foreground">View projects you have funded</span>
                   </Link>
-                  <Link
-                    href="/profile/wallet"
-                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
-                    onClick={() => setOpen(false)}
-                  >
-                    <span className="font-medium">Wallet & Earnings</span>
-                    <span className="text-xs text-muted-foreground">Manage your funds</span>
-                  </Link>
+
                 </div>
               </AccordionContent>
             </AccordionItem>

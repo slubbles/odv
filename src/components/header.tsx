@@ -65,51 +65,10 @@ function HeaderContent() {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild className="p-2 cursor-pointer">
-                  <Link href="/stats" className="flex flex-col items-start gap-1">
-                    <div className="font-medium leading-none">Platform Stats</div>
-                    <div className="text-xs text-muted-foreground line-clamp-2">
-                      View platform performance metrics
-                    </div>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="p-2 cursor-pointer">
                   <Link href="/faucet" className="flex flex-col items-start gap-1">
                     <div className="font-medium leading-none">Test USDC Faucet</div>
                     <div className="text-xs text-muted-foreground line-clamp-2">
                       Get test tokens for development
-                    </div>
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:ring-0 focus-visible:outline-none">
-                Fund Projects <ChevronDown className="h-4 w-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-[240px] p-2">
-                <DropdownMenuItem asChild className="p-2 cursor-pointer">
-                  <Link href="/dashboard/backer" className="flex flex-col items-start gap-1">
-                    <div className="font-medium leading-none">Backer Dashboard</div>
-                    <div className="text-xs text-muted-foreground line-clamp-2">
-                      Track your contributions and rewards
-                    </div>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="p-2 cursor-pointer">
-                  <Link href="/portfolio" className="flex flex-col items-start gap-1">
-                    <div className="font-medium leading-none">Funded Projects</div>
-                    <div className="text-xs text-muted-foreground line-clamp-2">
-                      View projects you have funded
-                    </div>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="p-2 cursor-pointer">
-                  <Link href="/profile/wallet" className="flex flex-col items-start gap-1">
-                    <div className="font-medium leading-none">Wallet & Earnings</div>
-                    <div className="text-xs text-muted-foreground line-clamp-2">
-                      Manage your funds
                     </div>
                   </Link>
                 </DropdownMenuItem>

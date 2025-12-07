@@ -1,6 +1,7 @@
 "use client"
 
 import { useParams } from "next/navigation"
+import Link from "next/link"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -9,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Users, Clock, Heart, MessageCircle, CheckCircle, Circle, Award, TrendingUp, Loader2, AlertCircle } from "lucide-react"
+import { Users, Clock, Heart, MessageCircle, CheckCircle, Circle, Award, TrendingUp, Loader2, AlertCircle, ArrowLeft } from "lucide-react"
 import { SocialShare } from "@/components/social-share"
 import { useProject } from "@/lib/hooks/use-projects"
 import { UpdatesList } from "@/components/project/updates-list"
@@ -153,46 +154,25 @@ export default function ProjectDetailPage() {
   const milestones = project.milestones || []
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
 
-      <div className="container px-4 sm:px-6 py-8 sm:py-12 flex-1 pb-24 md:pb-12">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Project Header */}
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <Badge variant="secondary">{project.category}</Badge>
-                <div className="flex items-center gap-2 ml-auto">
-                  <Button size="icon" variant="outline">
-                    <Heart className="h-4 w-4" />
-                  </Button>
-                  <SocialShare title={project.title} description={project.description} />
-                </div>
-              </div>
+      <div className="container px-4 sm:px-6 py-8 flex-1 pb-24 md:pb-12">
+        {/* Back Button */}
+        <div className="mb-6">
+          <Button variant="ghost" asChild className="-ml-2 text-muted-foreground hover:text-foreground">
+            <Link href="/discover">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Link>
+          </Button>
+        </div>
 
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">{project.title}</h1>
-
-              <p className="text-lg text-muted-foreground mb-6">{project.description}</p>
-
-              {/* Creator Info */}
-              <div className="flex items-center gap-4">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={project.creator_avatar || "/placeholder.svg"} />
-                  <AvatarFallback>{project.creator_name?.[0] || "?"}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-semibold">{project.creator_name || "Anonymous Creator"}</p>
-                  <p className="text-sm text-muted-foreground truncate max-w-xs">
-                    {project.creator_wallet?.slice(0, 8)}...{project.creator_wallet?.slice(-6)}
-                  </p>
-                </div>
-              </div>
-            </div>
-
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
+          {/* Left Column - Visuals & Tabs */}
+          <div className="lg:col-span-7 space-y-8">
             {/* Video/Image */}
-            <div className="aspect-video bg-muted rounded-lg overflow-hidden">
+            <div className="aspect-video bg-muted rounded-xl overflow-hidden border border-border shadow-sm">
               {project.video_url ? (
                 <iframe
                   src={project.video_url}
@@ -210,73 +190,69 @@ export default function ProjectDetailPage() {
             </div>
 
             {/* Tabs */}
-            <Tabs defaultValue="description" className="w-full">
-              <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-                <TabsList className="w-full justify-start min-w-max sm:min-w-0">
-                  <TabsTrigger value="description" className="text-xs sm:text-sm">What's This?</TabsTrigger>
-                  <TabsTrigger value="milestones" className="text-xs sm:text-sm">Progress ({milestones.length})</TabsTrigger>
-                  <TabsTrigger value="updates" className="text-xs sm:text-sm">Updates</TabsTrigger>
-                  <TabsTrigger value="backers" className="text-xs sm:text-sm">Backers ({project.backers_count})</TabsTrigger>
+            <Tabs defaultValue="story" className="w-full">
+              <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 border-b border-border">
+                <TabsList className="w-full justify-start min-w-max sm:min-w-0 bg-transparent p-0 h-auto">
+                  <TabsTrigger 
+                    value="story" 
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
+                  >
+                    Story
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="milestones" 
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
+                  >
+                    Milestones ({milestones.length})
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="updates" 
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
+                  >
+                    Updates
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="comments" 
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
+                  >
+                    Comments ({project.backers_count})
+                  </TabsTrigger>
                 </TabsList>
               </div>
 
-              <TabsContent value="description" className="space-y-6 mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>The full story</CardTitle>
-                  </CardHeader>
-                  <CardContent className="prose prose-invert max-w-none">
+              <TabsContent value="story" className="space-y-6 mt-6">
+                <Card className="border-none shadow-none bg-transparent">
+                  <CardContent className="p-0 prose prose-invert max-w-none">
+                    <h3 className="text-xl font-semibold mb-4">About this project</h3>
                     <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
                       {project.description}
                     </p>
-                    {project.twitter_link || project.github_link || project.website_link ? (
-                      <div className="mt-6 pt-6 border-t border-border">
-                        <h3 className="text-sm font-semibold mb-3">Links</h3>
-                        <div className="flex flex-wrap gap-2">
-                          {project.website_link && (
-                            <Button variant="outline" size="sm" asChild>
-                              <a href={project.website_link} target="_blank" rel="noopener noreferrer">
-                                Website
-                              </a>
-                            </Button>
-                          )}
-                          {project.github_link && (
-                            <Button variant="outline" size="sm" asChild>
-                              <a href={project.github_link} target="_blank" rel="noopener noreferrer">
-                                GitHub
-                              </a>
-                            </Button>
-                          )}
-                          {project.twitter_link && (
-                            <Button variant="outline" size="sm" asChild>
-                              <a href={project.twitter_link} target="_blank" rel="noopener noreferrer">
-                                Twitter
-                              </a>
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    ) : null}
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Who's building this</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-start gap-4">
-                      <Avatar className="h-16 w-16">
-                        <AvatarImage src={project.creator_avatar || "/placeholder.svg"} />
-                        <AvatarFallback>{project.creator_name?.[0] || "?"}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold mb-1">{project.creator_name || "Anonymous Creator"}</h3>
-                        <p className="text-muted-foreground leading-relaxed mb-4">
-                          {project.creator_bio || "Building innovative solutions on the blockchain."}
-                        </p>
-                        <div className="text-xs text-muted-foreground font-mono">
-                          {project.creator_wallet}
+                    
+                    {/* Creator Bio Section */}
+                    <div className="mt-8 pt-8 border-t border-border">
+                      <h3 className="text-lg font-semibold mb-4">Meet the Creator</h3>
+                      <div className="flex items-start gap-4 bg-muted/30 p-6 rounded-lg">
+                        <Avatar className="h-16 w-16 border border-border">
+                          <AvatarImage src={project.creator_avatar || "/placeholder.svg"} />
+                          <AvatarFallback>{project.creator_name?.[0] || "?"}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <h4 className="text-base font-bold mb-1">{project.creator_name || "Anonymous Creator"}</h4>
+                          <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                            {project.creator_bio || "Building innovative solutions on the blockchain."}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {project.website_link && (
+                              <Button variant="outline" size="sm" className="h-7 text-xs" asChild>
+                                <a href={project.website_link} target="_blank" rel="noopener noreferrer">Website</a>
+                              </Button>
+                            )}
+                            {project.twitter_link && (
+                              <Button variant="outline" size="sm" className="h-7 text-xs" asChild>
+                                <a href={project.twitter_link} target="_blank" rel="noopener noreferrer">Twitter</a>
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -286,22 +262,24 @@ export default function ProjectDetailPage() {
 
               <TabsContent value="milestones" className="space-y-4 mt-6">
                 {milestones.length === 0 ? (
-                  <Card>
-                    <CardContent className="p-8 text-center text-muted-foreground">
-                      No milestones defined yet
-                    </CardContent>
-                  </Card>
+                  <div className="text-center py-12 text-muted-foreground bg-muted/30 rounded-lg">
+                    No milestones defined yet
+                  </div>
                 ) : (
                   milestones.map((milestone: any) => {
                     const milestoneProgress = milestone.status === 'completed' ? 100 : milestone.status === 'in_review' ? 75 : milestone.status === 'active' ? 50 : 0
 
                     return (
-                      <Card key={milestone.id}>
+                      <Card key={milestone.id} className="overflow-hidden">
+                        <div className={`h-1 w-full ${
+                          milestone.status === 'completed' ? 'bg-green-500' : 
+                          milestone.status === 'active' ? 'bg-blue-500' : 'bg-muted'
+                        }`} />
                         <CardContent className="p-6">
-                          <div className="flex items-start gap-4 mb-4">
+                          <div className="flex items-start gap-4">
                             <div className="mt-1">
                               {milestone.status === "completed" ? (
-                                <CheckCircle className="h-6 w-6 text-accent" />
+                                <CheckCircle className="h-6 w-6 text-green-500" />
                               ) : (
                                 <Circle className="h-6 w-6 text-muted-foreground" />
                               )}
@@ -309,42 +287,31 @@ export default function ProjectDetailPage() {
                             <div className="flex-1">
                               <div className="flex items-start justify-between gap-4 mb-2">
                                 <div>
-                                  <h3 className="text-xl font-semibold">{milestone.title}</h3>
-                                  <p className="text-sm text-accent">{milestone.percentage}% of funding goal</p>
+                                  <h3 className="text-lg font-semibold">{milestone.title}</h3>
+                                  <p className="text-sm text-muted-foreground">Target: {new Date(milestone.deadline).toLocaleDateString()}</p>
                                 </div>
                                 <Badge
                                   variant={
-                                    milestone.status === "completed"
-                                      ? "default"
-                                      : milestone.status === "in_review"
-                                        ? "secondary"
-                                        : "outline"
+                                    milestone.status === "completed" ? "default" : 
+                                    milestone.status === "active" ? "secondary" : "outline"
                                   }
+                                  className={milestone.status === "completed" ? "bg-green-500 hover:bg-green-600" : ""}
                                 >
-                                  {milestone.status === "completed"
-                                    ? "Completed"
-                                    : milestone.status === "in_review"
-                                      ? "In Review"
-                                      : milestone.status === "active"
-                                        ? "Active"
-                                        : "Locked"}
+                                  {milestone.status === "completed" ? "Completed" : 
+                                   milestone.status === "in_review" ? "In Review" : 
+                                   milestone.status === "active" ? "In Progress" : "Locked"}
                                 </Badge>
                               </div>
                               {milestone.description && (
-                                <p className="text-muted-foreground mb-3">{milestone.description}</p>
+                                <p className="text-muted-foreground mb-4 text-sm">{milestone.description}</p>
                               )}
-                              <p className="text-sm text-muted-foreground mb-4">
-                                Deadline: {new Date(milestone.deadline).toLocaleDateString()}
-                              </p>
-
-                              <div className="space-y-2">
-                                <div className="flex justify-between text-sm">
+                              <div className="space-y-1.5">
+                                <div className="flex justify-between text-xs text-muted-foreground">
                                   <span>Progress</span>
                                   <span>{milestoneProgress}%</span>
                                 </div>
                                 <Progress value={milestoneProgress} className="h-2" />
                               </div>
-
                             </div>
                           </div>
                         </CardContent>
@@ -354,7 +321,7 @@ export default function ProjectDetailPage() {
                 )}
               </TabsContent>
 
-              <TabsContent value="updates" className="space-y-6 mt-6">
+              <TabsContent value="updates" className="mt-6">
                 <UpdatesList
                   projectTitle={project.title}
                   creatorName={project.creator_name || "Anonymous Creator"}
@@ -362,91 +329,111 @@ export default function ProjectDetailPage() {
                 />
               </TabsContent>
 
-              <TabsContent value="backers" className="space-y-4 mt-6">
+              <TabsContent value="comments" className="mt-6">
                 <CommentsList projectId={project.id} />
               </TabsContent>
             </Tabs>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Funding Stats */}
-            <Card className="sticky top-20">
-              <CardContent className="p-6 space-y-6">
-                <div>
-                  <p className="text-3xl font-bold mb-1">${project.raised.toLocaleString()}</p>
-                  <p className="text-muted-foreground mb-4">pledged of ${project.goal.toLocaleString()} goal</p>
-                  <Progress value={progress} className="h-3" />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-2xl font-bold">{project.backers_count}</p>
-                    <p className="text-sm text-muted-foreground">backers</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold">{daysLeft}</p>
-                    <p className="text-sm text-muted-foreground">days left</p>
+          {/* Right Column - Details & Actions */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="sticky top-24 space-y-6">
+              {/* Header Info */}
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <Badge variant="secondary" className="rounded-full px-3 py-0.5">{project.category}</Badge>
+                  <div className="flex items-center gap-2 ml-auto">
+                    <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full">
+                      <Heart className="h-4 w-4" />
+                    </Button>
+                    <SocialShare title={project.title} description={project.description} />
                   </div>
                 </div>
 
-                <BackProjectButton
-                  projectId={project.id}
-                  creatorWallet={project.creator_wallet}
-                  projectStatus={project.status}
-                  size="lg"
-                  className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
-                  onSuccess={refetch}
-                />
-
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  <span>
-                    {daysLeft > 0 ? `${daysLeft} days left` : project.deadline ? 'Campaign ended' : 'No deadline set'}
+                <h1 className="text-3xl md:text-4xl font-bold mb-3 leading-tight">{project.title}</h1>
+                
+                <div className="flex items-center gap-3 text-muted-foreground mb-6">
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage src={project.creator_avatar || "/placeholder.svg"} />
+                    <AvatarFallback>{project.creator_name?.[0] || "?"}</AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm">
+                    by <span className="font-medium text-foreground">{project.creator_name || "Anonymous"}</span>
                   </span>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
 
-            {/* Project Info */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Project Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Status</span>
-                  <Badge 
-                    variant="secondary"
-                    className={
-                      project.status === 'active' 
-                        ? 'bg-green-500/20 text-green-400 border-green-500/30' 
-                        : project.status === 'queue' || project.status === 'pending'
-                        ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
-                        : project.status === 'funded' || project.status === 'completed'
-                        ? 'bg-accent/20 text-accent border-accent/30'
-                        : ''
-                    }
-                  >
-                    {project.status === 'queue' ? 'In Review' : project.status.charAt(0).toUpperCase() + project.status.slice(1)}
-                  </Badge>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Category</span>
-                  <span>{project.category}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Created</span>
-                  <span>{new Date(project.created_at).toLocaleDateString()}</span>
-                </div>
-                {milestones.length > 0 && (
-                  <div className="flex justify-between">
+              {/* Funding Card */}
+              <Card className="border-accent/20 bg-accent/5 overflow-hidden shadow-lg">
+                <CardContent className="p-6 space-y-6">
+                  <div className="space-y-2">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold">${project.raised.toLocaleString()}</span>
+                      <span className="text-muted-foreground">raised of ${project.goal.toLocaleString()}</span>
+                    </div>
+                    <Progress value={progress} className="h-3" />
+                    <div className="flex justify-between text-sm text-muted-foreground pt-1">
+                      <span>{Math.round(progress)}% funded</span>
+                      <span>{daysLeft} days left</span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 py-2 border-y border-border/50">
+                    <div>
+                      <p className="text-2xl font-bold">{project.backers_count}</p>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider">Backers</p>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{daysLeft}</p>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider">Days to go</p>
+                    </div>
+                  </div>
+
+                  <BackProjectButton
+                    projectId={project.id}
+                    creatorWallet={project.creator_wallet}
+                    projectStatus={project.status}
+                    size="lg"
+                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 text-lg shadow-md"
+                    onSuccess={refetch}
+                  />
+
+                  <p className="text-xs text-center text-muted-foreground">
+                    All or nothing. This project will only be funded if it reaches its goal by {new Date(project.deadline).toLocaleDateString()}.
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Project Details Card */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">Project Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  <div className="flex justify-between py-2 border-b border-border/50">
+                    <span className="text-muted-foreground">Status</span>
+                    <Badge 
+                      variant="secondary"
+                      className={
+                        project.status === 'active' 
+                          ? 'bg-green-500/10 text-green-500 hover:bg-green-500/20' 
+                          : ''
+                      }
+                    >
+                      {project.status === 'queue' ? 'In Review' : project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-border/50">
+                    <span className="text-muted-foreground">Created</span>
+                    <span>{new Date(project.created_at).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex justify-between py-2">
                     <span className="text-muted-foreground">Milestones</span>
                     <span>{milestones.length}</span>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>

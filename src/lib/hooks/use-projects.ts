@@ -83,7 +83,7 @@ export function useProject(id: string) {
       setError(null)
 
       try {
-        const response = await fetch(`/api/projects/${id}`)
+        const response = await fetch(`/api/projects/${id}`, { cache: 'no-store' })
         
         if (!response.ok) {
           throw new Error('Failed to fetch project')

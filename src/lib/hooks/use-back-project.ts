@@ -136,15 +136,7 @@ export function useBackProject() {
       setStatus('success')
       const explorerUrl = getExplorerTransactionUrl(signature)
       
-      toast.success("Successfully backed project! 🎉", { 
-        id: "backing",
-        description: "Your support has been recorded on the blockchain",
-        duration: 5000,
-        action: {
-          label: "View TX",
-          onClick: () => window.open(explorerUrl, '_blank')
-        }
-      })
+      // Success modal will be shown by the component
       
       return { 
         success: true, 
@@ -185,7 +177,8 @@ export function useBackProject() {
   ) => {
     try {
       const response = await fetch(
-        `/api/backing/${projectId}?wallet=${walletAddress}`
+        `/api/backing/${projectId}?wallet=${walletAddress}`,
+        { cache: 'no-store' }
       )
       
       if (!response.ok) return { hasBacked: false }

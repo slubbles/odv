@@ -200,9 +200,20 @@ export async function GET(
       if (!walletAddress) {
         return NextResponse.json({ backers: [] })
       }
+      
+      // Simulate backing for specific projects in mock mode
+      const mockBackedProjects = ['1', '2', '6']
+      const isBacked = mockBackedProjects.includes(projectId)
+      
       return NextResponse.json({
-        hasBacked: false, // Default to false in mock mode
-        backing: null
+        hasBacked: isBacked,
+        backing: isBacked ? {
+          id: `mock-backing-${projectId}`,
+          project_id: projectId,
+          wallet_address: walletAddress,
+          amount: 1,
+          created_at: new Date().toISOString()
+        } : null
       })
     }
 

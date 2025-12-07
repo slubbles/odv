@@ -78,43 +78,43 @@ export function ProjectCard({
           </div>
         )}
       </Link>
-      <CardContent className="p-3 sm:p-5 flex-1 flex flex-col min-w-0">
+      <CardContent className="p-3 sm:p-4 flex-1 flex flex-col min-w-0">
         <Link href={`/project/${id}`} className="flex-1 flex flex-col">
-          <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-            <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
+          <div className="flex items-center gap-2 sm:gap-2 mb-2 sm:mb-2">
+            <Avatar className="h-5 w-5 sm:h-5 sm:w-5">
               <AvatarImage src={creator.avatar || "/placeholder.svg"} />
-              <AvatarFallback>{creator.name[0]}</AvatarFallback>
+              <AvatarFallback className="text-[10px]">{creator.name[0]}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-xs sm:text-sm text-muted-foreground truncate">{creator.name}</p>
+              <p className="text-[10px] sm:text-[10px] text-muted-foreground truncate">{creator.name}</p>
             </div>
-            <Badge variant="secondary" className="text-[10px] sm:text-xs px-1.5 py-0 sm:px-2.5 sm:py-0.5 h-5 sm:h-auto">
+            <Badge variant="secondary" className="text-[10px] sm:text-[10px] px-1.5 py-0 h-4 sm:h-4">
               {category}
             </Badge>
           </div>
 
-          <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 line-clamp-1 sm:line-clamp-2 group-hover:text-accent transition-colors">{title}</h3>
-          <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mb-3 sm:mb-3">{description}</p>
+          <h3 className="text-sm sm:text-sm font-semibold mb-1 sm:mb-1 line-clamp-1 group-hover:text-accent transition-colors">{title}</h3>
+          <p className="text-[10px] sm:text-[10px] text-muted-foreground line-clamp-2 mb-2 sm:mb-2">{description}</p>
 
-          <div className="mt-auto space-y-2 sm:space-y-2">
+          <div className="mt-auto space-y-1.5 sm:space-y-1.5">
             <div>
-              <div className="flex justify-between text-xs sm:text-sm mb-1 sm:mb-2">
+              <div className="flex justify-between text-[10px] sm:text-xs mb-1">
                 <span className="font-semibold text-accent">${raised.toLocaleString()}</span>
                 <span className="text-muted-foreground">of ${goal.toLocaleString()}</span>
               </div>
               <Progress
                 value={progress}
-                className="h-1.5 sm:h-2 [&>div]:bg-gradient-to-r [&>div]:from-accent [&>div]:to-accent/70 [&>div]:transition-all [&>div]:duration-500"
+                className="h-1 sm:h-1.5 [&>div]:bg-gradient-to-r [&>div]:from-accent [&>div]:to-accent/70 [&>div]:transition-all [&>div]:duration-500"
               />
             </div>
 
-            <div className="flex items-center justify-between text-[10px] sm:text-sm text-muted-foreground">
+            <div className="flex items-center justify-between text-[10px] sm:text-[10px] text-muted-foreground">
               <div className="flex items-center gap-1">
-                <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+                <Users className="h-3 w-3" />
                 <span>{backers} backers</span>
               </div>
               <div className="flex items-center gap-1">
-                <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                <Clock className="h-3 w-3" />
                 <span>{daysLeft > 0 ? `${daysLeft} days left` : 'Ended'}</span>
               </div>
             </div>
@@ -122,9 +122,9 @@ export function ProjectCard({
         </Link>
         
         {showBackButton && status === 'active' && (
-          <Link href={`/project/${id}`} className="mt-3 sm:mt-4 block">
-            <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-8 sm:h-9 text-xs sm:text-sm">
-              <Heart className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+          <Link href={`/project/${id}`} className="mt-2 sm:mt-3 block">
+            <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-7 sm:h-8 text-xs">
+              <Heart className="mr-1.5 h-3 w-3" />
               Fund This Project - $1
             </Button>
           </Link>

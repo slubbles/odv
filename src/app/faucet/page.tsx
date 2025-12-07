@@ -23,6 +23,8 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 
+import { SuccessModal } from "@/components/success-modal"
+
 interface FaucetInfo {
   mint: string
   amountPerRequest: number
@@ -41,6 +43,7 @@ export default function FaucetPage() {
   const [copied, setCopied] = useState(false)
   const [faucetInfo, setFaucetInfo] = useState<FaucetInfo | null>(null)
   const [cooldownRemaining, setCooldownRemaining] = useState<number | null>(null)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   // Auto-fill wallet address when connected
   useEffect(() => {
@@ -103,13 +106,7 @@ export default function FaucetPage() {
 
       setSuccess(true)
       setLastTx(data.signature)
-      toast.success(`${data.amount} Test USDC sent!`, {
-        description: "Tokens should appear in your wallet shortly",
-        action: {
-          label: "View TX",
-          onClick: () => window.open(data.explorerUrl, "_blank"),
-        },
-      })
+      setShowSuccessModal(true)
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to request tokens")
     } finally {
@@ -137,6 +134,15 @@ export default function FaucetPage() {
       <Header />
 
       <main className="flex-1 container mx-auto px-4 py-12 max-w-2xl">
+        <SuccessModal
+          open={showSuccessModal}
+          onOpenChange={setShowSuccessModal}
+          title="Tokens Sent Successfully!"
+          description="100 Test USDC has been sent to your wallet. You can now use these tokens to back projects."
+          txSignature={lastTx || undefined}
+          actionLabel="Check Wallet"
+          onAction={() => window.location.href = "/wallet"}
+        />
         {/* Hero Section */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/20 mb-6">

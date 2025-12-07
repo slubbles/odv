@@ -90,8 +90,8 @@ export function useBackerDashboard() {
 
       try {
         // In a real app, this would be /api/backing/user endpoint
-        // For now, we'll fetch all active projects and check backing status
-        const response = await fetch('/api/projects?status=active')
+        // For now, we'll fetch all projects and check backing status
+        const response = await fetch('/api/projects?status=all')
         
         if (!response.ok) {
           throw new Error('Failed to fetch projects')
@@ -106,7 +106,8 @@ export function useBackerDashboard() {
 
         for (const project of allProjects) {
           const backingStatus = await fetch(
-            `/api/backing/${project.id}?wallet=${publicKey.toString()}`
+            `/api/backing/${project.id}?wallet=${publicKey.toString()}`,
+            { cache: 'no-store' }
           ).then(r => r.json()).catch(() => ({ hasBacked: false }))
 
           if (backingStatus.hasBacked) {

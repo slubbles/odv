@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Upload, CheckCircle2, AlertCircle, Loader2, Clock, ExternalLink } from "lucide-react"
+import { Upload, CheckCircle2, AlertCircle, Loader2, Clock, ExternalLink, Pencil } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
 
@@ -100,6 +100,11 @@ export default function SubmitPage() {
       return
     }
 
+    if (parseFloat(formData.goal) < 100) {
+      toast.error("Minimum funding goal is $100")
+      return
+    }
+
     if (formData.milestones.length === 0) {
       toast.error("Please add at least one milestone")
       return
@@ -150,7 +155,8 @@ export default function SubmitPage() {
       
       const confirmation = await connection.confirmTransaction(signature, 'confirmed')
       if (confirmation.value.err) {
-          throw new Error(`Transaction failed: ${JSON.stringify(confirmation.value.err)}`)
+          const errStr = JSON.stringify(confirmation.value.err)
+          throw new Error(`Transaction failed: ${errStr}`)
       }
 
       toast.success("Campaign initialized on blockchain!")
@@ -198,7 +204,13 @@ export default function SubmitPage() {
 
     } catch (error: any) {
       console.error('Failed to create project:', error)
-      toast.error(error.message || 'Failed to create project')
+      
+      // Handle specific errors
+      if (error.message?.includes("NFT status") || error.toString().includes("NFT status")) {
+         toast.error("Wallet Error: Please try disconnecting and reconnecting your wallet, then try again. This often happens if the simulation fails.")
+      } else {
+         toast.error(error.message || 'Failed to create project')
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -218,6 +230,10 @@ export default function SubmitPage() {
         toast.error("Please provide a project description")
         return
       }
+      if (formData.description.length < 50) {
+        toast.error("Description must be at least 50 characters")
+        return
+      }
     }
 
     if (step === 3) {
@@ -225,6 +241,12 @@ export default function SubmitPage() {
         toast.error("Please set a funding goal and duration")
         return
       }
+      
+      if (parseFloat(formData.goal) < 100) {
+        toast.error("Minimum funding goal is $100")
+        return
+      }
+
       if (formData.milestones.length === 0) {
         toast.error("Please add at least one milestone")
         return
@@ -347,22 +369,30 @@ export default function SubmitPage() {
             ))}
           </div>
           {/* Step Labels */}
-          <div className="grid grid-cols-4 gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto">
-            <span className={`text-center ${step >= 1 ? 'text-foreground font-medium' : ''}`}>Basic Info</span>
-            <span className={`text-center ${step >= 2 ? 'text-foreground font-medium' : ''}`}>Details</span>
-            <span className={`text-center ${step >= 3 ? 'text-foreground font-medium' : ''}`}>Funding</span>
-            <span className={`text-center ${step >= 4 ? 'text-foreground font-medium' : ''}`}>Review</span>
+          <div className="flex items-center justify-center max-w-2xl mx-auto">
+            <div className="flex-1 text-center">
+              <span className={`text-xs sm:text-sm ${step >= 1 ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>Concept</span>
+            </div>
+            <div className="flex-1 text-center">
+              <span className={`text-xs sm:text-sm ${step >= 2 ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>Details</span>
+            </div>
+            <div className="flex-1 text-center">
+              <span className={`text-xs sm:text-sm ${step >= 3 ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>Milestones</span>
+            </div>
+            <div className="flex-1 text-center">
+              <span className={`text-xs sm:text-sm ${step >= 4 ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>Review</span>
+            </div>
           </div>
         </div>
 
         {/* Form Steps */}
-        <Card>
+        <Card className="max-w-3xl mx-auto">
           <CardHeader>
-            <CardTitle>
-              {step === 1 && "Basic Info"}
-              {step === 2 && "The Details"}
-              {step === 3 && "Funding & Rewards"}
-              {step === 4 && "Review"}
+            <CardTitle className="text-center">
+              {step === 1 && "Project Concept"}
+              {step === 2 && "Project Details"}
+              {step === 3 && "Milestones & Funding"}
+              {step === 4 && "Review Project"}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -430,6 +460,12 @@ export default function SubmitPage() {
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
                   />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>This will be shown on your pitch on /discover page</span>
+                    <span className={formData.description.length < 50 ? "text-red-500" : "text-green-500"}>
+                      {formData.description.length}/50 characters minimum
+                    </span>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -590,14 +626,89 @@ export default function SubmitPage() {
             {step === 4 && (
               <div className="space-y-6">
                 <div className="space-y-4">
-                  <h3 className="font-semibold">Project Summary</h3>
-                  <div className="space-y-2 text-sm">
-                    <p><span className="text-muted-foreground">Title:</span> {formData.title}</p>
-                    <p><span className="text-muted-foreground">Category:</span> {formData.category}</p>
-                    <p><span className="text-muted-foreground">Tagline:</span> {formData.tagline}</p>
-                    <p><span className="text-muted-foreground">Goal:</span> ${formData.goal}</p>
-                    <p><span className="text-muted-foreground">Duration:</span> {formData.duration} days</p>
-                    <p><span className="text-muted-foreground">Milestones:</span> {formData.milestones.length}</p>
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold">Project Summary</h3>
+                  </div>
+                  <div className="space-y-3 text-sm bg-muted/30 p-4 rounded-lg">
+                    <div className="flex items-center justify-between mb-2 border-b border-border/50 pb-2">
+                      <span className="font-medium">Basic Info</span>
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setStep(1)}>
+                        <Pencil className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-muted-foreground">Title:</span>
+                      <span className="col-span-2 font-medium">{formData.title}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-muted-foreground">Category:</span>
+                      <span className="col-span-2">{formData.category}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-muted-foreground">Tagline:</span>
+                      <span className="col-span-2">{formData.tagline}</span>
+                    </div>
+                    {formData.imageUrl && (
+                      <div className="grid grid-cols-3 gap-2">
+                        <span className="text-muted-foreground">Image:</span>
+                        <span className="col-span-2 truncate text-xs">{formData.imageUrl}</span>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between mb-2 mt-4 border-b border-border/50 pb-2">
+                      <span className="font-medium">Story</span>
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setStep(2)}>
+                        <Pencil className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-muted-foreground">Description:</span>
+                      <span className="col-span-2 line-clamp-3 text-xs">{formData.description}</span>
+                    </div>
+                    {formData.problem && (
+                      <div className="grid grid-cols-3 gap-2">
+                        <span className="text-muted-foreground">Problem:</span>
+                        <span className="col-span-2 line-clamp-2 text-xs">{formData.problem}</span>
+                      </div>
+                    )}
+                    {formData.solution && (
+                      <div className="grid grid-cols-3 gap-2">
+                        <span className="text-muted-foreground">Solution:</span>
+                        <span className="col-span-2 line-clamp-2 text-xs">{formData.solution}</span>
+                      </div>
+                    )}
+                    {formData.videoUrl && (
+                      <div className="grid grid-cols-3 gap-2">
+                        <span className="text-muted-foreground">Video:</span>
+                        <span className="col-span-2 truncate text-xs">{formData.videoUrl}</span>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between mb-2 mt-4 border-b border-border/50 pb-2">
+                      <span className="font-medium">Funding</span>
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setStep(3)}>
+                        <Pencil className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-muted-foreground">Goal:</span>
+                      <span className="col-span-2 font-medium">${formData.goal}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-muted-foreground">Duration:</span>
+                      <span className="col-span-2">{formData.duration} days</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-muted-foreground">Milestones:</span>
+                      <div className="col-span-2 space-y-1">
+                        <p>{formData.milestones.length} milestones defined</p>
+                        <ul className="list-disc list-inside text-xs text-muted-foreground">
+                          {formData.milestones.map((m, i) => (
+                            <li key={i}>{m.title} ({m.percentage}%) - {m.deadline}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

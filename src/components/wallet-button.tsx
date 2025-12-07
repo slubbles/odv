@@ -18,11 +18,17 @@ import {
   Copy, 
   ExternalLink, 
   ChevronDown,
-  CheckCircle2,
-  Loader2
+  Loader2,
+  User,
+  LayoutDashboard,
+  Heart,
+  HelpCircle,
+  CheckCircle2
 } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 // SOON Testnet config
 const SOON_EXPLORER = 'https://explorer.testnet.soo.network'
@@ -116,94 +122,63 @@ export function WalletButton() {
     )
   }
 
-  // Connected state - CobaltX style
+  // Connected state - Avatar Dropdown only
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-3">
       {/* Network Badge */}
-      <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+      <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
         <span className="text-xs font-medium text-emerald-400">SOON Testnet</span>
       </div>
 
-      {/* Wallet Dropdown */}
+      {/* Profile Avatar Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button 
-            variant="outline" 
-            className="gap-2 bg-background/50 border-border hover:bg-accent"
-          >
-            {wallet?.adapter.icon && (
-              <img 
-                src={wallet.adapter.icon} 
-                alt={wallet.adapter.name}
-                className="w-4 h-4 rounded"
-              />
-            )}
-            <span className="font-mono text-sm">
-              {publicKey ? truncateAddress(publicKey.toString()) : 'Connected'}
-            </span>
-            <ChevronDown className="h-3 w-3 opacity-50" />
+          <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 hover:bg-transparent focus-visible:ring-0">
+            <Avatar className="h-10 w-10 border border-border transition-transform hover:scale-105">
+              <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${publicKey?.toString()}`} alt="Wallet Avatar" />
+              <AvatarFallback>
+                <User className="h-5 w-5 text-muted-foreground" />
+              </AvatarFallback>
+            </Avatar>
+            <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
           </Button>
         </DropdownMenuTrigger>
         
-        <DropdownMenuContent align="end" className="w-64">
-          <DropdownMenuLabel className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-              <span className="text-sm font-medium">Connected</span>
-            </div>
-            {balance !== null && (
-              <span className="text-xs text-muted-foreground">
-                Balance: {balance.toFixed(4)} SOL
-              </span>
-            )}
-          </DropdownMenuLabel>
-          
-          <DropdownMenuSeparator />
-          
-          <DropdownMenuItem onClick={handleCopyAddress}>
-            {copied ? (
-              <CheckCircle2 className="h-4 w-4 mr-2 text-emerald-500" />
-            ) : (
-              <Copy className="h-4 w-4 mr-2" />
-            )}
-            Copy Address
+        <DropdownMenuContent align="end" className="w-64 p-2">
+          <div className="flex flex-col p-2 mb-2 bg-muted/30 rounded-lg">
+            <span className="text-xs text-muted-foreground mb-1">Wallet Balance</span>
+            <span className="text-lg font-bold flex items-center gap-1">
+              {balance !== null ? `${balance.toFixed(4)}` : '...'} 
+              <span className="text-sm font-normal text-muted-foreground">SOL</span>
+            </span>
+            <span className="text-xs font-mono text-muted-foreground mt-1 truncate">
+              {publicKey ? truncateAddress(publicKey.toString(), 6) : ''}
+            </span>
+          </div>
+
+          <DropdownMenuItem onClick={handleCopyAddress} className="cursor-pointer">
+            <Copy className="mr-2 h-4 w-4" />
+            <span>Copy Address</span>
           </DropdownMenuItem>
           
-          <DropdownMenuItem onClick={handleOpenExplorer}>
-            <ExternalLink className="h-4 w-4 mr-2" />
-            View on Explorer
+          <DropdownMenuItem onClick={handleOpenExplorer} className="cursor-pointer">
+            <ExternalLink className="mr-2 h-4 w-4" />
+            <span>View on Explorer</span>
           </DropdownMenuItem>
           
           <DropdownMenuSeparator />
           
-          <DropdownMenuItem asChild>
-            <Link href="/profile/wallet">
-              <Wallet className="h-4 w-4 mr-2" />
-              Wallet Details
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href="/help">
+              <HelpCircle className="mr-2 h-4 w-4" />
+              <span>Help & Support</span>
             </Link>
           </DropdownMenuItem>
 
-          <DropdownMenuItem asChild>
-            <Link href="/profile">
-              <CheckCircle2 className="h-4 w-4 mr-2" />
-              Profile Settings
-            </Link>
-          </DropdownMenuItem>
-          
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard">
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Dashboard
-            </Link>
-          </DropdownMenuItem>
-          
           <DropdownMenuSeparator />
           
-          <DropdownMenuItem 
-            onClick={handleDisconnect}
-            className="text-destructive focus:text-destructive"
-          >
+          <DropdownMenuItem onClick={handleDisconnect} className="text-destructive focus:text-destructive cursor-pointer">
             <LogOut className="h-4 w-4 mr-2" />
             Disconnect
           </DropdownMenuItem>

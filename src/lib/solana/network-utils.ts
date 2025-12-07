@@ -9,7 +9,7 @@ export type NetworkType = 'soon-testnet' | 'soon-devnet' | 'devnet' | 'mainnet-b
  * Check if the current network is SOON Network
  */
 export function isSoonNetwork(): boolean {
-    const network = process.env.NEXT_PUBLIC_SOLANA_NETWORK || '';
+    const network = process.env.NEXT_PUBLIC_SOLANA_NETWORK || 'soon-testnet';
     return network.includes('soon');
 }
 
@@ -31,12 +31,14 @@ export function getRpcEndpoint(): string {
  * @returns Full URL to view the transaction on the appropriate explorer
  */
 export function getExplorerTransactionUrl(signature: string): string {
-    if (isSoonNetwork()) {
+    // Always use SOON explorer if we are on SOON network (which is default)
+    // Or if the network is not explicitly set to mainnet/devnet (without soon)
+    const network = getNetworkType();
+    if (isSoonNetwork() || !process.env.NEXT_PUBLIC_SOLANA_NETWORK || (network !== 'mainnet-beta' && network !== 'devnet')) {
         const explorerBase = process.env.NEXT_PUBLIC_SOON_EXPLORER_URL || 'https://explorer.testnet.soo.network';
         return `${explorerBase}/tx/${signature}`;
     }
     
-    const network = getNetworkType();
     const cluster = network === 'mainnet-beta' ? '' : `?cluster=${network}`;
     return `https://explorer.solana.com/tx/${signature}${cluster}`;
 }

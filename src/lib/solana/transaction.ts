@@ -294,16 +294,32 @@ export async function createInitializeCampaignTransaction(
         true // allowOwnerOffCurve
     );
 
-    // 3. Add instruction to create Campaign Vault (ATA)
+    // 3. Check if Campaign Vault (ATA) exists
     // This is needed because the program's initialize instruction doesn't create the vault
-    transaction.add(
-        createAssociatedTokenAccountInstruction(
-            creatorPublicKey, // payer
-            campaignVault, // ata
-            campaignPDA, // owner
-            USDC_MINT_ADDRESS // mint
-        )
-    );
+    try {
+        await getAccount(connection, campaignVault);
+        // If it exists, we don't need to create it
+    } catch (error: unknown) {
+        // If it doesn't exist, add instruction to create it
+        if (error instanceof TokenAccountNotFoundError || error instanceof TokenInvalidAccountOwnerError) {
+            transaction.add(
+                createAssociatedTokenAccountInstruction(
+                    creatorPublicKey, // payer
+                    campaignVault, // ata
+                    campaignPDA, // owner
+                    USDC_MINT_ADDRESS // mint
+                )
+            );
+        } else {
+            // If it's another error (e.g. network), rethrow
+            console.warn("Error checking campaign vault:", error);
+            // We'll try to create it anyway if we can't verify, but this might fail
+            // transaction.add(...) 
+            // Better to rethrow or assume it doesn't exist? 
+            // If we can't check, we probably can't send either.
+            throw error;
+        }
+    }
 
     // 4. Prepare Initialize instruction data
     const args = {
