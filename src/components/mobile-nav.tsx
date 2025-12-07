@@ -29,8 +29,10 @@ export function MobileNav() {
   // Fetch SOL balance
   useEffect(() => {
     if (!publicKey || !connection) {
-      setBalance(null)
-      return
+      const timer = setTimeout(() => {
+        setBalance((prev) => (prev !== null ? null : prev))
+      }, 0)
+      return () => clearTimeout(timer)
     }
 
     const fetchBalance = async () => {
@@ -144,33 +146,57 @@ export function MobileNav() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="myspace" className="border-b-0">
-              <AccordionTrigger className="hover:no-underline py-3">My Portfolio</AccordionTrigger>
+            <AccordionItem value="fund-projects" className="border-b-0">
+              <AccordionTrigger className="hover:no-underline py-3">Fund Projects</AccordionTrigger>
               <AccordionContent>
                 <div className="flex flex-col gap-1">
-                  <Link
-                    href="/portfolio"
-                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
-                    onClick={() => setOpen(false)}
-                  >
-                    <span className="font-medium">Backed Projects</span>
-                    <span className="text-xs text-muted-foreground">View projects you have supported</span>
-                  </Link>
                   <Link
                     href="/dashboard/backer"
                     className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
                   >
                     <span className="font-medium">Backer Dashboard</span>
-                    <span className="text-xs text-muted-foreground">Manage your contributions and rewards</span>
+                    <span className="text-xs text-muted-foreground">Track your contributions</span>
                   </Link>
+                  <Link
+                    href="/portfolio"
+                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="font-medium">Funded Projects</span>
+                    <span className="text-xs text-muted-foreground">View projects you have funded</span>
+                  </Link>
+                  <Link
+                    href="/profile/wallet"
+                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="font-medium">Wallet & Earnings</span>
+                    <span className="text-xs text-muted-foreground">Manage your funds</span>
+                  </Link>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="launch-project" className="border-b-0">
+              <AccordionTrigger className="hover:no-underline py-3">Launch a Project</AccordionTrigger>
+              <AccordionContent>
+                <div className="flex flex-col gap-1">
                   <Link
                     href="/dashboard/creator"
                     className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
                   >
                     <span className="font-medium">Creator Dashboard</span>
-                    <span className="text-xs text-muted-foreground">Manage your own projects</span>
+                    <span className="text-xs text-muted-foreground">Manage your campaigns</span>
+                  </Link>
+                  <Link
+                    href="/submit"
+                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="font-medium">Start a Project</span>
+                    <span className="text-xs text-muted-foreground">Launch a new campaign</span>
                   </Link>
                 </div>
               </AccordionContent>
@@ -181,14 +207,6 @@ export function MobileNav() {
               <AccordionContent>
                 <div className="flex flex-col gap-1">
                   <Link
-                    href="/wallet"
-                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
-                    onClick={() => setOpen(false)}
-                  >
-                    <span className="font-medium">Wallet & Earnings</span>
-                    <span className="text-xs text-muted-foreground">View your wallet balance and earnings</span>
-                  </Link>
-                  <Link
                     href="/notifications"
                     className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
@@ -197,7 +215,7 @@ export function MobileNav() {
                     <span className="text-xs text-muted-foreground">View your latest updates</span>
                   </Link>
                   <Link
-                    href="/settings"
+                    href="/profile/account"
                     className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
                   >

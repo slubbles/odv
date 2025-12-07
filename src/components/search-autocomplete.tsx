@@ -34,6 +34,7 @@ export function SearchAutocomplete() {
       setFilteredSuggestions(suggestions)
       setIsOpen(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query])
 
   return (

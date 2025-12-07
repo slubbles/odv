@@ -30,7 +30,7 @@ export function QuickBackModal({ isOpen, onClose, projectTitle }: QuickBackModal
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Back This Project</DialogTitle>
+          <DialogTitle>Fund This Project</DialogTitle>
         </DialogHeader>
         <div className="space-y-6 py-4">
           <div>
@@ -84,7 +84,7 @@ export function QuickBackModal({ isOpen, onClose, projectTitle }: QuickBackModal
                   Processing...
                 </span>
               ) : (
-                `Back with $${amount}`
+                `Fund with $${amount}`
               )}
             </Button>
           </div>

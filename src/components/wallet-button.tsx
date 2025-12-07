@@ -41,8 +41,11 @@ export function WalletButton() {
   // Fetch SOL balance
   useEffect(() => {
     if (!publicKey || !connection) {
-      setBalance(null)
-      return
+      // Only reset if we actually have a balance to clear, to avoid redundant updates
+      const timer = setTimeout(() => {
+        setBalance((prev) => (prev !== null ? null : prev))
+      }, 0)
+      return () => clearTimeout(timer)
     }
 
     const fetchBalance = async () => {
@@ -175,9 +178,16 @@ export function WalletButton() {
           <DropdownMenuSeparator />
           
           <DropdownMenuItem asChild>
-            <Link href="/wallet">
+            <Link href="/profile/wallet">
               <Wallet className="h-4 w-4 mr-2" />
               Wallet Details
+            </Link>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem asChild>
+            <Link href="/profile">
+              <CheckCircle2 className="h-4 w-4 mr-2" />
+              Profile Settings
             </Link>
           </DropdownMenuItem>
           

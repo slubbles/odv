@@ -20,7 +20,8 @@ export function ViewingIndicator({ projectId }: { projectId: string }) {
     }, 8000)
 
     return () => clearInterval(interval)
-  }, [projectId])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   if (viewerCount === 0) return null
 

@@ -15,6 +15,11 @@ import { Badge } from "@/components/ui/badge"
 import { Loader2, Wallet, ArrowDownToLine, CheckCircle, ExternalLink } from "lucide-react"
 import { toast } from "sonner"
 import { useWallet, useConnection } from "@solana/wallet-adapter-react"
+import { 
+  createWithdrawTransaction, 
+  sendAndConfirmTransactionWithRetry,
+  getTransactionExplorerUrl 
+} from "@/lib/solana/transaction"
 
 interface WithdrawalHistory {
   id: string
@@ -81,29 +86,39 @@ export function WithdrawFundsModal({
     setIsWithdrawing(true)
 
     try {
-      // TODO: Replace with actual Solana withdrawal transaction
-      // 1. Create withdrawal transaction
-      // 2. Sign transaction
-      // 3. Send and confirm
-      // 4. Record in database
+      // Create withdrawal transaction
+      const transaction = await createWithdrawTransaction(connection, publicKey);
       
-      // Simulate transaction
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      // Sign transaction
+      if (!signTransaction) {
+        throw new Error("Wallet does not support signing");
+      }
+      
+      const signedTransaction = await signTransaction(transaction);
+      
+      // Send and confirm
+      const signature = await sendAndConfirmTransactionWithRetry(
+        connection, 
+        signedTransaction
+      );
 
-      const mockSignature = `${Math.random().toString(36).substring(7)}...${Math.random().toString(36).substring(7)}`
-      setTxSignature(mockSignature)
+      setTxSignature(signature)
       setShowSuccess(true)
       toast.success("Withdrawal successful!")
+
+      // Call onSuccess callback if provided
+      if (onSuccess) {
+        onSuccess();
+      }
 
       setTimeout(() => {
         setIsOpen(false)
         setShowSuccess(false)
         setTxSignature(null)
-        onSuccess?.()
       }, 3000)
     } catch (error) {
       console.error("Withdrawal failed:", error)
-      toast.error("Withdrawal failed. Please try again.")
+      toast.error(error instanceof Error ? error.message : "Failed to withdraw funds")
     } finally {
       setIsWithdrawing(false)
     }
@@ -142,12 +157,12 @@ export function WithdrawFundsModal({
                   </p>
                   {txSignature && (
                     <a
-                      href={`https://explorer.solana.com/tx/${txSignature}?cluster=devnet`}
+                      href={getTransactionExplorerUrl(txSignature)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-sm text-accent hover:underline inline-flex items-center gap-1"
                     >
-                      View on Solana Explorer <ExternalLink className="h-3 w-3" />
+                      View on Explorer <ExternalLink className="h-3 w-3" />
                     </a>
                   )}
                 </div>
@@ -221,7 +236,7 @@ export function WithdrawFundsModal({
                         </Badge>
                         {withdrawal.status === "completed" && (
                           <a
-                            href={`https://explorer.solana.com/tx/${withdrawal.transaction_signature}?cluster=devnet`}
+                            href={getTransactionExplorerUrl(withdrawal.transaction_signature)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="ml-2 text-accent hover:text-accent/80"

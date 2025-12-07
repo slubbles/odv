@@ -40,11 +40,11 @@ const PROGRAM_ERROR_CODES: Record<number, { message: string; suggestion: string 
   0x1770: { message: 'Campaign not active', suggestion: 'This campaign is no longer accepting funds.' },
   0x1771: { message: 'Campaign goal already met', suggestion: 'This campaign has reached its funding goal.' },
   0x1772: { message: 'Campaign deadline passed', suggestion: 'The funding deadline for this campaign has passed.' },
-  0x1773: { message: 'Invalid backing amount', suggestion: 'The backing amount must be exactly $1 USDC.' },
+  0x1773: { message: 'Invalid funding amount', suggestion: 'The funding amount must be exactly $1 USDC.' },
   0x1774: { message: 'Platform paused', suggestion: 'The platform is temporarily paused. Please try again later.' },
   0x1775: { message: 'Not authorized', suggestion: 'You do not have permission to perform this action.' },
   0x1776: { message: 'Milestone not approved', suggestion: 'This milestone has not been approved for release.' },
-  0x1777: { message: 'Already backed', suggestion: 'You have already backed this campaign.' },
+  0x1777: { message: 'Already funded', suggestion: 'You have already funded this campaign.' },
 };
 
 /**
@@ -65,7 +65,7 @@ export function parseBlockchainError(error: unknown): BlockchainError {
       type: 'USER_REJECTED',
       message: 'Transaction rejected by user',
       userMessage: 'Transaction cancelled',
-      suggestion: 'Click "Back Project" again when you\'re ready to approve the transaction.',
+      suggestion: 'Click "Fund Project" again when you\'re ready to approve the transaction.',
       recoverable: true,
       originalError: error instanceof Error ? error : undefined,
     };
@@ -111,7 +111,7 @@ export function parseBlockchainError(error: unknown): BlockchainError {
       type: 'SIMULATION_FAILED',
       message: 'Transaction simulation failed',
       userMessage: 'Transaction cannot be completed',
-      suggestion: 'The transaction failed validation. This might be because the campaign is inactive or you\'ve already backed it.',
+      suggestion: 'The transaction failed validation. This might be because the campaign is inactive or you\'ve already funded it.',
       recoverable: false,
       originalError: error instanceof Error ? error : undefined,
     };
@@ -143,7 +143,7 @@ export function parseBlockchainError(error: unknown): BlockchainError {
       type: 'INSUFFICIENT_FUNDS',
       message: 'Insufficient USDC balance',
       userMessage: 'Not enough USDC',
-      suggestion: 'You need at least $1 USDC to back this project. Get test USDC from the faucet.',
+      suggestion: 'You need at least $1 USDC to fund this project. Get test USDC from the faucet.',
       recoverable: true,
       originalError: error instanceof Error ? error : undefined,
     };

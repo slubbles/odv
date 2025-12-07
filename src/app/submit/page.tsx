@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { useWallet } from "@solana/wallet-adapter-react"
+import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import { useRouter } from "next/navigation"
+import { createInitializeCampaignTransaction } from "@/lib/solana/transaction"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -34,7 +35,8 @@ export default function SubmitPage() {
   const [step, setStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submittedProject, setSubmittedProject] = useState<SubmittedProject | null>(null)
-  const { publicKey, connected } = useWallet()
+  const { connection } = useConnection()
+  const { publicKey, connected, sendTransaction } = useWallet()
   const router = useRouter()
 
   // Get minimum date for milestone deadlines (tomorrow)
@@ -122,8 +124,38 @@ export default function SubmitPage() {
     try {
       // Calculate campaign deadline from duration
       const durationDays = parseInt(formData.duration) || 30
-      const deadline = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000).toISOString()
+      const deadlineDate = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000)
+      const deadlineTimestamp = Math.floor(deadlineDate.getTime() / 1000)
+      const deadlineISO = deadlineDate.toISOString()
 
+      const goalAmount = parseFloat(formData.goal)
+
+      // 1. Create and send blockchain transaction
+      toast.info("Initializing campaign on blockchain...")
+      
+      const transaction = await createInitializeCampaignTransaction(
+          connection,
+          publicKey,
+          goalAmount,
+          deadlineTimestamp,
+          formData.milestones.map(m => ({
+            title: m.title,
+            amount: (goalAmount * m.percentage) / 100
+          }))
+      )
+
+      const signature = await sendTransaction(transaction, connection)
+      
+      toast.info("Transaction sent. Waiting for confirmation...")
+      
+      const confirmation = await connection.confirmTransaction(signature, 'confirmed')
+      if (confirmation.value.err) {
+          throw new Error(`Transaction failed: ${JSON.stringify(confirmation.value.err)}`)
+      }
+
+      toast.success("Campaign initialized on blockchain!")
+
+      // 2. Save metadata to database
       const response = await fetch('/api/projects', {
         method: 'POST',
         headers: {
@@ -134,8 +166,8 @@ export default function SubmitPage() {
           tagline: formData.tagline,
           description: formData.description,
           category: formData.category,
-          goal: parseFloat(formData.goal),
-          deadline: deadline,
+          goal: goalAmount,
+          deadline: deadlineISO,
           video_url: formData.videoUrl || null,
           image_url: formData.imageUrl || null,
           creator_wallet: publicKey.toString(),

@@ -82,9 +82,9 @@ Crowdfunding is broken:
 - **Milestone-based releases** - funds unlock as creators deliver
 - **Transparent**: Everything on-chain
 
-## Why Back This?
+## Why Fund This?
 
-You're not just backing a project. You're:
+You're not just funding a project. You're:
 1. **Proving the concept** - Can a $1 crowdfunding platform work?
 2. **Becoming a founding member** - Your wallet will be recorded forever
 3. **Getting early access** - First to test new features
@@ -124,6 +124,7 @@ export default function ODVCampaignPage() {
 
   useEffect(() => {
     setNow(Date.now())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const progress = (ODV_CAMPAIGN.raised / ODV_CAMPAIGN.goal) * 100
@@ -312,10 +313,10 @@ export default function ODVCampaignPage() {
               </CardContent>
             </Card>
 
-            {/* How to Back */}
+            {/* How to Fund */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">How to Back</CardTitle>
+                <CardTitle className="text-lg">How to Fund</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div className="flex gap-3">
@@ -333,7 +334,7 @@ export default function ODVCampaignPage() {
                 </div>
                 <div className="flex gap-3">
                   <div className="h-6 w-6 rounded-full bg-accent/20 flex items-center justify-center text-accent text-xs font-bold">3</div>
-                  <p className="text-muted-foreground">Click "Back for $1" and approve the transaction</p>
+                  <p className="text-muted-foreground">Click "Fund for $1" and approve the transaction</p>
                 </div>
               </CardContent>
             </Card>

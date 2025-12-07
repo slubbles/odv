@@ -119,6 +119,7 @@ export function Hero3DScene() {
         setIsLowPerf(true)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

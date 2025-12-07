@@ -18,7 +18,7 @@ const ODV_CAMPAIGN = {
 
 Now we're using it to fund... itself.
 
-Back this project for $1 and you'll:
+Fund this project for $1 and you'll:
 • Be a founding backer of the platform
 • Get a Founding Member NFT (when we launch them)
 • Help prove this crazy idea works
@@ -54,6 +54,7 @@ export function ODVFeaturedCampaign({ raised = 0, backersCount = 0 }: ODVFeature
 
   useEffect(() => {
     setNow(Date.now())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const progress = (raised / ODV_CAMPAIGN.goal) * 100

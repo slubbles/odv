@@ -38,6 +38,7 @@ export default function DiscoverPage() {
 
   useEffect(() => {
     setNow(Date.now())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const { projects, loading, error, pagination } = useProjects({

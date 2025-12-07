@@ -78,9 +78,9 @@ export function ProjectCard({
           </div>
         )}
       </Link>
-      <CardContent className="p-3 sm:p-6 flex-1 flex flex-col min-w-0">
+      <CardContent className="p-3 sm:p-5 flex-1 flex flex-col min-w-0">
         <Link href={`/project/${id}`} className="flex-1 flex flex-col">
-          <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-4">
+          <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
             <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
               <AvatarImage src={creator.avatar || "/placeholder.svg"} />
               <AvatarFallback>{creator.name[0]}</AvatarFallback>
@@ -93,10 +93,10 @@ export function ProjectCard({
             </Badge>
           </div>
 
-          <h3 className="text-base sm:text-xl font-semibold mb-1 sm:mb-2 line-clamp-1 sm:line-clamp-2 group-hover:text-accent transition-colors">{title}</h3>
-          <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mb-3 sm:mb-4">{description}</p>
+          <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 line-clamp-1 sm:line-clamp-2 group-hover:text-accent transition-colors">{title}</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mb-3 sm:mb-3">{description}</p>
 
-          <div className="mt-auto space-y-2 sm:space-y-3">
+          <div className="mt-auto space-y-2 sm:space-y-2">
             <div>
               <div className="flex justify-between text-xs sm:text-sm mb-1 sm:mb-2">
                 <span className="font-semibold text-accent">${raised.toLocaleString()}</span>
@@ -123,9 +123,9 @@ export function ProjectCard({
         
         {showBackButton && status === 'active' && (
           <Link href={`/project/${id}`} className="mt-3 sm:mt-4 block">
-            <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-8 sm:h-10 text-xs sm:text-sm">
+            <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-8 sm:h-9 text-xs sm:text-sm">
               <Heart className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-              Back This Project - $1
+              Fund This Project - $1
             </Button>
           </Link>
         )}

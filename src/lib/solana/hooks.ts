@@ -17,6 +17,7 @@ export function useODVProgram() {
 
   useEffect(() => {
     setMounted(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const sdk = useMemo(() => {

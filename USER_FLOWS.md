@@ -24,7 +24,7 @@ OneDollarVentures (ODV) is a Web3 crowdfunding platform where users can:
 - **Admins**: Review and approve projects/milestones
 
 ### Key Features
-- Fixed $1 backing amount (on-chain enforced)
+- Fixed $1 support amount (on-chain enforced)
 - Milestone-based fund release
 - NFT badges for backers
 - Automatic refunds for failed campaigns
@@ -125,17 +125,17 @@ OneDollarVentures (ODV) is a Web3 crowdfunding platform where users can:
 │      ├── Cooldown: 24 hours between requests                │
 │      └── Network: SOON Testnet only                         │
 │                                                             │
-│  STEP 3: BACK A PROJECT                                     │
-│  ═══════════════════════                                    │
+│  STEP 3: SUPPORT A PROJECT                                  │
+│  ══════════════════════════                                 │
 │                                                             │
-│  3.1 Find Project to Back                                   │
+│  3.1 Find Project to Support                                │
 │      ├── Browse /discover                                   │
 │      ├── Use search/filters                                 │
 │      └── Click project to view details                      │
 │                                                             │
-│  3.2 Execute Backing                                        │
+│  3.2 Execute Support                                        │
 │      ├── On project page (/project/[id])                    │
-│      ├── Click "Back This Project" button                   │
+│      ├── Click "Support This Project" button                │
 │      │   └── Button shows "$1" fixed amount                 │
 │      ├── Wallet popup appears                               │
 │      ├── Review transaction details                         │
@@ -143,12 +143,12 @@ OneDollarVentures (ODV) is a Web3 crowdfunding platform where users can:
 │      │   └── Destination: Campaign vault                    │
 │      └── Click "Approve" in wallet                          │
 │                                                             │
-│  3.3 After Backing                                          │
+│  3.3 After Supporting                                       │
 │      ├── Success toast notification                         │
 │      ├── Transaction recorded on-chain                      │
-│      ├── Backing recorded in database                       │
+│      ├── Support recorded in database                       │
 │      ├── Receive NFT badge (Bronze Founder)                 │
-│      └── Button changes to "Already Backed ✓"               │
+│      └── Button changes to "Already Supported ✓"            │
 │                                                             │
 │  STEP 4: TRACK BACKED PROJECTS                              │
 │  ═════════════════════════════                              │
@@ -680,10 +680,10 @@ OneDollarVentures (ODV) is a Web3 crowdfunding platform where users can:
 | `/dashboard/backer` | Backer | Backed projects |
 | `/dashboard/creator` | Creator | Created projects |
 | `/submit` | Creator | Create new project |
-| `/profile` | Any | User profile |
-| `/wallet` | Any | Wallet & transactions |
+| `/profile` | Any | User profile details |
+| `/profile/wallet` | Any | Wallet & transactions |
 | `/notifications` | Any | Notifications |
-| `/settings` | Any | Account settings |
+| `/profile/account` | Any | Account settings |
 
 ### Admin Pages
 | Route | Description |

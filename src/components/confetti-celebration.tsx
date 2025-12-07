@@ -34,6 +34,7 @@ export function ConfettiCelebration({ trigger }: { trigger: boolean }) {
     setParticles(newParticles)
 
     setTimeout(() => setParticles([]), 3000)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trigger])
 
   if (particles.length === 0) return null

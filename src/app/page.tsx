@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { TrendingUp, Users, DollarSign, ArrowRight } from "lucide-react"
 import { AnimatedCounter } from "@/components/animated-counter"
 import { Footer } from "@/components/footer"
+import { FaqSection } from "@/components/faq-section"
 import dynamic from "next/dynamic"
 
 const Hero3DScene = dynamic(() => import("@/components/hero-3d-scene").then((mod) => mod.Hero3DScene), {
@@ -254,6 +255,8 @@ export default function Home() {
             </Card>
           </div>
         </section>
+
+        <FaqSection />
       </main>
 
       <Footer />

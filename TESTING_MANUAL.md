@@ -1,6 +1,6 @@
 # 🧪 ODV Manual Testing Guide
 
-Step-by-step instructions to test all user flows on the platform.
+This guide provides step-by-step instructions to manually verify all core user flows of the OneDollarVentures platform.
 
 ---
 
@@ -47,14 +47,14 @@ Open http://localhost:3000 in your browser.
 
 | # | Action | Expected Result | ✓ |
 |---|--------|-----------------|---|
-| 1.1 | Go to http://localhost:3000 | Homepage loads with hero section | ☐ | YES BUT THE 3D ANIMATION BG LOADS SLOW
+| 1.1 | Go to http://localhost:3000 | Homepage loads with hero section | ☐ |
 | 1.2 | Click "Discover Projects" or go to `/discover` | Project listing page loads | ☐ |
 | 1.3 | Use search bar, type "test" | Search filters projects (or shows "no results") | ☐ |
 | 1.4 | Click category filter (e.g., "Technology") | Projects filter by category | ☐ |
 | 1.5 | Click sort dropdown, select "Newest" | Projects reorder | ☐ |
 | 1.6 | Click any project card | Project detail page loads at `/project/[id]` | ☐ |
 | 1.7 | On project page, view tabs: Story, Milestones, Updates, Comments | All tabs render content | ☐ |
-| 1.8 | Click "Back This Project" button | Prompts to connect wallet | ☐ |
+| 1.8 | Click "Fund This Project" button | Prompts to connect wallet | ☐ |
 | 1.9 | Go to `/creators` | Creators listing page loads | ☐ |
 | 1.10 | Go to `/how-it-works` | How it works page loads | ☐ |
 | 1.11 | Go to `/about` | About page loads | ☐ |
@@ -63,9 +63,9 @@ Open http://localhost:3000 in your browser.
 
 ---
 
-## 🧪 TEST 2: Backer Flow
+## 🧪 TEST 2: Backer Flow (Fund a Project)
 
-**Goal:** Complete the full backer journey
+**Goal:** Complete the full funding journey
 
 ### 2A: Wallet Setup & Faucet
 
@@ -86,243 +86,67 @@ Open http://localhost:3000 in your browser.
 | 2.9 | Paste: `3PNhmxDckddYL24zEfrsHLFLXXvrdzBBoZgfRW8rruDs` | Token found | ☐ |
 | 2.10 | Confirm import | USDC now visible in wallet | ☐ |
 
-### 2B: Back a Project
+### 2B: Fund a Project
 
 | # | Action | Expected Result | ✓ |
 |---|--------|-----------------|---|
 | 2.11 | Go to `/discover` | See list of projects | ☐ |
 | 2.12 | Click an **Active** project | Project detail page | ☐ |
-| 2.13 | Click "Back This Project ($1)" | Wallet popup opens | ☐ |
+| 2.13 | Click "Fund This Project ($1)" | Wallet popup opens | ☐ |
 | 2.14 | Review transaction (1 USDC) | Shows correct amount | ☐ |
 | 2.15 | Click "Approve" in wallet | Transaction processing | ☐ |
 | 2.16 | Wait for confirmation | Success toast notification | ☐ |
-| 2.17 | Button changes to "Already Backed ✓" | Cannot back twice | ☐ |
+| 2.17 | Button changes to "Already Funded ✓" | Cannot fund twice | ☐ |
 
-### 2C: Backer Dashboard
-
-| # | Action | Expected Result | ✓ |
-|---|--------|-----------------|---|
-| 2.18 | Go to `/dashboard/backer` | Backer dashboard loads | ☐ |
-| 2.19 | Check stats cards | Shows "1 bet placed", "$1 spent" | ☐ |
-| 2.20 | Click "Still Building" tab | Shows the project you backed | ☐ |
-| 2.21 | Click "Made It" tab | Empty or funded projects | ☐ |
-| 2.22 | Click "My Proof" tab | Shows NFT badges (if any) | ☐ |
-| 2.23 | Click project in list | Navigates to project page | ☐ |
-
-### 2D: Wallet Page
+### 2C: Verify Portfolio
 
 | # | Action | Expected Result | ✓ |
 |---|--------|-----------------|---|
-| 2.24 | Go to `/wallet` | Wallet page loads | ☐ |
-| 2.25 | View balance section | Shows SOL balance | ☐ |
-| 2.26 | View transactions tab | Shows backing transactions | ☐ |
-| 2.27 | Click copy address button | Address copied to clipboard | ☐ |
+| 2.18 | Go to "Fund Projects" -> "Funded Projects" | Funded project appears in list | ☐ |
+| 2.19 | Go to "Fund Projects" -> "Backer Dashboard" | Stats updated (Total Spent: $1) | ☐ |
 
 ---
 
-## 🧪 TEST 3: Creator Flow
+## 🧪 TEST 3: Creator Flow (Submit Project)
 
-**Goal:** Create and manage a project
-
-### 3A: Creator Onboarding
+**Goal:** Create a new project
 
 | # | Action | Expected Result | ✓ |
 |---|--------|-----------------|---|
-| 3.1 | Connect wallet (if not connected) | Wallet connected | ☐ |
-| 3.2 | Go to `/onboarding/creator` | Creator onboarding page | ☐ |
-| 3.3 | Step 1: Fill profile info | Form accepts input | ☐ |
-| 3.4 | Click "Continue" | Moves to Step 2 | ☐ |
-| 3.5 | Step 2: Fill experience | Form accepts input | ☐ |
-| 3.6 | Click "Continue" | Moves to Step 3 | ☐ |
-| 3.7 | Step 3: Verify wallet | Wallet info shown | ☐ |
-| 3.8 | Click "Complete" | Moves to Step 4, success | ☐ |
-
-### 3B: Create Project
-
-| # | Action | Expected Result | ✓ |
-|---|--------|-----------------|---|
-| 3.9 | Go to `/submit` | Project submission form | ☐ |
-| 3.10 | **Step 1 - Basic Info:** | | |
-| | - Title: "Test Project" | Input accepted | ☐ |
-| | - Category: Select any | Dropdown works | ☐ |
-| | - Tagline: "A test project" | Input accepted | ☐ |
-| | - Image URL: any image URL | Input accepted | ☐ |
-| 3.11 | Click "Continue" | Moves to Step 2 | ☐ |
-| 3.12 | **Step 2 - Story:** | | |
-| | - Description: 50+ chars | Input accepted | ☐ |
-| | - Problem: 20+ chars | Input accepted | ☐ |
-| | - Solution: 20+ chars | Input accepted | ☐ |
-| 3.13 | Click "Continue" | Moves to Step 3 | ☐ |
-| 3.14 | **Step 3 - Funding:** | | |
-| | - Goal: 100 | Input accepted | ☐ |
-| | - Duration: 30 days | Dropdown works | ☐ |
-| 3.15 | Click "Continue" | Moves to Step 4 | ☐ |
-| 3.16 | **Step 4 - Milestones:** | | |
-| | - Click "Add Milestone" | New milestone row | ☐ |
-| | - Title: "MVP Launch" | Input accepted | ☐ |
-| | - Percentage: 50% | Input accepted | ☐ |
-| | - Deadline: Future date | Date picker works | ☐ |
-| | - Add second milestone (50%) | Total = 100% | ☐ |
-| 3.17 | Click "Submit for Review" | Loading state | ☐ |
-| 3.18 | Wait for submission | Success page with project ID | ☐ |
-
-### 3C: Creator Dashboard
-
-| # | Action | Expected Result | ✓ |
-|---|--------|-----------------|---|
-| 3.19 | Go to `/dashboard/creator` | Creator dashboard loads | ☐ |
-| 3.20 | View stats cards | Shows project count | ☐ |
-| 3.21 | Click "All Projects" tab | Shows your test project | ☐ |
-| 3.22 | Click "In Review" tab | Test project shown here | ☐ |
-| 3.23 | Project shows "In Review" badge | Status correct | ☐ |
+| 3.1 | Click "Launch a Project" -> "Start a Project" | Submission wizard loads | ☐ |
+| 3.2 | Step 1: Basic Info | Fill title, tagline, category | ☐ |
+| 3.3 | Step 2: Story | Fill description, problem, solution | ☐ |
+| 3.4 | Step 3: Media | Add image URL (use placeholder) | ☐ |
+| 3.5 | Step 4: Milestones | Add at least 2 milestones | ☐ |
+| 3.6 | Review & Submit | Summary page loads | ☐ |
+| 3.7 | Click "Submit for Review" | Success message | ☐ |
+| 3.8 | Go to "Launch a Project" -> "Creator Dashboard" | Project shows as "Pending" | ☐ |
 
 ---
 
-## 🧪 TEST 4: Admin Flow
+## 🧪 TEST 4: Admin Flow (Review Project)
 
-**Goal:** Review and approve projects/milestones
-
-### ⚠️ Important: Admin Wallet Required
-You must use the admin wallet to access admin features:
-```
-Admin Wallet: 4GCC5vqQ6R8MWnVW3tFE5iS6p66agk4XCaeZ8V9wFxRw
-```
-
-If you don't have the admin private key, you can still view admin pages but cannot approve/reject.
-
-### 4A: Admin Project Review
+**Note:** Requires Admin Wallet (`4GCC5vqQ6R8MWnVW3tFE5iS6p66agk4XCaeZ8V9wFxRw`)
 
 | # | Action | Expected Result | ✓ |
 |---|--------|-----------------|---|
-| 4.1 | Connect with admin wallet | Wallet connected | ☐ |
-| 4.2 | Go to `/admin` | Admin dashboard loads | ☐ |
-| 4.3 | View stats cards | Shows pending, approved, rejected counts | ☐ |
-| 4.4 | See project queue | List of pending projects | ☐ |
-| 4.5 | Click on a pending project | Expand/view details | ☐ |
-| 4.6 | Click "Approve" button | Confirmation dialog (if any) | ☐ |
-| 4.7 | Confirm approval | Project status → "Active" | ☐ |
-| | **OR** | | |
-| 4.6b | Click "Reject" button | Rejection dialog opens | ☐ |
-| 4.7b | Enter reason and confirm | Project status → "Rejected" | ☐ |
+| 4.1 | Connect Admin Wallet | "Admin" menu appears in header | ☐ |
+| 4.2 | Go to `/admin` | Queue review page loads | ☐ |
+| 4.3 | Find pending project | Project from Test 3 appears | ☐ |
+| 4.4 | Click "Review" | Review modal opens | ☐ |
+| 4.5 | Click "Approve" | Success message | ☐ |
+| 4.6 | Go to `/discover` | Project now appears as "Active" | ☐ |
 
-### 4B: Admin Milestone Review
+---
+
+## 🧪 TEST 5: Mobile Responsiveness
+
+**Goal:** Verify UI on mobile screens
 
 | # | Action | Expected Result | ✓ |
 |---|--------|-----------------|---|
-| 4.8 | Go to `/admin/milestones` | Milestones page loads | ☐ |
-| 4.9 | View stats | Pending, approved, rejected counts | ☐ |
-| 4.10 | Filter by "Pending Review" | Shows milestones awaiting review | ☐ |
-| 4.11 | Click a milestone | View proof details | ☐ |
-| 4.12 | Click "Approve" | Wallet popup (on-chain tx) | ☐ |
-| 4.13 | Sign transaction | Milestone approved | ☐ |
-| | **OR** | | |
-| 4.12b | Click "Reject" | Rejection dialog | ☐ |
-| 4.13b | Sign transaction | Milestone reset to Active | ☐ |
-
-### 4C: Admin User Management
-
-| # | Action | Expected Result | ✓ |
-|---|--------|-----------------|---|
-| 4.14 | Go to `/admin/users` | Users page loads | ☐ |
-| 4.15 | Use search bar | Filters users | ☐ |
-| 4.16 | View user list | Shows user stats | ☐ |
-| 4.17 | Click "View Profile" on any user | User details shown | ☐ |
-
----
-
-## 🧪 TEST 5: Complete E2E Flow
-
-**Goal:** Full cycle from project creation to funding
-
-### Preparation
-You need **2 wallets**:
-- **Wallet A**: Creator
-- **Wallet B**: Backer (+ Admin if you have admin key)
-
-### Flow Steps
-
-| # | Wallet | Action | Expected | ✓ |
-|---|--------|--------|----------|---|
-| 5.1 | A | Create project via `/submit` | Project in review | ☐ |
-| 5.2 | Admin | Approve project in `/admin` | Project now "Active" | ☐ |
-| 5.3 | B | Get USDC from `/faucet` | 100 USDC received | ☐ |
-| 5.4 | B | Back project with $1 | Backing successful | ☐ |
-| 5.5 | A | Check `/dashboard/creator` | Shows $1 raised, 1 backer | ☐ |
-| 5.6 | B | Check `/dashboard/backer` | Shows backed project | ☐ |
-| 5.7 | A | Submit milestone proof (if funded) | Milestone in review | ☐ |
-| 5.8 | Admin | Approve milestone | Milestone approved | ☐ |
-| 5.9 | A | Release funds | Funds transferred | ☐ |
-
----
-
-## 🧪 TEST 6: Edge Cases
-
-### 6A: Error Handling
-
-| # | Action | Expected Result | ✓ |
-|---|--------|-----------------|---|
-| 6.1 | Try backing without enough USDC | Error: "Insufficient funds" | ☐ |
-| 6.2 | Try backing same project twice | Error: "Already backed" | ☐ |
-| 6.3 | Try backing project "In Review" | Button shows "In Review Queue" | ☐ |
-| 6.4 | Reject transaction in wallet | Error: "Transaction rejected" | ☐ |
-| 6.5 | Disconnect wallet mid-action | Shows connect prompt | ☐ |
-
-### 6B: Responsive Design
-
-| # | Action | Expected Result | ✓ |
-|---|--------|-----------------|---|
-| 6.6 | View on mobile (< 768px) | Mobile navigation works | ☐ |
-| 6.7 | View on tablet (768-1024px) | Layout adjusts properly | ☐ |
-| 6.8 | View on desktop (> 1024px) | Full layout visible | ☐ |
-
----
-
-## 📝 Test Results Summary
-
-| Test Section | Pass | Fail | Notes |
-|--------------|------|------|-------|
-| 1. Visitor Flow | /13 | | |
-| 2. Backer Flow | /27 | | |
-| 3. Creator Flow | /23 | | |
-| 4. Admin Flow | /17 | | |
-| 5. E2E Flow | /9 | | |
-| 6. Edge Cases | /8 | | |
-| **TOTAL** | /97 | | |
-
----
-
-## 🐛 Bug Report Template
-
-If you find issues, document them:
-
-```
-### Bug #X
-- **Page:** [URL]
-- **Steps to reproduce:**
-  1. 
-  2. 
-  3. 
-- **Expected:** 
-- **Actual:** 
-- **Screenshot:** [if applicable]
-- **Console errors:** [if any]
-```
-
----
-
-## ✅ Testing Complete Checklist
-
-- [ ] All visitor pages load correctly
-- [ ] Wallet connects successfully  
-- [ ] Faucet dispenses test USDC
-- [ ] Project backing works end-to-end
-- [ ] Project creation submits to queue
-- [ ] Admin can approve/reject projects
-- [ ] Admin can approve/reject milestones
-- [ ] Dashboards show correct data
-- [ ] Error messages are user-friendly
-- [ ] Mobile responsive works
-
----
-
-*Last Updated: December 2024*
+| 5.1 | Resize browser to mobile width | Mobile layout activates | ☐ |
+| 5.2 | Check Header | Hamburger menu appears | ☐ |
+| 5.3 | Open Mobile Menu | Menu slides in with subheaders | ☐ |
+| 5.4 | Check Project Cards | Cards stack vertically | ☐ |
+| 5.5 | Check "Fund" button | Visible and clickable on mobile | ☐ |

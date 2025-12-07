@@ -7,7 +7,7 @@ export function Footer() {
   return (
     <footer className="border-t border-border bg-card/50 py-16" role="contentinfo">
       <div className="container mx-auto max-w-7xl px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-6">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent shadow-lg shadow-accent/20" aria-hidden="true">
@@ -105,20 +105,6 @@ export function Footer() {
                 </li>
               </ul>
             </nav>
-          </div>
-
-          <div className="md:col-span-1">
-            <h4 className="font-bold mb-6 text-sm uppercase tracking-wider text-foreground/80">Stay in the loop</h4>
-            <p className="text-sm text-muted-foreground mb-4">
-              Get the daily drop of new projects. No spam, just alpha.
-            </p>
-            <div className="flex gap-2">
-              <Input placeholder="Enter your email" className="bg-background border-accent/20 focus-visible:ring-accent" />
-              <Button size="icon" className="bg-accent text-accent-foreground hover:bg-accent/90 shrink-0">
-                <Shield className="h-4 w-4" />
-                <span className="sr-only">Subscribe</span>
-              </Button>
-            </div>
           </div>
         </div>
         

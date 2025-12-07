@@ -19,18 +19,18 @@ const faqCategories = [
     questions: [
       { q: "How do I create an account?", a: "Click 'Connect Wallet' to get started with your crypto wallet." },
       { q: "What wallet do I need?", a: "Any Web3 wallet like MetaMask, Coinbase Wallet, or WalletConnect." },
-      { q: "How much does it cost to back a project?", a: "Every project costs exactly $1 USDC to back." },
+      { q: "How much does it cost to fund a project?", a: "Every project costs exactly $1 USDC to fund." },
     ],
   },
   {
-    title: "Backing Projects",
+    title: "Funding Projects",
     questions: [
       {
-        q: "How does backing work?",
-        a: "Browse projects, click 'Back for $1', confirm the transaction with your wallet.",
+        q: "How does funding work?",
+        a: "Browse projects, click 'Fund for $1', confirm the transaction with your wallet.",
       },
-      { q: "What do I get for backing?", a: "You receive a unique NFT badge and can vote on project milestones." },
-      { q: "Can I back multiple projects?", a: "Yes! Back as many projects as you want, $1 each." },
+      { q: "What do I get for funding?", a: "You receive a unique NFT badge and can vote on project milestones." },
+      { q: "Can I fund multiple projects?", a: "Yes! Fund as many projects as you want, $1 each." },
     ],
   },
   {

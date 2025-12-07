@@ -135,7 +135,7 @@ export function ProjectComparisonModal({ projects, triggerButton }: ProjectCompa
                         </div>
 
                         <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                          Back This Project
+                          Fund This Project
                         </Button>
                       </div>
                     </div>

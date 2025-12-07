@@ -21,6 +21,7 @@ export default function CreatorDashboardPage() {
 
   useEffect(() => {
     setNow(Date.now())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (!connected) {

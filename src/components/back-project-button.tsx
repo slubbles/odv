@@ -39,11 +39,26 @@ export function BackProjectButton({
   const isEnded = projectStatus === "completed" || projectStatus === "funded" || projectStatus === "withdrawn"
 
   useEffect(() => {
+    let mounted = true
+
     if (connected && publicKey && canBeBacked) {
-      setIsChecking(true)
+      const timer = setTimeout(() => {
+        if (mounted) setIsChecking(true)
+      }, 0)
+      
       checkBackingStatus(projectId, publicKey.toString())
-        .then(result => setHasBacked(result.hasBacked))
-        .finally(() => setIsChecking(false))
+        .then(result => {
+          if (mounted) setHasBacked(result.hasBacked)
+        })
+        .finally(() => {
+          if (mounted) setIsChecking(false)
+        })
+        
+      return () => clearTimeout(timer)
+    }
+
+    return () => {
+      mounted = false
     }
   }, [connected, publicKey, projectId, canBeBacked])
 
@@ -106,7 +121,7 @@ export function BackProjectButton({
         disabled
       >
         <Heart className="mr-2 h-4 w-4" />
-        Connect Wallet to Back
+        Connect Wallet to Fund
       </Button>
     )
   }
@@ -134,7 +149,7 @@ export function BackProjectButton({
         disabled
       >
         <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" />
-        Already Backed
+        Already Funded
       </Button>
     )
   }
@@ -155,7 +170,7 @@ export function BackProjectButton({
       ) : (
         <>
           <Heart className="mr-2 h-4 w-4" />
-          Back for ${amount}
+          Fund for ${amount}
         </>
       )}
     </Button>

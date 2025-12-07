@@ -41,9 +41,9 @@ export function BottomNav() {
         </Link>
 
         <Link
-          href="/wallet"
+          href="/profile/wallet"
           className={`flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-            isActive("/wallet") ? "text-accent" : "text-muted-foreground"
+            isActive("/profile/wallet") ? "text-accent" : "text-muted-foreground"
           }`}
         >
           <Wallet className="h-5 w-5" />

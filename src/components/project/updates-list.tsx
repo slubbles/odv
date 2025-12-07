@@ -38,6 +38,10 @@ export function UpdatesList({
         id: "1",
         title: "MVP Launch Complete! 🚀",
         content: `We're thrilled to announce that the platform MVP is now live! After weeks of hard work, we've deployed the core features including:
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      },
+    ])
+  }, [])
 
 • AI-powered recipe recommendations
 • User profiles and preferences
