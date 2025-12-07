@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Shield, Twitter, Github, Disc } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,10 +11,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent shadow-lg shadow-accent/20" aria-hidden="true">
-                <Shield className="h-6 w-6 text-accent-foreground" />
-              </div>
-              <span className="text-xl font-bold tracking-tight">OneDollarVentures</span>
+              <Image 
+                src="/logo.svg" 
+                alt="OneDollarVentures" 
+                width={180} 
+                height={50} 
+                className="h-14 w-auto object-contain"
+              />
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6">
               The anti-VC platform. Your $1 might fund the next unicorn. Or at least a really cool sandwich shop.

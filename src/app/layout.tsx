@@ -10,6 +10,7 @@ import { SkipNav } from "@/components/skip-nav"
 import { BottomNav } from "@/components/bottom-nav"
 import { Toaster } from "sonner"
 import { NetworkGuard } from "@/components/network-guard"
+import { TestnetBanner } from "@/components/testnet-banner"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const poppins = Poppins({
@@ -88,6 +89,7 @@ export default function RootLayout({
           <WalletContextProvider>
             <NetworkGuard>
               <SkipNav />
+              <TestnetBanner />
               {children}
               <BottomNav />
             </NetworkGuard>

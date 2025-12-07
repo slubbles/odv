@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Menu, Zap, Shield, Wallet, LogOut, Copy, ExternalLink, CheckCircle2, Droplets } from "lucide-react"
 import { useWallet, useConnection } from "@solana/wallet-adapter-react"
 import { useWalletModal } from "@solana/wallet-adapter-react-ui"
@@ -88,14 +89,17 @@ export function MobileNav() {
           <span className="sr-only">Open menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[280px] sm:w-[320px] p-0 flex flex-col">
+      <SheetContent side="right" className="w-full sm:max-w-full p-0 flex flex-col">
         <SheetHeader className="p-4 pb-0">
           <SheetTitle asChild>
             <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent">
-                <Zap className="h-5 w-5 text-accent-foreground" />
-              </div>
-              <span className="text-lg font-semibold">OneDollarVentures</span>
+              <Image 
+                src="/logo.svg" 
+                alt="OneDollarVentures" 
+                width={160} 
+                height={40} 
+                className="h-10 w-auto object-contain"
+              />
             </Link>
           </SheetTitle>
         </SheetHeader>

@@ -1,6 +1,6 @@
 # 🧪 ODV Manual Testing Guide
 
-This guide provides step-by-step instructions to manually verify all core user flows of the OneDollarVentures platform.
+This guide provides step-by-step instructions to manually verify all core user flows of the OneDollarVentures platform, including recent updates like Profile Management and Real Withdrawals.
 
 ---
 
@@ -48,7 +48,9 @@ Open http://localhost:3000 in your browser.
 | # | Action | Expected Result | ✓ |
 |---|--------|-----------------|---|
 | 1.1 | Go to http://localhost:3000 | Homepage loads with hero section | ☐ |
-| 1.2 | Click "Discover Projects" or go to `/discover` | Project listing page loads | ☐ |
+| 1.2 | Check Top Banner | "Testnet Mode" banner is visible | ☐ |
+| 1.3 | Check Header Logo | Logo image loads correctly (not text) | ☐ |
+| 1.4 | Click "Discover Projects" or go to `/discover` | Project listing page loads | ☐ |
 | 1.3 | Use search bar, type "test" | Search filters projects (or shows "no results") | ☐ |
 | 1.4 | Click category filter (e.g., "Technology") | Projects filter by category | ☐ |
 | 1.5 | Click sort dropdown, select "Newest" | Projects reorder | ☐ |
@@ -107,9 +109,11 @@ Open http://localhost:3000 in your browser.
 
 ---
 
-## 🧪 TEST 3: Creator Flow (Submit Project)
+## 🧪 TEST 3: Creator Flow (Submit & Withdraw)
 
-**Goal:** Create a new project
+**Goal:** Create a new project and withdraw funds (simulated or real)
+
+### 3A: Create Project
 
 | # | Action | Expected Result | ✓ |
 |---|--------|-----------------|---|
@@ -122,31 +126,61 @@ Open http://localhost:3000 in your browser.
 | 3.7 | Click "Submit for Review" | Success message | ☐ |
 | 3.8 | Go to "Launch a Project" -> "Creator Dashboard" | Project shows as "Pending" | ☐ |
 
+### 3B: Withdraw Funds (Requires Funded Project)
+
+*Note: You may need to switch wallets to fund your own project (Test 2) or use a second browser.*
+
+| # | Action | Expected Result | ✓ |
+|---|--------|-----------------|---|
+| 3.9 | Ensure project is "Active" and "Funded" | Check Creator Dashboard | ☐ |
+| 3.10 | Go to Creator Dashboard | Dashboard loads | ☐ |
+| 3.11 | Locate "Withdraw Funds" button/modal | Withdrawal UI appears | ☐ |
+| 3.12 | Click "Withdraw" | Wallet signature prompt | ☐ |
+| 3.13 | Approve Transaction | Transaction processes | ☐ |
+| 3.14 | Verify Success | Funds (USDC) appear in wallet | ☐ |
+
 ---
 
-## 🧪 TEST 4: Admin Flow (Review Project)
+## 🧪 TEST 4: Profile Management
+
+**Goal:** Verify user profile customization
+
+| # | Action | Expected Result | ✓ |
+|---|--------|-----------------|---|
+| 4.1 | Click Profile Avatar in Header | Dropdown menu appears | ☐ |
+| 4.2 | Select "Settings" or "Profile" | Profile settings page loads | ☐ |
+| 4.3 | Edit "Display Name" | Input accepts text | ☐ |
+| 4.4 | Edit "Bio" | Textarea accepts text | ☐ |
+| 4.5 | Click "Save Changes" | Success notification | ☐ |
+| 4.6 | Refresh Page | Changes persist | ☐ |
+| 4.7 | Go to Public Profile (via URL or link) | Updated info is visible publicly | ☐ |
+
+---
+
+## 🧪 TEST 5: Admin Flow (Review Project)
 
 **Note:** Requires Admin Wallet (`4GCC5vqQ6R8MWnVW3tFE5iS6p66agk4XCaeZ8V9wFxRw`)
 
 | # | Action | Expected Result | ✓ |
 |---|--------|-----------------|---|
-| 4.1 | Connect Admin Wallet | "Admin" menu appears in header | ☐ |
-| 4.2 | Go to `/admin` | Queue review page loads | ☐ |
-| 4.3 | Find pending project | Project from Test 3 appears | ☐ |
-| 4.4 | Click "Review" | Review modal opens | ☐ |
-| 4.5 | Click "Approve" | Success message | ☐ |
-| 4.6 | Go to `/discover` | Project now appears as "Active" | ☐ |
+| 5.1 | Connect Admin Wallet | "Admin" menu appears in header | ☐ |
+| 5.2 | Go to `/admin` | Queue review page loads | ☐ |
+| 5.3 | Find pending project | Project from Test 3 appears | ☐ |
+| 5.4 | Click "Review" | Review modal opens | ☐ |
+| 5.5 | Click "Approve" | Success message | ☐ |
+| 5.6 | Go to `/discover` | Project now appears as "Active" | ☐ |
 
 ---
 
-## 🧪 TEST 5: Mobile Responsiveness
+## 🧪 TEST 6: Mobile Responsiveness
 
 **Goal:** Verify UI on mobile screens
 
 | # | Action | Expected Result | ✓ |
 |---|--------|-----------------|---|
-| 5.1 | Resize browser to mobile width | Mobile layout activates | ☐ |
-| 5.2 | Check Header | Hamburger menu appears | ☐ |
-| 5.3 | Open Mobile Menu | Menu slides in with subheaders | ☐ |
-| 5.4 | Check Project Cards | Cards stack vertically | ☐ |
-| 5.5 | Check "Fund" button | Visible and clickable on mobile | ☐ |
+| 6.1 | Resize browser to mobile width | Mobile layout activates | ☐ |
+| 6.2 | Check Header | Hamburger menu appears on RIGHT side | ☐ |
+| 6.3 | Check Header Logo | Logo is centered | ☐ |
+| 6.4 | Open Mobile Menu | Menu slides in from RIGHT, covers full width | ☐ |
+| 6.5 | Check Project Cards | Cards stack vertically | ☐ |
+| 6.5 | Check "Fund" button | Visible and clickable on mobile | ☐ |

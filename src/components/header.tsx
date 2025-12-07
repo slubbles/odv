@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { ChevronDown, Shield } from "lucide-react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import {
@@ -29,12 +30,15 @@ function HeaderContent() {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto max-w-7xl flex h-16 items-center justify-between px-6">
         <div className="flex items-center gap-8">
-          <ClientOnly>
-            <MobileNav />
-          </ClientOnly>
-
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-lg font-semibold tracking-tight">OneDollarVentures</span>
+          <Link href="/" className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0">
+            <Image 
+              src="/logo.svg" 
+              alt="OneDollarVentures" 
+              width={180} 
+              height={50} 
+              className="h-14 w-auto object-contain"
+              priority
+            />
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
@@ -192,14 +196,14 @@ function HeaderContent() {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <ClientOnly>
-            <NotificationBell />
-          </ClientOnly>
           {/* Wallet button hidden on mobile - available in mobile sidebar */}
           <ClientOnly>
             <div className="wallet-button-wrapper hidden md:block">
               <WalletButton />
             </div>
+          </ClientOnly>
+          <ClientOnly>
+            <MobileNav />
           </ClientOnly>
         </div>
       </div>
