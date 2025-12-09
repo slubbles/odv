@@ -371,20 +371,26 @@ INSERT INTO activity_feed (id, user_wallet, project_id, type, data, created_at) 
 -- ============================================================================
 
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users are viewable by everyone" ON public.users;
 CREATE POLICY "Users are viewable by everyone" ON public.users FOR SELECT USING ( true );
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.users;
 CREATE POLICY "Users can insert their own profile" ON public.users FOR INSERT WITH CHECK ( true );
 
 ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Projects are viewable by everyone" ON public.projects;
 CREATE POLICY "Projects are viewable by everyone" ON public.projects FOR SELECT USING ( true );
+DROP POLICY IF EXISTS "Creators can insert projects" ON public.projects;
 CREATE POLICY "Creators can insert projects" ON public.projects FOR INSERT WITH CHECK ( true );
 
 -- ⚡ CRITICAL FIX: Add UPDATE policies for projects
+DROP POLICY IF EXISTS "Service role can update project stats" ON public.projects;
 CREATE POLICY "Service role can update project stats" 
   ON public.projects 
   FOR UPDATE 
   USING (true)
   WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Creators can update their projects" ON public.projects;
 CREATE POLICY "Creators can update their projects" 
   ON public.projects 
   FOR UPDATE 
@@ -392,14 +398,19 @@ CREATE POLICY "Creators can update their projects"
   WITH CHECK (creator_wallet = current_setting('request.jwt.claims', true)::json->>'wallet');
 
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Comments are viewable by everyone" ON public.comments;
 CREATE POLICY "Comments are viewable by everyone" ON public.comments FOR SELECT USING ( true );
+DROP POLICY IF EXISTS "Users can post comments" ON public.comments;
 CREATE POLICY "Users can post comments" ON public.comments FOR INSERT WITH CHECK ( true );
 
 ALTER TABLE public.backers ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Backers are viewable by everyone" ON public.backers;
 CREATE POLICY "Backers are viewable by everyone" ON public.backers FOR SELECT USING ( true );
+DROP POLICY IF EXISTS "Users can back projects" ON public.backers;
 CREATE POLICY "Users can back projects" ON public.backers FOR INSERT WITH CHECK ( true );
 
 -- ⚡ CRITICAL FIX: Add explicit service role INSERT policy
+DROP POLICY IF EXISTS "Service role can insert backers" ON public.backers;
 CREATE POLICY "Service role can insert backers" 
   ON public.backers 
   FOR INSERT 
@@ -407,26 +418,37 @@ CREATE POLICY "Service role can insert backers"
   WITH CHECK (true);
 
 ALTER TABLE public.milestones ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Milestones are viewable by everyone" ON public.milestones;
 CREATE POLICY "Milestones are viewable by everyone" ON public.milestones FOR SELECT USING ( true );
+DROP POLICY IF EXISTS "Creators can insert milestones" ON public.milestones;
 CREATE POLICY "Creators can insert milestones" ON public.milestones FOR INSERT WITH CHECK ( true );
 
 ALTER TABLE public.project_updates ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Updates are viewable by everyone" ON public.project_updates;
 CREATE POLICY "Updates are viewable by everyone" ON public.project_updates FOR SELECT USING ( true );
+DROP POLICY IF EXISTS "Creators can create updates" ON public.project_updates;
 CREATE POLICY "Creators can create updates" ON public.project_updates FOR INSERT WITH CHECK ( true );
 
 ALTER TABLE public.follows ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Follows are viewable by everyone" ON public.follows;
 CREATE POLICY "Follows are viewable by everyone" ON public.follows FOR SELECT USING ( true );
+DROP POLICY IF EXISTS "Users can follow" ON public.follows;
 CREATE POLICY "Users can follow" ON public.follows FOR INSERT WITH CHECK ( true );
 
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can view their own notifications" ON public.notifications;
 CREATE POLICY "Users can view their own notifications" ON public.notifications FOR SELECT USING ( wallet_address = current_setting('request.jwt.claims', true)::json->>'wallet' );
+DROP POLICY IF EXISTS "System can insert notifications" ON public.notifications;
 CREATE POLICY "System can insert notifications" ON public.notifications FOR INSERT WITH CHECK ( true );
 
 ALTER TABLE public.activity_feed ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Activity feed is viewable by everyone" ON public.activity_feed;
 CREATE POLICY "Activity feed is viewable by everyone" ON public.activity_feed FOR SELECT USING ( true );
 
 ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Transactions are viewable by everyone" ON public.transactions;
 CREATE POLICY "Transactions are viewable by everyone" ON public.transactions FOR SELECT USING ( true );
+DROP POLICY IF EXISTS "System can insert transactions" ON public.transactions;
 CREATE POLICY "System can insert transactions" ON public.transactions FOR INSERT WITH CHECK ( true );
 
 -- ============================================================================
