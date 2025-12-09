@@ -78,7 +78,7 @@ export function ProjectCard({
           </div>
         )}
       </Link>
-      <CardContent className="p-3 sm:p-3 flex-1 flex flex-col min-w-0">
+      <CardContent className="p-2 sm:p-3 flex-1 flex flex-col min-w-0">
         <Link href={`/project/${id}`} className="flex-1 flex flex-col">
           <div className="flex items-center gap-2 mb-2">
             <Avatar className="h-6 w-6">
@@ -93,7 +93,7 @@ export function ProjectCard({
             </Badge>
           </div>
 
-          <h3 className="text-base font-bold mb-1 line-clamp-1 group-hover:text-accent transition-colors">{title}</h3>
+          <h3 className="text-sm sm:text-base font-bold mb-1 line-clamp-1 group-hover:text-accent transition-colors">{title}</h3>
           <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{description}</p>
 
           <div className="mt-auto space-y-2">

@@ -205,11 +205,31 @@ export default function SubmitPage() {
     } catch (error: any) {
       console.error('Failed to create project:', error)
       
-      // Handle specific errors
-      if (error.message?.includes("NFT status") || error.toString().includes("NFT status")) {
-         toast.error("Wallet Error: Please try disconnecting and reconnecting your wallet, then try again. This often happens if the simulation fails.")
+      // Handle specific errors with detailed messages
+      const errorMessage = error.message || error.toString()
+      
+      if (errorMessage.includes("NFT status")) {
+         toast.error("Wallet Error: Please disconnect and reconnect your wallet, then try again.")
+      } else if (errorMessage.includes("0x0")) {
+         toast.error("Campaign already exists for this wallet. Each wallet can only create one campaign.")
+      } else if (errorMessage.includes("0x1")) {
+         toast.error("Insufficient SOL balance. You need ~0.01 SOL to cover transaction fees and account rent.")
+      } else if (errorMessage.includes("blockhash not found")) {
+         toast.error("Network timeout. Please try again in a few seconds.")
+      } else if (errorMessage.includes("Failed to verify campaign vault")) {
+         toast.error("Network error while checking campaign vault. Please check your connection and try again.")
+      } else if (errorMessage.includes("Transaction simulation failed")) {
+         toast.error("Transaction simulation failed. This usually means insufficient SOL or the campaign already exists.")
+      } else if (errorMessage.includes("Transaction failed")) {
+         // Extract the actual error from the JSON
+         const match = errorMessage.match(/InstructionError.*?}/)
+         if (match) {
+            toast.error(`Transaction execution failed: ${match[0]}. Please try again or contact support.`)
+         } else {
+            toast.error(`Transaction execution unsuccessful: ${errorMessage}`)
+         }
       } else {
-         toast.error(error.message || 'Failed to create project')
+         toast.error(errorMessage || 'Failed to create project. Please try again.')
       }
     } finally {
       setIsSubmitting(false)
@@ -636,22 +656,22 @@ export default function SubmitPage() {
                         <Pencil className="h-3 w-3" />
                       </Button>
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-muted-foreground">Title:</span>
-                      <span className="col-span-2 font-medium">{formData.title}</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2">
+                      <span className="text-muted-foreground text-xs sm:text-sm">Title:</span>
+                      <span className="sm:col-span-2 font-medium">{formData.title}</span>
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-muted-foreground">Category:</span>
-                      <span className="col-span-2">{formData.category}</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2">
+                      <span className="text-muted-foreground text-xs sm:text-sm">Category:</span>
+                      <span className="sm:col-span-2">{formData.category}</span>
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-muted-foreground">Tagline:</span>
-                      <span className="col-span-2">{formData.tagline}</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2">
+                      <span className="text-muted-foreground text-xs sm:text-sm">Tagline:</span>
+                      <span className="sm:col-span-2">{formData.tagline}</span>
                     </div>
                     {formData.imageUrl && (
-                      <div className="grid grid-cols-3 gap-2">
-                        <span className="text-muted-foreground">Image:</span>
-                        <span className="col-span-2 truncate text-xs">{formData.imageUrl}</span>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2">
+                        <span className="text-muted-foreground text-xs sm:text-sm">Image:</span>
+                        <span className="sm:col-span-2 truncate text-xs">{formData.imageUrl}</span>
                       </div>
                     )}
 
@@ -661,26 +681,26 @@ export default function SubmitPage() {
                         <Pencil className="h-3 w-3" />
                       </Button>
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-muted-foreground">Description:</span>
-                      <span className="col-span-2 line-clamp-3 text-xs">{formData.description}</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2">
+                      <span className="text-muted-foreground text-xs sm:text-sm">Description:</span>
+                      <span className="sm:col-span-2 line-clamp-3 text-xs">{formData.description}</span>
                     </div>
                     {formData.problem && (
-                      <div className="grid grid-cols-3 gap-2">
-                        <span className="text-muted-foreground">Problem:</span>
-                        <span className="col-span-2 line-clamp-2 text-xs">{formData.problem}</span>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2">
+                        <span className="text-muted-foreground text-xs sm:text-sm">Problem:</span>
+                        <span className="sm:col-span-2 line-clamp-2 text-xs">{formData.problem}</span>
                       </div>
                     )}
                     {formData.solution && (
-                      <div className="grid grid-cols-3 gap-2">
-                        <span className="text-muted-foreground">Solution:</span>
-                        <span className="col-span-2 line-clamp-2 text-xs">{formData.solution}</span>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2">
+                        <span className="text-muted-foreground text-xs sm:text-sm">Solution:</span>
+                        <span className="sm:col-span-2 line-clamp-2 text-xs">{formData.solution}</span>
                       </div>
                     )}
                     {formData.videoUrl && (
-                      <div className="grid grid-cols-3 gap-2">
-                        <span className="text-muted-foreground">Video:</span>
-                        <span className="col-span-2 truncate text-xs">{formData.videoUrl}</span>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2">
+                        <span className="text-muted-foreground text-xs sm:text-sm">Video:</span>
+                        <span className="sm:col-span-2 truncate text-xs">{formData.videoUrl}</span>
                       </div>
                     )}
 
@@ -690,17 +710,17 @@ export default function SubmitPage() {
                         <Pencil className="h-3 w-3" />
                       </Button>
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-muted-foreground">Goal:</span>
-                      <span className="col-span-2 font-medium">${formData.goal}</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2">
+                      <span className="text-muted-foreground text-xs sm:text-sm">Goal:</span>
+                      <span className="sm:col-span-2 font-medium">${formData.goal}</span>
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-muted-foreground">Duration:</span>
-                      <span className="col-span-2">{formData.duration} days</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2">
+                      <span className="text-muted-foreground text-xs sm:text-sm">Duration:</span>
+                      <span className="sm:col-span-2">{formData.duration} days</span>
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-muted-foreground">Milestones:</span>
-                      <div className="col-span-2 space-y-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2">
+                      <span className="text-muted-foreground text-xs sm:text-sm">Milestones:</span>
+                      <div className="sm:col-span-2 space-y-1">
                         <p>{formData.milestones.length} milestones defined</p>
                         <ul className="list-disc list-inside text-xs text-muted-foreground">
                           {formData.milestones.map((m, i) => (

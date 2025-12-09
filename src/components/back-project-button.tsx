@@ -7,6 +7,7 @@ import { Loader2, Heart, CheckCircle2, Clock, XCircle } from "lucide-react"
 import { useBackProject } from "@/lib/hooks/use-back-project"
 import { toast } from "sonner"
 import { SuccessModal } from "@/components/success-modal"
+import { TransactionProgressModal } from "@/components/transaction-progress-modal"
 
 interface BackProjectButtonProps {
   projectId: string
@@ -30,12 +31,14 @@ export function BackProjectButton({
   onSuccess
 }: BackProjectButtonProps) {
   const { publicKey, connected } = useWallet()
-  const { backProject, checkBackingStatus, isSubmitting } = useBackProject()
+  const { backProject, checkBackingStatus, isSubmitting, status } = useBackProject()
   const [hasBacked, setHasBacked] = useState(false)
   const [isChecking, setIsChecking] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [showProgressModal, setShowProgressModal] = useState(false)
   const [txSignature, setTxSignature] = useState<string>("")
   const [explorerUrl, setExplorerUrl] = useState<string>("")
+  const [txError, setTxError] = useState<string>("")
 
   // Check if project can be backed
   const canBeBacked = projectStatus === "active"
@@ -78,6 +81,9 @@ export function BackProjectButton({
       return
     }
 
+    setShowProgressModal(true)
+    setTxError("")
+    
     const result = await backProject(projectId, creatorWallet, amount)
     
     if (result.success) {
@@ -88,8 +94,18 @@ export function BackProjectButton({
       if (result.explorerUrl) {
         setExplorerUrl(result.explorerUrl)
       }
-      setShowSuccessModal(true)
-      onSuccess?.()
+      // Wait a bit to show the success state in progress modal
+      setTimeout(() => {
+        setShowProgressModal(false)
+        setShowSuccessModal(true)
+        onSuccess?.()
+      }, 1500)
+    } else {
+      setTxError(result.error || "Transaction failed")
+      // Show error in progress modal for 3s
+      setTimeout(() => {
+        setShowProgressModal(false)
+      }, 3000)
     }
   }
 
@@ -167,6 +183,13 @@ export function BackProjectButton({
 
   return (
     <>
+      <TransactionProgressModal
+        open={showProgressModal}
+        step={status === 'error' ? 'error' : status === 'success' ? 'success' : status === 'signing' ? 'approving' : status === 'confirming' ? 'confirming' : status === 'recording' ? 'recording' : 'approving'}
+        signature={txSignature}
+        explorerUrl={explorerUrl}
+        error={txError}
+      />
       <Button
         variant={variant}
         size={size}
@@ -187,6 +210,13 @@ export function BackProjectButton({
         )}
       </Button>
 
+      <TransactionProgressModal
+        open={showProgressModal}
+        step={status === 'error' ? 'error' : status === 'success' ? 'success' : status === 'signing' ? 'approving' : status === 'confirming' ? 'confirming' : status === 'recording' ? 'recording' : 'approving'}
+        signature={txSignature}
+        explorerUrl={explorerUrl}
+        error={txError}
+      />
       <SuccessModal 
         open={showSuccessModal}
         onOpenChange={setShowSuccessModal}

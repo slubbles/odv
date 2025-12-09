@@ -39,7 +39,9 @@ export function useBackProject() {
         throw new Error(error.error || 'Verification failed')
       }
       return response.json()
-    }
+    },
+    retry: 2,
+    retryDelay: 1000
   })
 
   const resetStatus = useCallback(() => {
@@ -141,10 +143,29 @@ export function useBackProject() {
           backerWallet: publicKey.toString()
         })
         // If successful, we don't strictly need the backing object for the UI right now
-      } catch (dbError) {
+      } catch (dbError: any) {
         console.error('Verification/Recording error:', dbError)
-        // Ignore DB errors as the blockchain tx is what matters most
-        // The user still paid, so we show success
+        
+        // If verification fails, try fallback to old endpoint
+        // This ensures we don't lose successful blockchain transactions
+        try {
+          const fallbackResponse = await fetch(`/api/backing/${projectId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              walletAddress: publicKey.toString(),
+              transactionSignature: signature,
+              amount
+            })
+          })
+          if (fallbackResponse.ok) {
+            const data = await fallbackResponse.json()
+            backingData = data.backing
+          }
+        } catch (fallbackError) {
+          console.error('Fallback also failed:', fallbackError)
+          // Still show success since blockchain tx succeeded
+        }
       }
 
       // Success!

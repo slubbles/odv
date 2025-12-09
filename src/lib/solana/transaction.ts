@@ -298,6 +298,7 @@ export async function createInitializeCampaignTransaction(
     // This is needed because the program's initialize instruction doesn't create the vault
     try {
         await getAccount(connection, campaignVault);
+        console.log("Campaign vault already exists, skipping creation");
         // If it exists, we don't need to create it
     } catch (error: unknown) {
         // If it doesn't exist, add instruction to create it
@@ -309,6 +310,7 @@ export async function createInitializeCampaignTransaction(
             (typeof error === 'object' && error !== null && 'name' in error && (error as any).name === 'TokenInvalidAccountOwnerError');
 
         if (isTokenAccountError) {
+            console.log("Campaign vault doesn't exist, creating it");
             transaction.add(
                 createAssociatedTokenAccountInstruction(
                     creatorPublicKey, // payer
@@ -318,13 +320,9 @@ export async function createInitializeCampaignTransaction(
                 )
             );
         } else {
-            // If it's another error (e.g. network), rethrow
-            console.warn("Error checking campaign vault:", error);
-            // We'll try to create it anyway if we can't verify, but this might fail
-            // transaction.add(...) 
-            // Better to rethrow or assume it doesn't exist? 
-            // If we can't check, we probably can't send either.
-            throw error;
+            // If it's another error (e.g. network), throw with helpful message
+            console.error("Error checking campaign vault:", error);
+            throw new Error(`Failed to verify campaign vault: ${error instanceof Error ? error.message : 'Network error. Please check your connection and try again.'}`);
         }
     }
 

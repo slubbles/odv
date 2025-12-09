@@ -159,9 +159,9 @@ function HeaderContent() {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Wallet button hidden on mobile - available in mobile sidebar */}
+          {/* Wallet button visible on mobile (optimized to avatar only) */}
           <ClientOnly>
-            <div className="wallet-button-wrapper hidden md:block">
+            <div className="wallet-button-wrapper block">
               <WalletButton />
             </div>
           </ClientOnly>
