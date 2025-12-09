@@ -42,6 +42,10 @@ function HeaderContent() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
+            <Link href="/discover" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Fund Projects
+            </Link>
+
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:ring-0 focus-visible:outline-none">
                 Explore <ChevronDown className="h-4 w-4" />

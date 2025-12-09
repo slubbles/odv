@@ -122,7 +122,7 @@ export function WalletButton() {
     )
   }
 
-  // Connected state - Avatar Dropdown only
+  // Connected state - Split style (Address + Avatar)
   return (
     <div className="flex items-center gap-3">
       {/* Network Badge */}
@@ -130,6 +130,41 @@ export function WalletButton() {
         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
         <span className="text-xs font-medium text-emerald-400">SOON Testnet</span>
       </div>
+
+      {/* Wallet Address Dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" className="hidden sm:flex items-center gap-2 bg-background/50 border-border hover:bg-accent h-10 px-4 rounded-full">
+            <Wallet className="h-4 w-4 text-muted-foreground" />
+            <span className="font-mono text-sm">
+              {publicKey ? truncateAddress(publicKey.toString()) : 'Connected'}
+            </span>
+            <ChevronDown className="h-3 w-3 opacity-50" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-64 p-2">
+          <div className="flex flex-col p-2 mb-2 bg-muted/30 rounded-lg">
+            <span className="text-xs text-muted-foreground mb-1">Wallet Balance</span>
+            <span className="text-lg font-bold flex items-center gap-1">
+              {balance !== null ? `${balance.toFixed(4)}` : '...'} 
+              <span className="text-sm font-normal text-muted-foreground">SOL</span>
+            </span>
+          </div>
+          <DropdownMenuItem onClick={handleCopyAddress} className="cursor-pointer">
+            <Copy className="mr-2 h-4 w-4" />
+            <span>Copy Address</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleOpenExplorer} className="cursor-pointer">
+            <ExternalLink className="mr-2 h-4 w-4" />
+            <span>View on Explorer</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleDisconnect} className="text-destructive focus:text-destructive cursor-pointer">
+            <LogOut className="h-4 w-4 mr-2" />
+            Disconnect
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {/* Profile Avatar Dropdown */}
       <DropdownMenu>
@@ -145,42 +180,33 @@ export function WalletButton() {
           </Button>
         </DropdownMenuTrigger>
         
-        <DropdownMenuContent align="end" className="w-64 p-2">
-          <div className="flex flex-col p-2 mb-2 bg-muted/30 rounded-lg">
-            <span className="text-xs text-muted-foreground mb-1">Wallet Balance</span>
-            <span className="text-lg font-bold flex items-center gap-1">
-              {balance !== null ? `${balance.toFixed(4)}` : '...'} 
-              <span className="text-sm font-normal text-muted-foreground">SOL</span>
-            </span>
-            <span className="text-xs font-mono text-muted-foreground mt-1 truncate">
-              {publicKey ? truncateAddress(publicKey.toString(), 6) : ''}
-            </span>
+        <DropdownMenuContent align="end" className="w-56 p-2">
+          <div className="px-2 py-1.5 mb-1">
+            <p className="text-sm font-medium">My Account</p>
+            <p className="text-xs text-muted-foreground">Manage your profile</p>
           </div>
-
-          <DropdownMenuItem onClick={handleCopyAddress} className="cursor-pointer">
-            <Copy className="mr-2 h-4 w-4" />
-            <span>Copy Address</span>
-          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           
-          <DropdownMenuItem onClick={handleOpenExplorer} className="cursor-pointer">
-            <ExternalLink className="mr-2 h-4 w-4" />
-            <span>View on Explorer</span>
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href="/portfolio">
+              <Heart className="mr-2 h-4 w-4" />
+              <span>Funded Projects</span>
+            </Link>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href="/wallet">
+              <Wallet className="mr-2 h-4 w-4" />
+              <span>Wallet Details</span>
+            </Link>
           </DropdownMenuItem>
           
           <DropdownMenuSeparator />
-          
           <DropdownMenuItem asChild className="cursor-pointer">
             <Link href="/help">
               <HelpCircle className="mr-2 h-4 w-4" />
               <span>Help & Support</span>
             </Link>
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-          
-          <DropdownMenuItem onClick={handleDisconnect} className="text-destructive focus:text-destructive cursor-pointer">
-            <LogOut className="h-4 w-4 mr-2" />
-            Disconnect
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

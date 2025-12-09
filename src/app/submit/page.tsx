@@ -632,7 +632,7 @@ export default function SubmitPage() {
                   <div className="space-y-3 text-sm bg-muted/30 p-4 rounded-lg">
                     <div className="flex items-center justify-between mb-2 border-b border-border/50 pb-2">
                       <span className="font-medium">Basic Info</span>
-                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setStep(1)}>
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0 flex items-center justify-center" onClick={() => setStep(1)}>
                         <Pencil className="h-3 w-3" />
                       </Button>
                     </div>
@@ -657,7 +657,7 @@ export default function SubmitPage() {
 
                     <div className="flex items-center justify-between mb-2 mt-4 border-b border-border/50 pb-2">
                       <span className="font-medium">Story</span>
-                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setStep(2)}>
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0 flex items-center justify-center" onClick={() => setStep(2)}>
                         <Pencil className="h-3 w-3" />
                       </Button>
                     </div>
@@ -686,7 +686,7 @@ export default function SubmitPage() {
 
                     <div className="flex items-center justify-between mb-2 mt-4 border-b border-border/50 pb-2">
                       <span className="font-medium">Funding</span>
-                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setStep(3)}>
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0 flex items-center justify-center" onClick={() => setStep(3)}>
                         <Pencil className="h-3 w-3" />
                       </Button>
                     </div>

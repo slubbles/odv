@@ -301,7 +301,14 @@ export async function createInitializeCampaignTransaction(
         // If it exists, we don't need to create it
     } catch (error: unknown) {
         // If it doesn't exist, add instruction to create it
-        if (error instanceof TokenAccountNotFoundError || error instanceof TokenInvalidAccountOwnerError) {
+        // Check for both instance and name to handle bundling issues
+        const isTokenAccountError = 
+            error instanceof TokenAccountNotFoundError || 
+            error instanceof TokenInvalidAccountOwnerError ||
+            (typeof error === 'object' && error !== null && 'name' in error && (error as any).name === 'TokenAccountNotFoundError') ||
+            (typeof error === 'object' && error !== null && 'name' in error && (error as any).name === 'TokenInvalidAccountOwnerError');
+
+        if (isTokenAccountError) {
             transaction.add(
                 createAssociatedTokenAccountInstruction(
                     creatorPublicKey, // payer

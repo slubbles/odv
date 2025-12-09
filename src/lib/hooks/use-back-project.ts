@@ -114,22 +114,37 @@ export function useBackProject() {
       setStatus('recording')
       toast.loading("Recording your backing...", { id: "backing" })
       
-      const response = await fetch(`/api/backing/${projectId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          walletAddress: publicKey.toString(),
-          transactionSignature: signature,
-          amount
+      let backingData = null;
+
+      try {
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
+
+        const response = await fetch(`/api/backing/${projectId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            walletAddress: publicKey.toString(),
+            transactionSignature: signature,
+            amount
+          }),
+          signal: controller.signal
         })
-      })
+        
+        clearTimeout(timeoutId)
 
-      const data = await response.json()
+        const data = await response.json()
 
-      if (!response.ok) {
-        // Transaction succeeded but DB recording failed
-        console.error('Failed to record backing in DB:', data.error)
-        // Still return success since blockchain transaction went through
+        if (!response.ok) {
+          // Transaction succeeded but DB recording failed
+          console.error('Failed to record backing in DB:', data.error)
+          // Still return success since blockchain transaction went through
+        } else {
+          backingData = data.backing
+        }
+      } catch (dbError) {
+        console.error('DB recording error:', dbError)
+        // Ignore DB errors as the blockchain tx is what matters most
       }
 
       // Success!
@@ -141,7 +156,7 @@ export function useBackProject() {
       return { 
         success: true, 
         signature, 
-        backing: data.backing, 
+        backing: backingData, 
         explorerUrl 
       }
 
