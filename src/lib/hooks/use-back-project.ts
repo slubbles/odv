@@ -192,8 +192,8 @@ export function useBackProject() {
       }
     } finally {
       setIsSubmitting(false)
-      // Reset status after a delay
-      setTimeout(() => setStatus('idle'), 2000)
+      // Don't auto-reset status - let component control lifecycle
+      // setTimeout(() => setStatus('idle'), 2000) // REMOVED to prevent modal loop
     }
   }, [connected, publicKey, sendTransaction, connection])
 

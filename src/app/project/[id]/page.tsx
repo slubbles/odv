@@ -114,6 +114,12 @@ export default function ProjectDetailPage() {
   const params = useParams()
   const { project, loading, error, refetch } = useProject(params.id as string)
 
+  // Force re-render when project data changes
+  const handleBackingSuccess = () => {
+    console.log('[ProjectPage] Backing successful, refetching project data')
+    refetch()
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -395,7 +401,7 @@ export default function ProjectDetailPage() {
                     projectStatus={project.status}
                     size="lg"
                     className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 text-lg shadow-md"
-                    onSuccess={refetch}
+                    onSuccess={handleBackingSuccess}
                   />
 
                   <p className="text-xs text-center text-muted-foreground">

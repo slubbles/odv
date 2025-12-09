@@ -39,9 +39,8 @@ export function BackProjectButton({
   const [showProgressModal, setShowProgressModal] = useState(false)
   const [txSignature, setTxSignature] = useState<string>("")
   const [explorerUrl, setExplorerUrl] = useState<string>("")
-  const [txError, setTxError] = useState<string>("")
-
-  // Check if project can be backed
+  const [txError, setTxError] = useState<string>("") 
+  const [finalStep, setFinalStep] = useState<'success' | 'error' | null>(null)  // Check if project can be backed
   const canBeBacked = projectStatus === "active"
   const isInQueue = projectStatus === "queue" || projectStatus === "pending"
   const isEnded = projectStatus === "completed" || projectStatus === "funded" || projectStatus === "withdrawn"
@@ -88,6 +87,7 @@ export function BackProjectButton({
     setTxError("")
     setTxSignature("")
     setExplorerUrl("")
+    setFinalStep(null) // Reset final step for new transaction
     
     const result = await backProject(projectId, creatorWallet, amount)
     
@@ -99,6 +99,7 @@ export function BackProjectButton({
       if (result.explorerUrl) {
         setExplorerUrl(result.explorerUrl)
       }
+      setFinalStep('success') // Lock modal on success
       // Modal stays on success step - user closes it manually
       // Modal lock will be released on close
     } else {
@@ -124,6 +125,7 @@ export function BackProjectButton({
       }
       
       setTxError(errorMessage)
+      setFinalStep('error') // Lock modal on error
       // Error modal stays open until user closes it
       
       // If blockchain succeeded but recording failed, auto-refresh after 10s
@@ -233,17 +235,24 @@ export function BackProjectButton({
 
       <TransactionProgressModal
         open={showProgressModal}
-        step={status === 'error' ? 'error' : status === 'success' ? 'success' : status === 'signing' ? 'approving' : status === 'confirming' ? 'confirming' : status === 'recording' ? 'recording' : 'approving'}
+        step={
+          finalStep === 'success' ? 'success' : 
+          finalStep === 'error' ? 'error' : 
+          status === 'signing' ? 'approving' : 
+          status === 'confirming' ? 'confirming' : 
+          status === 'recording' ? 'recording' : 
+          'approving'
+        }
         signature={txSignature}
         explorerUrl={explorerUrl}
         error={txError}
         onClose={() => {
-          console.log('[BackProjectButton] Modal closing, status:', status)
+          console.log('[BackProjectButton] Modal closing, finalStep:', finalStep, 'status:', status)
           setShowProgressModal(false)
           setIsModalLocked(false) // Release the lock
           
           // When modal closes, update button state and refetch project data
-          if (status === 'success' && txSignature) {
+          if (finalStep === 'success' && txSignature) {
             console.log('[BackProjectButton] Success modal closed, updating UI state')
             setHasBacked(true)
             
@@ -266,12 +275,13 @@ export function BackProjectButton({
                 })
               }, 1000) // Wait 1s for DB to sync
             }
-          } else if (status === 'error') {
+          } else if (finalStep === 'error') {
             console.log('[BackProjectButton] Error modal closed, resetting state')
             // On error close, reset states for retry
             setTxError('')
             setTxSignature('')
             setExplorerUrl('')
+            setFinalStep(null) // Reset for retry
           }
         }}
       />
