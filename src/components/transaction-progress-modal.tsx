@@ -11,6 +11,7 @@ interface TransactionProgressModalProps {
   signature?: string
   explorerUrl?: string
   error?: string
+  onClose?: () => void
 }
 
 export function TransactionProgressModal({
@@ -18,13 +19,19 @@ export function TransactionProgressModal({
   step,
   signature,
   explorerUrl,
-  error
+  error,
+  onClose
 }: TransactionProgressModalProps) {
   const stepIndex = ['approving', 'confirming', 'recording', 'success'].indexOf(step)
   const progress = stepIndex >= 0 ? ((stepIndex + 1) / 4) * 100 : 0
 
   return (
-    <Dialog open={open} onOpenChange={() => {}}>
+    <Dialog open={open} onOpenChange={(isOpen) => {
+      // Allow closing only on success/error steps
+      if (!isOpen && (step === 'success' || step === 'error') && onClose) {
+        onClose()
+      }
+    }}>
       <DialogContent className="sm:max-w-md" showCloseButton={step === 'success' || step === 'error'}>
         <DialogHeader className="flex flex-col items-center text-center gap-4">
           {step === 'error' ? (
@@ -53,7 +60,7 @@ export function TransactionProgressModal({
             {step === 'approving' && 'Please approve the transaction in your wallet'}
             {step === 'confirming' && 'Waiting for blockchain confirmation...'}
             {step === 'recording' && 'Saving your backing to the database...'}
-            {step === 'success' && 'Transaction completed! The UI will update automatically.'}
+            {step === 'success' && 'Transaction successful! You can close this modal anytime.'}
             {step === 'error' && (error || 'Something went wrong. Please try again.')}
           </DialogDescription>
         </DialogHeader>

@@ -87,26 +87,17 @@ export function BackProjectButton({
     const result = await backProject(projectId, creatorWallet, amount)
     
     if (result.success) {
-      setHasBacked(true)
       if (result.signature) {
         setTxSignature(result.signature)
       }
       if (result.explorerUrl) {
         setExplorerUrl(result.explorerUrl)
       }
-      // Keep progress modal on success step for 2 seconds, then show confetti
-      setTimeout(() => {
-        setShowProgressModal(false)
-        setShowSuccessModal(true)
-        // Call onSuccess to trigger any parent updates
-        onSuccess?.()
-      }, 2000)
+      // Progress modal stays open on success step - user closes it manually
+      // No auto-close, no auto-redirect
     } else {
       setTxError(result.error || "Transaction failed")
-      // Keep error modal open for 5 seconds so user can read it
-      setTimeout(() => {
-        setShowProgressModal(false)
-      }, 5000)
+      // Error modal also stays open until user closes it
     }
   }
 
@@ -210,13 +201,13 @@ export function BackProjectButton({
         signature={txSignature}
         explorerUrl={explorerUrl}
         error={txError}
-      />
-      <SuccessModal 
-        open={showSuccessModal}
-        onOpenChange={(open) => {
-          setShowSuccessModal(open)
-          // When modal closes, verify backing status to update UI
-          if (!open && txSignature) {
+        onClose={() => {
+          setShowProgressModal(false)
+          // When modal closes, update button state and refetch project data
+          if (status === 'success' && txSignature) {
+            setHasBacked(true)
+            onSuccess?.()
+            // Verify backing status from database
             if (publicKey) {
               checkBackingStatus(projectId, publicKey.toString()).then(result => {
                 setHasBacked(result.hasBacked)
@@ -224,10 +215,6 @@ export function BackProjectButton({
             }
           }
         }}
-        title="Project Backed Successfully!"
-        description={`You have successfully backed this project with ${amount} USDC. Your contribution helps bring this idea to life.`}
-        txSignature={txSignature}
-        explorerUrl={explorerUrl}
       />
     </>
   )
