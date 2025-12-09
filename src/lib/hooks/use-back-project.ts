@@ -7,7 +7,6 @@ import { useMutation } from "@tanstack/react-query"
 import { createFundCampaignTransaction } from "@/lib/solana/transaction"
 import { getExplorerTransactionUrl } from "@/lib/solana/network-utils"
 import { parseBlockchainError, formatErrorForLogging } from "@/lib/solana/error-handling"
-import { toast } from "sonner"
 
 export type BackingStatus = 'idle' | 'creating' | 'signing' | 'confirming' | 'recording' | 'success' | 'error'
 
@@ -56,12 +55,10 @@ export function useBackProject() {
   ): Promise<BackProjectResult> => {
     // Pre-flight checks
     if (!connected || !publicKey) {
-      toast.error("Please connect your wallet first")
       return { success: false, error: "Wallet not connected", errorType: 'WALLET_NOT_CONNECTED', recoverable: true }
     }
 
     if (!sendTransaction) {
-      toast.error("Wallet does not support transactions")
       return { success: false, error: "Wallet cannot send transactions", errorType: 'WALLET_NOT_CONNECTED', recoverable: true }
     }
 
@@ -70,7 +67,6 @@ export function useBackProject() {
     try {
       creatorPublicKey = new PublicKey(creatorWallet)
     } catch {
-      toast.error("Invalid project configuration")
       return { success: false, error: "Invalid creator wallet address", recoverable: false }
     }
 
@@ -79,7 +75,6 @@ export function useBackProject() {
 
     try {
       // Step 1: Create transaction
-      toast.loading("Preparing transaction...", { id: "backing" })
       const transaction = await createFundCampaignTransaction(
         connection,
         publicKey,
@@ -89,7 +84,6 @@ export function useBackProject() {
 
       // Step 2: Simulate transaction
       setStatus('signing')
-      toast.loading("Validating transaction...", { id: "backing" })
       
       try {
         const simulation = await connection.simulateTransaction(transaction)
@@ -110,7 +104,6 @@ export function useBackProject() {
       }
 
       // Step 3: Sign and send transaction (SOON-compatible approach)
-      toast.loading("Please approve in your wallet...", { id: "backing" })
       setStatus('confirming')
       
       // Use sendTransaction which handles signing + broadcasting to SOON RPC
@@ -121,8 +114,6 @@ export function useBackProject() {
       })
       
       // Step 5: Confirm transaction
-      toast.loading("Confirming on blockchain...", { id: "backing" })
-      
       const confirmation = await connection.confirmTransaction(signature, 'confirmed')
       if (confirmation.value.err) {
         throw new Error(`Transaction failed: ${JSON.stringify(confirmation.value.err)}`)
@@ -130,7 +121,6 @@ export function useBackProject() {
 
       // Step 6: Record in database
       setStatus('recording')
-      toast.loading("Verifying & Recording...", { id: "backing" })
       
       let backingData = null;
 
@@ -187,12 +177,6 @@ export function useBackProject() {
       // Parse error for user-friendly handling
       const parsed = parseBlockchainError(error)
       console.error('Back project error:', formatErrorForLogging(error))
-      
-      toast.error(parsed.userMessage, { 
-        id: "backing",
-        description: parsed.suggestion,
-        duration: 6000
-      })
       
       return { 
         success: false, 

@@ -94,16 +94,13 @@ export function BackProjectButton({
       if (result.explorerUrl) {
         setExplorerUrl(result.explorerUrl)
       }
-      // Keep success modal open for 3 seconds so user can see it
+      // Keep progress modal on success step for 2 seconds, then show confetti
       setTimeout(() => {
         setShowProgressModal(false)
         setShowSuccessModal(true)
-        // Delay the reload to show success modal first
-        setTimeout(() => {
-          onSuccess?.()
-          window.location.reload()
-        }, 2000)
-      }, 3000)
+        // Call onSuccess to trigger any parent updates
+        onSuccess?.()
+      }, 2000)
     } else {
       setTxError(result.error || "Transaction failed")
       // Keep error modal open for 5 seconds so user can read it

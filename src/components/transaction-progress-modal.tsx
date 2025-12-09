@@ -53,7 +53,7 @@ export function TransactionProgressModal({
             {step === 'approving' && 'Please approve the transaction in your wallet'}
             {step === 'confirming' && 'Waiting for blockchain confirmation...'}
             {step === 'recording' && 'Saving your backing to the database...'}
-            {step === 'success' && 'Your backing has been recorded successfully!'}
+            {step === 'success' && 'Transaction completed! The UI will update automatically.'}
             {step === 'error' && (error || 'Something went wrong. Please try again.')}
           </DialogDescription>
         </DialogHeader>
@@ -81,12 +81,6 @@ export function TransactionProgressModal({
             >
               View on Explorer <ExternalLink className="h-4 w-4" />
             </Button>
-          </div>
-        )}
-        
-        {step === 'success' && (
-          <div className="text-xs text-center text-muted-foreground">
-            The page will update automatically
           </div>
         )}
       </DialogContent>
