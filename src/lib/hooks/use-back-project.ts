@@ -28,19 +28,25 @@ export function useBackProject() {
 
   const verifyMutation = useMutation({
     mutationFn: async (data: { signature: string, projectId: string, amount: number, backerWallet: string }) => {
+      console.log('[useBackProject] Verifying transaction...', data.signature.slice(0, 8))
       const response = await fetch('/api/verify-transaction', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       })
+      
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Verification failed')
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('[useBackProject] Verification failed:', errorData)
+        throw new Error(errorData.error || errorData.message || 'Verification failed')
       }
-      return response.json()
+      
+      const result = await response.json()
+      console.log('[useBackProject] Verification successful:', result)
+      return result
     },
-    retry: 2,
-    retryDelay: 1000
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000) // Exponential backoff: 1s, 2s, 4s
   })
 
   const resetStatus = useCallback(() => {

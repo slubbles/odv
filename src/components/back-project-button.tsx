@@ -5,9 +5,8 @@ import { useWallet } from "@solana/wallet-adapter-react"
 import { Button } from "@/components/ui/button"
 import { Loader2, Heart, CheckCircle2, Clock, XCircle } from "lucide-react"
 import { useBackProject } from "@/lib/hooks/use-back-project"
-import { toast } from "sonner"
-import { SuccessModal } from "@/components/success-modal"
 import { TransactionProgressModal } from "@/components/transaction-progress-modal"
+import { useToast } from "@/components/ui/use-toast"
 
 interface BackProjectButtonProps {
   projectId: string
@@ -32,6 +31,7 @@ export function BackProjectButton({
 }: BackProjectButtonProps) {
   const { publicKey, connected } = useWallet()
   const { backProject, checkBackingStatus, isSubmitting, status } = useBackProject()
+  const { toast } = useToast()
   const [hasBacked, setHasBacked] = useState(false)
   const [isChecking, setIsChecking] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
@@ -71,18 +71,14 @@ export function BackProjectButton({
 
   const handleBack = async () => {
     if (!canBeBacked) {
-      if (isInQueue) {
-        toast.error("This project is still in review and cannot be backed yet")
-      } else if (isEnded) {
-        toast.error("This campaign has ended")
-      } else {
-        toast.error("This project cannot be backed")
-      }
+      // Don't show toast - just prevent action
       return
     }
 
     setShowProgressModal(true)
     setTxError("")
+    setTxSignature("")
+    setExplorerUrl("")
     
     const result = await backProject(projectId, creatorWallet, amount)
     
@@ -96,8 +92,28 @@ export function BackProjectButton({
       // Progress modal stays open on success step - user closes it manually
       // No auto-close, no auto-redirect
     } else {
-      setTxError(result.error || "Transaction failed")
-      // Error modal also stays open until user closes it
+      // Set detailed error message
+      let errorMessage = result.error || "That didn't work. Try again."
+      
+      // Add context based on error type
+      if (result.errorType === 'WALLET_NOT_CONNECTED') {
+        errorMessage = 'Wallet connection lost. Reconnect and try again.'
+      } else if (result.errorType === 'INSUFFICIENT_FUNDS') {
+        errorMessage = 'Not enough funds in your wallet. Add more and try again.'
+      } else if (errorMessage.includes('Failed to record')) {
+        errorMessage = 'Transaction succeeded on blockchain but failed to record. Check explorer to verify, then refresh the page.'
+        
+        // Show critical error toast for recording failures
+        toast({
+          variant: "destructive",
+          title: "Recording Error",
+          description: "Your transaction succeeded but we couldn't record it. Check the blockchain explorer and refresh the page.",
+          duration: 10000, // 10 seconds for critical errors
+        })
+      }
+      
+      setTxError(errorMessage)
+      // Error modal stays open until user closes it
     }
   }
 
@@ -203,16 +219,31 @@ export function BackProjectButton({
         error={txError}
         onClose={() => {
           setShowProgressModal(false)
+          
           // When modal closes, update button state and refetch project data
           if (status === 'success' && txSignature) {
+            console.log('[BackProjectButton] Success modal closed, updating UI state')
             setHasBacked(true)
+            
+            // Trigger parent component refetch (updates project stats)
             onSuccess?.()
-            // Verify backing status from database
+            
+            // Double-check backing status from database to ensure accuracy
             if (publicKey) {
               checkBackingStatus(projectId, publicKey.toString()).then(result => {
+                console.log('[BackProjectButton] Backing status verified:', result.hasBacked)
                 setHasBacked(result.hasBacked)
+              }).catch(err => {
+                console.error('[BackProjectButton] Failed to verify backing status:', err)
+                // Keep hasBacked=true since we know transaction succeeded
               })
             }
+          } else if (status === 'error') {
+            console.log('[BackProjectButton] Error modal closed, resetting state')
+            // On error close, reset states for retry
+            setTxError('')
+            setTxSignature('')
+            setExplorerUrl('')
           }
         }}
       />

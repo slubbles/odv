@@ -377,6 +377,28 @@ create policy "Activity feed is viewable by everyone"
   on public.activity_feed for select
   using ( true );
 
+-- Helper Function: Increment Backers Count and Raised Amount
+-- This function atomically updates project stats when a new backing is recorded
+create or replace function increment_backers(project_id uuid, amount_to_add numeric)
+returns void
+language plpgsql
+security definer
+as $$
+begin
+  update public.projects
+  set 
+    raised = raised + amount_to_add,
+    backers_count = backers_count + 1,
+    updated_at = now()
+  where id = project_id;
+  
+  -- Verify the update happened
+  if not found then
+    raise exception 'Project not found: %', project_id;
+  end if;
+end;
+$$;
+
 -- Functions for updating timestamps
 create or replace function update_updated_at_column()
 returns trigger as $$

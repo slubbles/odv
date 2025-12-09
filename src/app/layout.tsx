@@ -8,9 +8,9 @@ import { WalletContextProvider } from "@/components/providers/WalletContextProvi
 import { QueryClientProvider } from "@/components/providers/QueryClientProvider"
 import { SkipNav } from "@/components/skip-nav"
 import { BottomNav } from "@/components/bottom-nav"
-import { Toaster } from "sonner"
 import { NetworkGuard } from "@/components/network-guard"
 import { TestnetBanner } from "@/components/testnet-banner"
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const poppins = Poppins({
