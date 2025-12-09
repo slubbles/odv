@@ -184,13 +184,6 @@ export function BackProjectButton({
 
   return (
     <>
-      <TransactionProgressModal
-        open={showProgressModal}
-        step={status === 'error' ? 'error' : status === 'success' ? 'success' : status === 'signing' ? 'approving' : status === 'confirming' ? 'confirming' : status === 'recording' ? 'recording' : 'approving'}
-        signature={txSignature}
-        explorerUrl={explorerUrl}
-        error={txError}
-      />
       <Button
         variant={variant}
         size={size}
@@ -220,7 +213,17 @@ export function BackProjectButton({
       />
       <SuccessModal 
         open={showSuccessModal}
-        onOpenChange={setShowSuccessModal}
+        onOpenChange={(open) => {
+          setShowSuccessModal(open)
+          // When modal closes, verify backing status to update UI
+          if (!open && txSignature) {
+            if (publicKey) {
+              checkBackingStatus(projectId, publicKey.toString()).then(result => {
+                setHasBacked(result.hasBacked)
+              })
+            }
+          }
+        }}
         title="Project Backed Successfully!"
         description={`You have successfully backed this project with ${amount} USDC. Your contribution helps bring this idea to life.`}
         txSignature={txSignature}
