@@ -4,15 +4,15 @@
 seeds = false
 skip-lint = false
 
-[programs.localnet]
-odv_escrow = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+[programs.devnet]
+odv_escrow = "4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+test = "npx mocha -t 1000000 tests/**/*.js"

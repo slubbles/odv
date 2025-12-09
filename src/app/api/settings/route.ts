@@ -1,0 +1,91 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { getSupabaseClient } from '@/lib/supabase/api-client'
+
+// GET /api/settings - Get user settings
+export async function GET(request: NextRequest) {
+  try {
+    const supabase = getSupabaseClient()
+    const { searchParams } = new URL(request.url)
+    const wallet = searchParams.get('wallet')
+
+    if (!wallet) {
+      return NextResponse.json(
+        { error: 'Wallet address required' },
+        { status: 400 }
+      )
+    }
+
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('notification_preferences, privacy_settings, email, email_verified')
+      .eq('wallet_address', wallet)
+      .single()
+
+    if (error) throw error
+
+    return NextResponse.json({
+      settings: user || {},
+    })
+  } catch (error: any) {
+    console.error('Get settings error:', error)
+    return NextResponse.json(
+      { error: 'Failed to get settings', details: error.message },
+      { status: 500 }
+    )
+  }
+}
+
+// PATCH /api/settings - Update user settings
+export async function PATCH(request: NextRequest) {
+  try {
+    const supabase = getSupabaseClient()
+    const body = await request.json()
+    const { wallet, notificationPreferences, privacySettings, email } = body
+
+    if (!wallet) {
+      return NextResponse.json(
+        { error: 'Wallet address required' },
+        { status: 400 }
+      )
+    }
+
+    const updateData: any = {}
+    if (notificationPreferences) updateData.notification_preferences = notificationPreferences
+    if (privacySettings) updateData.privacy_settings = privacySettings
+    if (email !== undefined) updateData.email = email
+
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
+    const { data: user, error } = await supabase
+      .from('users')
+      .update(updateData)
+      .eq('wallet_address', wallet)
+      .select()
+      .single()
+
+    if (error) throw error
+
+    return NextResponse.json({
+      success: true,
+      user,
+    })
+  } catch (error: any) {
+    console.error('Update settings error:', error)
+    return NextResponse.json(
+      { error: 'Failed to update settings', details: error.message },
+      { status: 500 }
+    )
+  }
+}
