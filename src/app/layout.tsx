@@ -59,19 +59,23 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
+        url: "/odv logo - favicon 512x512.png",
+        sizes: "512x512",
+        type: "image/png",
       },
       {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
+        url: "/odv logo - favicon 512x512.png",
+        sizes: "192x192",
+        type: "image/png",
       },
       {
-        url: "/icon.svg",
-        type: "image/svg+xml",
+        url: "/odv logo - favicon 512x512.png",
+        sizes: "32x32",
+        type: "image/png",
       },
     ],
-    apple: "/apple-icon.png",
+    apple: "/odv logo - favicon 512x512.png",
+    shortcut: "/odv logo - favicon 512x512.png",
   },
   
   manifest: '/site.webmanifest',
