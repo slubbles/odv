@@ -22,6 +22,8 @@ export function TransactionProgressModal({
   error,
   onClose
 }: TransactionProgressModalProps) {
+  console.log('[TransactionProgressModal] Render:', { open, step, hasSignature: !!signature, hasError: !!error })
+  
   const stepIndex = ['approving', 'confirming', 'recording', 'success'].indexOf(step)
   const progress = stepIndex >= 0 ? ((stepIndex + 1) / 4) * 100 : 0
 

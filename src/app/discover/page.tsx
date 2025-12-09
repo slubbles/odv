@@ -257,6 +257,11 @@ export default function DiscoverPage() {
                     trending={project.backers_count > 50}
                     status={project.status}
                     showBackButton={true}
+                    creatorWallet={project.creator_wallet}
+                    onSuccess={() => {
+                      // Refetch projects after successful backing to update stats
+                      window.location.reload()
+                    }}
                   />
                 );
               })}

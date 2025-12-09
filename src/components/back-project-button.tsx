@@ -34,6 +34,7 @@ export function BackProjectButton({
   const { toast } = useToast()
   const [hasBacked, setHasBacked] = useState(false)
   const [isChecking, setIsChecking] = useState(false)
+  const [isModalLocked, setIsModalLocked] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [showProgressModal, setShowProgressModal] = useState(false)
   const [txSignature, setTxSignature] = useState<string>("")
@@ -75,6 +76,14 @@ export function BackProjectButton({
       return
     }
 
+    // Prevent duplicate submissions if modal is locked
+    if (isModalLocked || showProgressModal) {
+      console.log('[BackProjectButton] Transaction already in progress, ignoring click')
+      return
+    }
+
+    console.log('[BackProjectButton] Starting backing flow...')
+    setIsModalLocked(true)
     setShowProgressModal(true)
     setTxError("")
     setTxSignature("")
@@ -83,15 +92,17 @@ export function BackProjectButton({
     const result = await backProject(projectId, creatorWallet, amount)
     
     if (result.success) {
+      console.log('[BackProjectButton] Transaction successful!', result.signature?.slice(0, 8))
       if (result.signature) {
         setTxSignature(result.signature)
       }
       if (result.explorerUrl) {
         setExplorerUrl(result.explorerUrl)
       }
-      // Progress modal stays open on success step - user closes it manually
-      // No auto-close, no auto-redirect
+      // Modal stays on success step - user closes it manually
+      // Modal lock will be released on close
     } else {
+      console.error('[BackProjectButton] Transaction failed:', result.error)
       // Set detailed error message
       let errorMessage = result.error || "That didn't work. Try again."
       
@@ -114,6 +125,15 @@ export function BackProjectButton({
       
       setTxError(errorMessage)
       // Error modal stays open until user closes it
+      
+      // If blockchain succeeded but recording failed, auto-refresh after 10s
+      if (result.signature && errorMessage.includes('Failed to record')) {
+        console.log('[BackProjectButton] Setting up auto-refresh fallback for recording failure')
+        setTimeout(() => {
+          console.log('[BackProjectButton] Auto-refreshing page due to recording failure')
+          window.location.reload()
+        }, 10000) // 10 seconds
+      }
     }
   }
 
@@ -218,7 +238,9 @@ export function BackProjectButton({
         explorerUrl={explorerUrl}
         error={txError}
         onClose={() => {
+          console.log('[BackProjectButton] Modal closing, status:', status)
           setShowProgressModal(false)
+          setIsModalLocked(false) // Release the lock
           
           // When modal closes, update button state and refetch project data
           if (status === 'success' && txSignature) {
@@ -226,17 +248,23 @@ export function BackProjectButton({
             setHasBacked(true)
             
             // Trigger parent component refetch (updates project stats)
+            console.log('[BackProjectButton] Triggering parent refetch')
             onSuccess?.()
             
             // Double-check backing status from database to ensure accuracy
             if (publicKey) {
-              checkBackingStatus(projectId, publicKey.toString()).then(result => {
-                console.log('[BackProjectButton] Backing status verified:', result.hasBacked)
-                setHasBacked(result.hasBacked)
-              }).catch(err => {
-                console.error('[BackProjectButton] Failed to verify backing status:', err)
-                // Keep hasBacked=true since we know transaction succeeded
-              })
+              setTimeout(() => {
+                checkBackingStatus(projectId, publicKey.toString()).then(result => {
+                  console.log('[BackProjectButton] Backing status verified:', result.hasBacked)
+                  setHasBacked(result.hasBacked)
+                  if (!result.hasBacked) {
+                    console.warn('[BackProjectButton] Backing not found in DB, may need manual refresh')
+                  }
+                }).catch(err => {
+                  console.error('[BackProjectButton] Failed to verify backing status:', err)
+                  // Keep hasBacked=true since we know transaction succeeded
+                })
+              }, 1000) // Wait 1s for DB to sync
             }
           } else if (status === 'error') {
             console.log('[BackProjectButton] Error modal closed, resetting state')

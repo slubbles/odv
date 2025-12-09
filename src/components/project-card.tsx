@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 import { Users, Clock, TrendingUp, Heart } from "lucide-react"
+import { BackProjectButton } from "@/components/back-project-button"
 
 interface ProjectCardProps {
   id: string
@@ -23,6 +24,8 @@ interface ProjectCardProps {
   trending?: boolean
   status?: 'active' | 'funded' | 'completed' | 'queue' | 'pending'
   showBackButton?: boolean
+  creatorWallet?: string
+  onSuccess?: () => void
 }
 
 export function ProjectCard({
@@ -39,6 +42,8 @@ export function ProjectCard({
   trending,
   status = 'active',
   showBackButton = true,
+  creatorWallet,
+  onSuccess,
 }: ProjectCardProps) {
   const progress = (raised / goal) * 100
 
@@ -121,7 +126,20 @@ export function ProjectCard({
           </div>
         </Link>
         
-        {showBackButton && status === 'active' && (
+        {showBackButton && status === 'active' && creatorWallet && (
+          <div className="mt-2 sm:mt-3" onClick={(e) => e.stopPropagation()}>
+            <BackProjectButton
+              projectId={id}
+              creatorWallet={creatorWallet}
+              projectStatus={status}
+              size="sm"
+              className="w-full h-7 sm:h-8 text-xs"
+              onSuccess={onSuccess}
+            />
+          </div>
+        )}
+        
+        {showBackButton && status === 'active' && !creatorWallet && (
           <Link href={`/project/${id}`} className="mt-2 sm:mt-3 block">
             <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-7 sm:h-8 text-xs">
               <Heart className="mr-1.5 h-3 w-3" />
