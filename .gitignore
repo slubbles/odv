@@ -36,6 +36,15 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Sensitive documentation files (contain secrets/credentials)
+SECRETS.md
+VERCEL_*.md
+CURRENT_SESSION_CONTEXT.md
+FIXES_SUMMARY.md
+CRITICAL_*.md
+*_CONTEXT.md
+*_SECRETS*.md
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
