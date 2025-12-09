@@ -25,7 +25,7 @@ export function TransactionProgressModal({
 
   return (
     <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-md" hideClose={step !== 'success' && step !== 'error'}>
+      <DialogContent className="sm:max-w-md" showCloseButton={step === 'success' || step === 'error'}>
         <DialogHeader className="flex flex-col items-center text-center gap-4">
           {step === 'error' ? (
             <div className="h-16 w-16 rounded-full bg-destructive/10 flex items-center justify-center mb-2">
