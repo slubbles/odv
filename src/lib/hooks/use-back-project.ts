@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react"
 import { useWallet, useConnection } from "@solana/wallet-adapter-react"
 import { PublicKey } from "@solana/web3.js"
+import { useMutation } from "@tanstack/react-query"
 import { createFundCampaignTransaction } from "@/lib/solana/transaction"
 import { getExplorerTransactionUrl } from "@/lib/solana/network-utils"
 import { parseBlockchainError, formatErrorForLogging } from "@/lib/solana/error-handling"
@@ -25,6 +26,21 @@ export function useBackProject() {
   const [status, setStatus] = useState<BackingStatus>('idle')
   const { publicKey, sendTransaction, connected } = useWallet()
   const { connection } = useConnection()
+
+  const verifyMutation = useMutation({
+    mutationFn: async (data: { signature: string, projectId: string, amount: number, backerWallet: string }) => {
+      const response = await fetch('/api/verify-transaction', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Verification failed')
+      }
+      return response.json()
+    }
+  })
 
   const resetStatus = useCallback(() => {
     setStatus('idle')
@@ -112,39 +128,23 @@ export function useBackProject() {
 
       // Step 6: Record in database
       setStatus('recording')
-      toast.loading("Recording your backing...", { id: "backing" })
+      toast.loading("Verifying & Recording...", { id: "backing" })
       
       let backingData = null;
 
       try {
-        const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
-
-        const response = await fetch(`/api/backing/${projectId}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            walletAddress: publicKey.toString(),
-            transactionSignature: signature,
-            amount
-          }),
-          signal: controller.signal
+        // Use the new secure verification API
+        await verifyMutation.mutateAsync({
+          signature,
+          projectId,
+          amount,
+          backerWallet: publicKey.toString()
         })
-        
-        clearTimeout(timeoutId)
-
-        const data = await response.json()
-
-        if (!response.ok) {
-          // Transaction succeeded but DB recording failed
-          console.error('Failed to record backing in DB:', data.error)
-          // Still return success since blockchain transaction went through
-        } else {
-          backingData = data.backing
-        }
+        // If successful, we don't strictly need the backing object for the UI right now
       } catch (dbError) {
-        console.error('DB recording error:', dbError)
+        console.error('Verification/Recording error:', dbError)
         // Ignore DB errors as the blockchain tx is what matters most
+        // The user still paid, so we show success
       }
 
       // Success!
