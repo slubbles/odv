@@ -137,6 +137,13 @@ export default function SubmitPage() {
       const goalAmount = parseFloat(formData.goal)
 
       // 1. Create and send blockchain transaction
+      console.log('[Submit] Starting campaign creation...', {
+        goal: goalAmount,
+        deadline: deadlineTimestamp,
+        milestones: formData.milestones.length,
+        wallet: publicKey.toString().slice(0, 8) + '...'
+      })
+      
       toast.info("Initializing campaign on blockchain...")
       
       const transaction = await createInitializeCampaignTransaction(
@@ -149,20 +156,40 @@ export default function SubmitPage() {
             amount: (goalAmount * m.percentage) / 100
           }))
       )
+      
+      console.log('[Submit] Transaction created, requesting signature...')
 
-      const signature = await sendTransaction(transaction, connection)
+      let signature: string
+      try {
+        signature = await sendTransaction(transaction, connection, {
+          skipPreflight: false,
+          preflightCommitment: 'confirmed'
+        })
+        console.log('[Submit] Transaction signature:', signature)
+      } catch (sendError: any) {
+        console.error('[Submit] Send transaction error:', sendError)
+        throw sendError // Re-throw to be caught by outer catch
+      }
       
       toast.info("Transaction sent. Waiting for confirmation...")
       
-      const confirmation = await connection.confirmTransaction(signature, 'confirmed')
-      if (confirmation.value.err) {
+      try {
+        const confirmation = await connection.confirmTransaction(signature, 'confirmed')
+        if (confirmation.value.err) {
           const errStr = JSON.stringify(confirmation.value.err)
+          console.error('[Submit] Transaction confirmation error:', errStr)
           throw new Error(`Transaction failed: ${errStr}`)
+        }
+        console.log('[Submit] Transaction confirmed successfully')
+      } catch (confirmError: any) {
+        console.error('[Submit] Confirmation error:', confirmError)
+        throw confirmError
       }
 
       toast.success("Campaign initialized on blockchain!")
 
       // 2. Save metadata to database
+      console.log('[Submit] Saving project metadata to database...')
       const response = await fetch('/api/projects', {
         method: 'POST',
         headers: {
@@ -187,10 +214,14 @@ export default function SubmitPage() {
       })
 
       const data = await response.json()
+      console.log('[Submit] Database response:', { ok: response.ok, status: response.status, data })
 
       if (!response.ok) {
+        console.error('[Submit] Database save failed:', data)
         throw new Error(data.error || 'Failed to create project')
       }
+
+      console.log('[Submit] Project created successfully:', data.project?.id)
 
       // Show success state with project details
       setSubmittedProject({
