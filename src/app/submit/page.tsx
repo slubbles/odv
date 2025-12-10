@@ -359,26 +359,28 @@ export default function SubmitPage() {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <div className="flex-1 container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-2xl flex items-center justify-center">
-          <Card className="w-full p-8">
-            <div className="mb-6 text-center">
-              <div className="h-16 w-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <AlertCircle className="h-8 w-8 text-red-500" />
+        <div className="flex-1 container mx-auto px-4 sm:px-6 py-4 sm:py-8 max-w-2xl flex items-center justify-center">
+          <Card className="w-full p-4 sm:p-6 md:p-8">
+            <div className="mb-4 sm:mb-6 text-center">
+              <div className="h-12 w-12 sm:h-16 sm:w-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <AlertCircle className="h-6 w-6 sm:h-8 sm:w-8 text-red-500" />
               </div>
-              <h1 className="text-2xl font-bold mb-2">Submission {submissionError.stage === 'blockchain' ? 'Failed' : 'Partially Complete'}</h1>
-              <p className="text-muted-foreground">{submissionError.message}</p>
+              <h1 className="text-xl sm:text-2xl font-bold mb-2">Submission {submissionError.stage === 'blockchain' ? 'Failed' : 'Partially Complete'}</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">{submissionError.message}</p>
             </div>
 
-            <div className="bg-muted/50 rounded-lg p-6 mb-6 space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  {submissionError.stage === 'blockchain' ? (
-                    <AlertCircle className="h-4 w-4 text-red-500" />
-                  ) : (
-                    <CheckCircle2 className="h-4 w-4 text-green-500" />
-                  )}
-                  <span className="font-medium">Blockchain Transaction</span>
-                  <span className="text-muted-foreground ml-auto">
+            <div className="bg-muted/50 rounded-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 space-y-3 sm:space-y-4">
+              <div className="space-y-2 sm:space-y-3">
+                <div className="flex items-start sm:items-center gap-2 text-xs sm:text-sm">
+                  <div className="flex-shrink-0 mt-0.5 sm:mt-0">
+                    {submissionError.stage === 'blockchain' ? (
+                      <AlertCircle className="h-4 w-4 text-red-500" />
+                    ) : (
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    )}
+                  </div>
+                  <span className="font-medium flex-1">Blockchain Transaction</span>
+                  <span className="text-muted-foreground text-xs sm:text-sm">
                     {submissionError.stage === 'blockchain' ? 'Failed' : 'Completed'}
                   </span>
                 </div>
@@ -389,28 +391,32 @@ export default function SubmitPage() {
                       href={`https://explorer.solana.com/tx/${submissionError.txSignature}?cluster=custom&customUrl=${encodeURIComponent('https://rpc.testnet.soo.network/rpc')}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary hover:underline flex items-center gap-1"
+                      className="text-primary hover:underline flex items-center gap-1 break-all"
                     >
-                      View transaction <ExternalLink className="h-3 w-3" />
+                      <span className="hidden sm:inline">View transaction</span>
+                      <span className="sm:hidden">View on explorer</span>
+                      <ExternalLink className="h-3 w-3 flex-shrink-0" />
                     </a>
                   </div>
                 )}
 
-                <div className="flex items-center gap-2 text-sm">
-                  {submissionError.stage === 'database' ? (
-                    <AlertCircle className="h-4 w-4 text-red-500" />
-                  ) : (
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                  )}
-                  <span className="font-medium">Database Storage</span>
-                  <span className="text-muted-foreground ml-auto">
+                <div className="flex items-start sm:items-center gap-2 text-xs sm:text-sm">
+                  <div className="flex-shrink-0 mt-0.5 sm:mt-0">
+                    {submissionError.stage === 'database' ? (
+                      <AlertCircle className="h-4 w-4 text-red-500" />
+                    ) : (
+                      <Clock className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </div>
+                  <span className="font-medium flex-1">Database Storage</span>
+                  <span className="text-muted-foreground text-xs sm:text-sm">
                     {submissionError.stage === 'database' ? 'Failed' : 'Not Started'}
                   </span>
                 </div>
               </div>
 
-              <div className="border-t pt-4">
-                <p className="text-sm text-muted-foreground">
+              <div className="border-t pt-3 sm:pt-4">
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                   {submissionError.details}
                 </p>
               </div>
@@ -418,25 +424,28 @@ export default function SubmitPage() {
 
             <div className="space-y-3">
               {submissionError.stage === 'database' && submissionError.txSignature && (
-                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-sm">
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 sm:p-4 text-xs sm:text-sm">
                   <p className="font-medium text-blue-600 dark:text-blue-400 mb-2">📧 Need Help?</p>
-                  <p className="text-muted-foreground mb-2">
+                  <p className="text-muted-foreground mb-2 leading-relaxed">
                     Your campaign was created on-chain successfully. Please contact support with your transaction signature so we can manually add your project.
                   </p>
-                  <code className="block bg-black/20 p-2 rounded text-xs break-all">
-                    {submissionError.txSignature}
-                  </code>
+                  <div className="bg-black/20 p-2 rounded">
+                    <code className="block text-[10px] sm:text-xs break-all leading-tight">
+                      {submissionError.txSignature}
+                    </code>
+                  </div>
                 </div>
               )}
 
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <Button
                   onClick={() => {
                     setSubmissionError(null)
                     setStep(1)
                   }}
                   variant="outline"
-                  className="flex-1"
+                  className="w-full sm:flex-1"
+                  size="default"
                 >
                   Start Over
                 </Button>
@@ -446,7 +455,8 @@ export default function SubmitPage() {
                       setSubmissionError(null)
                       handleSubmit()
                     }}
-                    className="flex-1"
+                    className="w-full sm:flex-1"
+                    size="default"
                   >
                     Try Again
                   </Button>
@@ -465,50 +475,51 @@ export default function SubmitPage() {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <div className="flex-1 container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-2xl flex items-center justify-center">
-          <Card className="w-full p-8 text-center">
-            <div className="mb-6">
-              <div className="h-16 w-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 className="h-8 w-8 text-green-500" />
+        <div className="flex-1 container mx-auto px-4 sm:px-6 py-4 sm:py-8 max-w-2xl flex items-center justify-center">
+          <Card className="w-full p-4 sm:p-6 md:p-8 text-center">
+            <div className="mb-4 sm:mb-6">
+              <div className="h-12 w-12 sm:h-16 sm:w-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <CheckCircle2 className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
               </div>
-              <h1 className="text-2xl font-bold mb-2">Project Submitted!</h1>
-              <p className="text-muted-foreground">Your project is now in the review queue</p>
+              <h1 className="text-xl sm:text-2xl font-bold mb-2">Project Submitted!</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">Your project is now in the review queue</p>
             </div>
 
-            <div className="bg-muted/50 rounded-lg p-6 mb-6 text-left space-y-3">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Title</span>
-                <span className="font-semibold">{submittedProject.title}</span>
+            <div className="bg-muted/50 rounded-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 text-left space-y-2 sm:space-y-3">
+              <div className="flex justify-between gap-2 text-xs sm:text-sm">
+                <span className="text-muted-foreground flex-shrink-0">Title</span>
+                <span className="font-semibold text-right break-words">{submittedProject.title}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between gap-2 text-xs sm:text-sm">
                 <span className="text-muted-foreground">Category</span>
-                <Badge variant="outline">{submittedProject.category}</Badge>
+                <Badge variant="outline" className="text-xs">{submittedProject.category}</Badge>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between gap-2 text-xs sm:text-sm">
                 <span className="text-muted-foreground">Goal</span>
                 <span className="font-semibold">${submittedProject.goal.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center gap-2 text-xs sm:text-sm">
                 <span className="text-muted-foreground">Status</span>
-                <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+                <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs">
                   <Clock className="h-3 w-3 mr-1" />
-                  In Review Queue
+                  <span className="hidden sm:inline">In Review Queue</span>
+                  <span className="sm:hidden">Pending</span>
                 </Badge>
               </div>
             </div>
 
-            <p className="text-sm text-muted-foreground mb-6">
+            <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6 leading-relaxed">
               Our team will review your project shortly. You&apos;ll be notified once it&apos;s approved and live.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button variant="outline" className="flex-1" asChild>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              <Button variant="outline" className="w-full sm:flex-1" size="default" asChild>
                 <Link href={`/project/${submittedProject.id}`}>
                   <ExternalLink className="h-4 w-4 mr-2" />
                   View Project
                 </Link>
               </Button>
-              <Button className="flex-1 bg-accent text-accent-foreground" asChild>
+              <Button className="w-full sm:flex-1 bg-accent text-accent-foreground" size="default" asChild>
                 <Link href="/dashboard/creator">
                   Go to Dashboard
                 </Link>
@@ -730,23 +741,23 @@ export default function SubmitPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
                     <div>
-                      <Label>Milestones *</Label>
+                      <Label className="text-sm sm:text-base">Milestones *</Label>
                       <p className="text-xs text-muted-foreground mt-1">Define how you&apos;ll deliver value.</p>
                     </div>
-                    <Button type="button" variant="outline" size="sm" onClick={addMilestone}>
+                    <Button type="button" variant="outline" size="sm" onClick={addMilestone} className="w-full sm:w-auto">
                       + Add Another
                     </Button>
                   </div>
 
                   {/* Milestone percentage notice */}
-                  <div className="p-4 rounded-lg bg-accent/10 border border-accent/30">
-                    <p className="text-sm font-medium text-accent-foreground flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4 text-accent" />
-                      All milestone percentages must add up to exactly 100%
+                  <div className="p-3 sm:p-4 rounded-lg bg-accent/10 border border-accent/30">
+                    <p className="text-xs sm:text-sm font-medium text-accent-foreground flex items-start sm:items-center gap-2">
+                      <AlertCircle className="h-4 w-4 text-accent flex-shrink-0 mt-0.5 sm:mt-0" />
+                      <span>All milestone percentages must add up to exactly 100%</span>
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs text-muted-foreground mt-1 ml-6">
                       Current total: <span className={`font-bold ${formData.milestones.reduce((sum, m) => sum + m.percentage, 0) === 100 ? 'text-green-500' : 'text-yellow-500'}`}>
                         {formData.milestones.reduce((sum, m) => sum + m.percentage, 0)}%
                       </span>
@@ -755,47 +766,50 @@ export default function SubmitPage() {
 
                   {formData.milestones.map((milestone, index) => (
                     <Card key={index} className="bg-muted/50">
-                      <CardContent className="p-4 space-y-4">
+                      <CardContent className="p-3 sm:p-4 space-y-3 sm:space-y-4">
                         <div className="flex items-center justify-between">
-                          <Label>Milestone {index + 1}</Label>
+                          <Label className="text-sm sm:text-base">Milestone {index + 1}</Label>
                           <Button
                             type="button"
                             variant="ghost"
                             size="sm"
                             onClick={() => removeMilestone(index)}
+                            className="h-8 px-2 sm:px-3 text-xs sm:text-sm"
                           >
                             Remove
                           </Button>
                         </div>
 
-                        <div className="grid md:grid-cols-3 gap-4">
-                          <div className="space-y-2 md:col-span-2">
-                            <Label>Title</Label>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                          <div className="space-y-2 sm:col-span-2">
+                            <Label className="text-xs sm:text-sm">Title</Label>
                             <Input
                               placeholder="Milestone title"
                               value={milestone.title}
                               onChange={(e) => updateMilestone(index, 'title', e.target.value)}
+                              className="text-sm"
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label>Percentage (%)</Label>
+                            <Label className="text-xs sm:text-sm">Percentage (%)</Label>
                             <Input
                               type="number"
                               placeholder="25"
                               value={milestone.percentage || ''}
                               onChange={(e) => updateMilestone(index, 'percentage', parseFloat(e.target.value) || 0)}
+                              className="text-sm"
                             />
                           </div>
                         </div>
 
                         <div className="space-y-2">
-                          <Label>Deadline</Label>
+                          <Label className="text-xs sm:text-sm">Deadline</Label>
                           <Input
                             type="date"
                             min={getMinDate()}
                             value={milestone.deadline}
                             onChange={(e) => updateMilestone(index, 'deadline', e.target.value)}
-                            className="cursor-pointer"
+                            className="cursor-pointer text-sm"
                           />
                           <p className="text-xs text-muted-foreground">Must be a future date</p>
                         </div>
@@ -918,14 +932,15 @@ export default function SubmitPage() {
               </div>
             )}
 
-            <div className="flex gap-4 pt-6">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-6">
               {step > 1 && (
                 <Button
                   type="button"
                   variant="outline"
-                  className="flex-1 bg-transparent"
+                  className="w-full sm:flex-1 bg-transparent"
                   onClick={() => setStep(step - 1)}
                   disabled={isSubmitting}
+                  size="default"
                 >
                   Back
                 </Button>
@@ -934,25 +949,31 @@ export default function SubmitPage() {
               {step < 4 ? (
                 <Button
                   type="button"
-                  className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90"
+                  className="w-full sm:flex-1 bg-accent text-accent-foreground hover:bg-accent/90"
                   onClick={handleNextStep}
+                  size="default"
                 >
                   Continue
                 </Button>
               ) : (
                 <Button
                   type="button"
-                  className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90"
+                  className="w-full sm:flex-1 bg-accent text-accent-foreground hover:bg-accent/90"
                   onClick={handleSubmit}
                   disabled={isSubmitting || !connected}
+                  size="default"
                 >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Submitting...
+                      <span className="hidden sm:inline">Submitting...</span>
+                      <span className="sm:hidden">Submitting</span>
                     </>
                   ) : (
-                    'Submit Project'
+                    <>
+                      <span className="hidden sm:inline">Submit Project</span>
+                      <span className="sm:hidden">Submit</span>
+                    </>
                   )}
                 </Button>
               )}
