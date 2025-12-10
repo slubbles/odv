@@ -28,6 +28,7 @@ It's meta. It's recursive. It might just work.`,
   goal: 500, // $500 = 500 backers
   raised: 0, // Will be dynamic from Supabase
   backers_count: 0, // Will be dynamic
+  campaign_id: 0, // Platform's own campaign
   creator_wallet: "4GCC5vqQ6R8MWnVW3tFE5iS6p66agk4XCaeZ8V9wFxRw",
   creator_name: "ODV Team",
   status: "active",
@@ -158,6 +159,7 @@ export function ODVFeaturedCampaign({ raised = 0, backersCount = 0 }: ODVFeature
               <BackProjectButton
                 projectId={ODV_CAMPAIGN.id}
                 creatorWallet={ODV_CAMPAIGN.creator_wallet}
+                campaignId={ODV_CAMPAIGN.campaign_id}
                 projectStatus={ODV_CAMPAIGN.status}
                 size="lg"
                 className="w-full bg-accent text-accent-foreground hover:bg-accent/90"

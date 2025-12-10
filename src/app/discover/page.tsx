@@ -258,6 +258,7 @@ export default function DiscoverPage() {
                     status={project.status}
                     showBackButton={true}
                     creatorWallet={project.creator_wallet}
+                    campaignId={project.campaign_id}
                     onSuccess={() => {
                       // Refetch projects after successful backing to update stats
                       window.location.reload()

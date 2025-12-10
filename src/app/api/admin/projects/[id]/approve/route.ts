@@ -22,7 +22,7 @@ export async function POST(
     const supabase = getSupabaseClient()
     const { id } = await params
     const body = await request.json()
-    const { launchDate, notes, initializeTxSignature, campaignPda: providedCampaignPda } = body
+    const { launchDate, notes, initializeTxSignature, campaignPda: providedCampaignPda, campaignId } = body
 
     if (!supabase) {
       return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
@@ -44,9 +44,9 @@ export async function POST(
 
     // Use provided campaign PDA or generate one
     let campaignPda = providedCampaignPda
-    if (!campaignPda) {
+    if (!campaignPda && campaignId !== undefined) {
       try {
-        campaignPda = getCampaignAddress(existingProject.creator_wallet)
+        campaignPda = getCampaignAddress(existingProject.creator_wallet, campaignId)
       } catch (err) {
         console.warn('Could not generate campaign PDA:', err)
       }
@@ -64,6 +64,11 @@ export async function POST(
     // Store campaign PDA if available
     if (campaignPda) {
       updateData.campaign_pda = campaignPda
+    }
+
+    // Store campaign_id if available
+    if (campaignId !== undefined) {
+      updateData.campaign_id = campaignId
     }
 
     // Store initialization transaction signature if provided

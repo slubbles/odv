@@ -35,7 +35,8 @@ export async function GET(request: NextRequest) {
           id,
           title,
           creator_name,
-          creator_wallet
+          creator_wallet,
+          campaign_id
         )
       `,
         { count: "exact" }
@@ -78,6 +79,7 @@ export async function GET(request: NextRequest) {
       project_id: milestone.project_id,
       project_title: milestone.projects?.title || "Unknown Project",
       creator_wallet: milestone.projects?.creator_wallet || null,
+      campaign_id: milestone.projects?.campaign_id || null,
       title: milestone.title,
       description: milestone.description,
       deadline: milestone.deadline,

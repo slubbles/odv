@@ -25,6 +25,7 @@ interface ProjectCardProps {
   status?: 'active' | 'funded' | 'completed' | 'queue' | 'pending'
   showBackButton?: boolean
   creatorWallet?: string
+  campaignId?: number
   onSuccess?: () => void
 }
 
@@ -43,6 +44,7 @@ export function ProjectCard({
   status = 'active',
   showBackButton = true,
   creatorWallet,
+  campaignId,
   onSuccess,
 }: ProjectCardProps) {
   const progress = (raised / goal) * 100
@@ -126,11 +128,12 @@ export function ProjectCard({
           </div>
         </Link>
         
-        {showBackButton && status === 'active' && creatorWallet && (
+        {showBackButton && status === 'active' && creatorWallet && campaignId !== undefined && (
           <div className="mt-2 sm:mt-3" onClick={(e) => e.stopPropagation()}>
             <BackProjectButton
               projectId={id}
               creatorWallet={creatorWallet}
+              campaignId={campaignId}
               projectStatus={status}
               size="sm"
               className="w-full h-7 sm:h-8 text-xs"

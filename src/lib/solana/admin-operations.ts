@@ -32,6 +32,32 @@ export function getPlatformConfigPDA(): [PublicKey, number] {
 }
 
 /**
+ * Fetch next campaign ID from on-chain platform config
+ */
+export async function getNextCampaignId(connection: Connection): Promise<number> {
+    const [platformConfigPDA] = getPlatformConfigPDA();
+    
+    const accountInfo = await connection.getAccountInfo(platformConfigPDA);
+    if (!accountInfo) {
+        throw new Error('Platform config not found. Platform may not be initialized.');
+    }
+    
+    // Platform config layout (simplified - only reading next_campaign_id):
+    // admin: Pubkey (32 bytes)
+    // fixed_backing_amount: u64 (8 bytes)
+    // total_campaigns: u64 (8 bytes)
+    // total_backers: u64 (8 bytes)
+    // next_campaign_id: u64 (8 bytes) at offset 56
+    // paused: bool (1 byte)
+    // bump: u8 (1 byte)
+    
+    const data = accountInfo.data;
+    const nextCampaignId = data.readBigUInt64LE(56); // offset 56 for next_campaign_id
+    
+    return Number(nextCampaignId);
+}
+
+/**
  * Serialize a string for Borsh (4 bytes length prefix + UTF-8 bytes)
  */
 function serializeString(str: string): Buffer {
@@ -66,6 +92,7 @@ function serializeMilestones(milestones: Array<{ title: string; amount: number }
 export async function createInitializeCampaignTransaction(
     connection: Connection,
     creatorPublicKey: PublicKey,
+    campaignId: number,
     goal: number,
     deadline: number, // Unix timestamp
     milestones: Array<{ title: string; amount: number }>
@@ -73,7 +100,7 @@ export async function createInitializeCampaignTransaction(
     const transaction = new Transaction();
     
     // Derive PDAs
-    const [campaignPDA] = getCampaignPDA(creatorPublicKey);
+    const [campaignPDA] = getCampaignPDA(creatorPublicKey, campaignId);
     const [platformConfigPDA] = getPlatformConfigPDA();
     
     // Serialize instruction data
@@ -120,12 +147,13 @@ export async function createInitializeCampaignTransaction(
 export async function createApproveMilestoneTransaction(
     connection: Connection,
     adminPublicKey: PublicKey,
-    creatorPublicKey: PublicKey
+    creatorPublicKey: PublicKey,
+    campaignId: number
 ): Promise<Transaction> {
     const transaction = new Transaction();
     
     // Derive PDAs
-    const [campaignPDA] = getCampaignPDA(creatorPublicKey);
+    const [campaignPDA] = getCampaignPDA(creatorPublicKey, campaignId);
     const [platformConfigPDA] = getPlatformConfigPDA();
     
     const approveMilestoneInstruction = new TransactionInstruction({
@@ -153,11 +181,12 @@ export async function createApproveMilestoneTransaction(
 export async function createRejectMilestoneTransaction(
     connection: Connection,
     adminPublicKey: PublicKey,
-    creatorPublicKey: PublicKey
+    creatorPublicKey: PublicKey,
+    campaignId: number
 ): Promise<Transaction> {
     const transaction = new Transaction();
     
-    const [campaignPDA] = getCampaignPDA(creatorPublicKey);
+    const [campaignPDA] = getCampaignPDA(creatorPublicKey, campaignId);
     const [platformConfigPDA] = getPlatformConfigPDA();
     
     const rejectMilestoneInstruction = new TransactionInstruction({
@@ -185,12 +214,13 @@ export async function createRejectMilestoneTransaction(
  */
 export async function createReleaseMilestoneTransaction(
     connection: Connection,
-    creatorPublicKey: PublicKey
+    creatorPublicKey: PublicKey,
+    campaignId: number
 ): Promise<Transaction> {
     const transaction = new Transaction();
     
     // Derive PDAs
-    const [campaignPDA] = getCampaignPDA(creatorPublicKey);
+    const [campaignPDA] = getCampaignPDA(creatorPublicKey, campaignId);
     const [campaignVaultPDA] = getCampaignVaultPDA(campaignPDA);
     const [platformConfigPDA] = getPlatformConfigPDA();
     
@@ -240,9 +270,10 @@ export function getSoonConnection(): Connection {
  */
 export async function campaignExists(
     connection: Connection,
-    creatorPublicKey: PublicKey
+    creatorPublicKey: PublicKey,
+    campaignId: number
 ): Promise<boolean> {
-    const [campaignPDA] = getCampaignPDA(creatorPublicKey);
+    const [campaignPDA] = getCampaignPDA(creatorPublicKey, campaignId);
     const accountInfo = await connection.getAccountInfo(campaignPDA);
     return accountInfo !== null;
 }
@@ -250,8 +281,8 @@ export async function campaignExists(
 /**
  * Get campaign PDA address for a creator
  */
-export function getCampaignAddress(creatorWallet: string): string {
+export function getCampaignAddress(creatorWallet: string, campaignId: number): string {
     const creatorPublicKey = new PublicKey(creatorWallet);
-    const [campaignPDA] = getCampaignPDA(creatorPublicKey);
+    const [campaignPDA] = getCampaignPDA(creatorPublicKey, campaignId);
     return campaignPDA.toBase58();
 }

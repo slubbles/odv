@@ -25,6 +25,8 @@ interface Project {
   status: string
   creator_name: string
   creator_avatar: string
+  creator_wallet?: string
+  campaign_id?: number
 }
 
 const CATEGORIES = ["Technology", "Art", "Music", "Film", "Games", "Design", "Food", "Publishing"]
@@ -183,6 +185,8 @@ export default function SearchResultsPage() {
                 goal={project.goal}
                 backers={project.backers_count || 0}
                 daysLeft={project.daysLeft}
+                creatorWallet={project.creator_wallet}
+                campaignId={project.campaign_id}
               />
             ))}
           </div>

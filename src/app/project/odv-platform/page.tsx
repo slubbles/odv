@@ -21,6 +21,7 @@ const ODV_CAMPAIGN = {
   goal: 500,
   raised: 0,
   backers_count: 0,
+  campaign_id: 0, // Platform's own campaign (assumed to be initialized on-chain)
   creator_wallet: "4GCC5vqQ6R8MWnVW3tFE5iS6p66agk4XCaeZ8V9wFxRw",
   creator_name: "ODV Team",
   creator_bio: "Building the future of micro-crowdfunding on Solana. One dollar at a time.",
@@ -287,6 +288,7 @@ export default function ODVCampaignPage() {
                 <BackProjectButton
                   projectId={ODV_CAMPAIGN.id}
                   creatorWallet={ODV_CAMPAIGN.creator_wallet}
+                  campaignId={ODV_CAMPAIGN.campaign_id}
                   projectStatus={ODV_CAMPAIGN.status}
                   size="lg"
                   className="w-full bg-accent text-accent-foreground hover:bg-accent/90"

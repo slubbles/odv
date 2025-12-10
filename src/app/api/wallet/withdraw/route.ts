@@ -24,12 +24,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
     }
 
-    // Verify the withdrawal is authorized
+    // Verify the withdrawal is authorized and get campaign_id
+    let campaignId: number | null = null
+    
     if (projectId) {
       // Check if this is a valid project withdrawal
       const { data: project } = await supabase
         .from('projects')
-        .select('creator_wallet, status, raised')
+        .select('creator_wallet, status, raised, campaign_id')
         .eq('id', projectId)
         .single()
 
@@ -53,11 +55,20 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
+
+      campaignId = project.campaign_id
+    }
+
+    if (campaignId === null) {
+      return NextResponse.json(
+        { error: 'Campaign ID not found. Project may not be initialized on-chain.' },
+        { status: 400 }
+      )
     }
 
     // Calculate the on-chain vault and creator ATAs
     const creatorPublicKey = new PublicKey(walletAddress)
-    const [campaignPDA] = getCampaignPDA(creatorPublicKey)
+    const [campaignPDA] = getCampaignPDA(creatorPublicKey, campaignId)
     const [campaignVaultPDA] = getCampaignVaultPDA(campaignPDA)
     
     const vaultAta = await getAssociatedTokenAddress(

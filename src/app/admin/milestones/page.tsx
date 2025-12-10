@@ -22,6 +22,7 @@ interface Milestone {
   project_id: string
   project_title: string
   creator_wallet?: string
+  campaign_id?: number
   title: string
   description: string
   deadline: string
@@ -112,7 +113,7 @@ export default function AdminMilestonesPage() {
       let releaseTxSignature: string | undefined
 
       // If approving, create and sign blockchain transactions
-      if (action === "approve" && milestone.creator_wallet) {
+      if (action === "approve" && milestone.creator_wallet && milestone.campaign_id !== undefined) {
         const creatorPubkey = new PublicKey(milestone.creator_wallet)
         
         // Step 1: Create and sign approve milestone transaction
@@ -120,7 +121,8 @@ export default function AdminMilestonesPage() {
         const approveTx = await createApproveMilestoneTransaction(
           connection,
           publicKey,
-          creatorPubkey
+          creatorPubkey,
+          milestone.campaign_id
         )
         
         const signedApproveTx = await signTransaction!(approveTx)
@@ -134,7 +136,8 @@ export default function AdminMilestonesPage() {
         toast.loading("Creating release transaction...")
         const releaseTx = await createReleaseMilestoneTransaction(
           connection,
-          creatorPubkey
+          creatorPubkey,
+          milestone.campaign_id
         )
         
         const signedReleaseTx = await signTransaction!(releaseTx)
@@ -143,7 +146,7 @@ export default function AdminMilestonesPage() {
         await connection.confirmTransaction(releaseTxSignature, "confirmed")
         
         toast.success(`Release transaction confirmed: ${releaseTxSignature.slice(0, 8)}...`)
-      } else if (action === "reject" && milestone.creator_wallet) {
+      } else if (action === "reject" && milestone.creator_wallet && milestone.campaign_id !== undefined) {
         // Create and sign reject milestone transaction
         const creatorPubkey = new PublicKey(milestone.creator_wallet)
         
@@ -151,7 +154,8 @@ export default function AdminMilestonesPage() {
         const rejectTx = await createRejectMilestoneTransaction(
           connection,
           publicKey,
-          creatorPubkey
+          creatorPubkey,
+          milestone.campaign_id
         )
         
         const signedRejectTx = await signTransaction!(rejectTx)

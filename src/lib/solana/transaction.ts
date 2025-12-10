@@ -230,12 +230,13 @@ export async function createBackingTransaction(
  */
 export async function createWithdrawTransaction(
     connection: Connection,
-    creatorPublicKey: PublicKey
+    creatorPublicKey: PublicKey,
+    campaignId: number
 ): Promise<Transaction> {
     const transaction = new Transaction();
 
     // 1. Derive Campaign PDA
-    const [campaignPDA] = getCampaignPDA(creatorPublicKey);
+    const [campaignPDA] = getCampaignPDA(creatorPublicKey, campaignId);
 
     // 2. Derive Campaign Vault (ATA)
     const campaignVault = await getAssociatedTokenAddress(

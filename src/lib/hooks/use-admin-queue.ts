@@ -143,9 +143,14 @@ export function useAdminQueue() {
         milestones.push({ title: 'Project Completion', amount: goalLamports })
       }
 
+      // Get next campaign_id from on-chain platform config
+      const { getNextCampaignId } = await import('@/lib/solana/admin-operations')
+      const campaignId = await getNextCampaignId(connection)
+
       const transaction = await createInitializeCampaignTransaction(
         connection,
         creatorPublicKey,
+        campaignId,
         goalLamports,
         deadline,
         milestones
@@ -172,7 +177,7 @@ export function useAdminQueue() {
       await connection.confirmTransaction(signature, 'confirmed')
 
       // Step 5: Update database with approval and PDA
-      const campaignPda = getCampaignAddress(project.creator_wallet)
+      const campaignPda = getCampaignAddress(project.creator_wallet, campaignId)
       
       const res = await fetch(`/api/admin/projects/${projectId}/approve`, {
         method: "POST",
@@ -180,6 +185,7 @@ export function useAdminQueue() {
         body: JSON.stringify({
           initializeTxSignature: signature,
           campaignPda,
+          campaignId,
         }),
       })
       

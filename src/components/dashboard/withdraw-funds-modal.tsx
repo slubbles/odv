@@ -32,6 +32,7 @@ interface WithdrawalHistory {
 interface WithdrawFundsModalProps {
   projectId?: string
   projectTitle?: string
+  campaignId?: number
   availableBalance: number
   pendingWithdrawals?: WithdrawalHistory[]
   onSuccess?: () => void
@@ -41,6 +42,7 @@ interface WithdrawFundsModalProps {
 export function WithdrawFundsModal({
   projectId,
   projectTitle,
+  campaignId,
   availableBalance,
   pendingWithdrawals = [],
   onSuccess,
@@ -87,7 +89,7 @@ export function WithdrawFundsModal({
 
     try {
       // Create withdrawal transaction
-      const transaction = await createWithdrawTransaction(connection, publicKey);
+      const transaction = await createWithdrawTransaction(connection, publicKey, campaignId || 0);
       
       // Sign transaction
       if (!signTransaction) {
