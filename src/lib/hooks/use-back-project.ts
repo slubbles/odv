@@ -78,6 +78,7 @@ export function useBackProject() {
 
     setIsSubmitting(true)
     setStatus('creating')
+    console.log('[useBackProject] Step 1: Creating transaction...')
 
     try {
       // Step 1: Create transaction
@@ -87,8 +88,10 @@ export function useBackProject() {
         creatorPublicKey,
         amount
       )
+      console.log('[useBackProject] Transaction created successfully')
 
       // Step 2: Simulate transaction
+      console.log('[useBackProject] Step 2: Simulating transaction...')
       setStatus('signing')
       
       try {
@@ -106,11 +109,12 @@ export function useBackProject() {
           throw simError
         }
         // Log but continue for recoverable errors
-        console.warn('Simulation warning:', formatErrorForLogging(simError))
+        console.warn('[useBackProject] Simulation warning (continuing):', formatErrorForLogging(simError))
       }
 
       // Step 3: Sign and send transaction (SOON-compatible approach)
-      setStatus('confirming')
+      console.log('[useBackProject] Step 3: Waiting for wallet signature...')
+      // Status stays 'signing' until user approves in wallet
       
       // Use sendTransaction which handles signing + broadcasting to SOON RPC
       const signature = await sendTransaction(transaction, connection, {
@@ -118,14 +122,19 @@ export function useBackProject() {
         preflightCommitment: 'confirmed',
         maxRetries: 3,
       })
+      console.log('[useBackProject] Transaction signed! Signature:', signature.slice(0, 8) + '...')
       
-      // Step 5: Confirm transaction
+      // Step 4: Confirm transaction on blockchain
+      console.log('[useBackProject] Step 4: Confirming on blockchain...')
+      setStatus('confirming')
       const confirmation = await connection.confirmTransaction(signature, 'confirmed')
       if (confirmation.value.err) {
-        throw new Error(`Transaction failed: ${JSON.stringify(confirmation.value.err)}`)
+        throw new Error(`Transaction failed on blockchain: ${JSON.stringify(confirmation.value.err)}`)
       }
+      console.log('[useBackProject] ✅ Blockchain confirmation successful!')
 
-      // Step 6: Record in database
+      // Step 5: Record in database (ONLY after blockchain success)
+      console.log('[useBackProject] Step 5: Recording in database...')
       setStatus('recording')
       
       let backingData = null;
@@ -138,6 +147,7 @@ export function useBackProject() {
           amount,
           backerWallet: publicKey.toString()
         })
+        console.log('[useBackProject] ✅ Database recording successful!')
         // If successful, we don't strictly need the backing object for the UI right now
       } catch (dbError: any) {
         console.error('Verification/Recording error:', dbError)
@@ -182,11 +192,21 @@ export function useBackProject() {
       
       // Parse error for user-friendly handling
       const parsed = parseBlockchainError(error)
-      console.error('Back project error:', formatErrorForLogging(error))
+      console.error('[useBackProject] ❌ Error at status:', status, formatErrorForLogging(error))
+      
+      // Provide context about where the error occurred
+      let contextualError = parsed.userMessage
+      if (status === 'creating') {
+        contextualError = 'Failed to create transaction. Check your wallet connection.'
+      } else if (status === 'signing') {
+        contextualError = parsed.userMessage.includes('User rejected') 
+          ? 'Transaction cancelled by user' 
+          : 'Failed to sign transaction. ' + parsed.userMessage
+      }
       
       return { 
         success: false, 
-        error: parsed.userMessage, 
+        error: contextualError, 
         errorType: parsed.type,
         recoverable: parsed.recoverable
       }
