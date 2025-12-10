@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/use-toast"
 interface BackProjectButtonProps {
   projectId: string
   creatorWallet: string
+  campaignId: number
   projectStatus?: string
   amount?: number
   variant?: "default" | "outline" | "ghost"
@@ -22,6 +23,7 @@ interface BackProjectButtonProps {
 export function BackProjectButton({
   projectId,
   creatorWallet,
+  campaignId,
   projectStatus = "active",
   amount = 1,
   variant = "default",
@@ -89,7 +91,7 @@ export function BackProjectButton({
     setExplorerUrl("")
     setFinalStep(null) // Reset final step for new transaction
     
-    const result = await backProject(projectId, creatorWallet, amount)
+    const result = await backProject(projectId, creatorWallet, campaignId, amount)
     
     if (result.success) {
       console.log('[BackProjectButton] Transaction successful!', result.signature?.slice(0, 8))

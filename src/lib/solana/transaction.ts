@@ -35,6 +35,9 @@ const INITIALIZE_DISCRIMINATOR = Buffer.from([175, 175, 109, 31, 13, 152, 155, 2
 // Release Milestone instruction discriminator: [56, 2, 199, 164, 184, 108, 167, 222]
 const RELEASE_MILESTONE_DISCRIMINATOR = Buffer.from([56, 2, 199, 164, 184, 108, 167, 222]);
 
+// Close Campaign instruction discriminator (computed from "close_campaign")
+const CLOSE_CAMPAIGN_DISCRIMINATOR = Buffer.from([111, 180, 142, 212, 144, 52, 42, 66]);
+
 // Borsh layout for Initialize instruction
 const milestoneInputLayout = borsh.struct([
     borsh.str('title'),
@@ -42,6 +45,7 @@ const milestoneInputLayout = borsh.struct([
 ]);
 
 const initializeLayout = borsh.struct([
+    borsh.u64('campaign_id'),
     borsh.u64('goal'),
     borsh.i64('deadline'),
     borsh.vec(milestoneInputLayout, 'milestones'),
@@ -62,18 +66,20 @@ function getPlatformConfigPDA(): [PublicKey, number] {
  * @param connection - Solana connection
  * @param backerPublicKey - Public key of the backer
  * @param creatorPublicKey - Public key of the project creator
+ * @param campaignId - Campaign ID to fund
  * @param amount - Amount parameter (ignored - fixed $1 enforced by contract)
  */
 export async function createFundCampaignTransaction(
     connection: Connection,
     backerPublicKey: PublicKey,
     creatorPublicKey: PublicKey,
+    campaignId: number,
     amount: number = 1
 ): Promise<Transaction> {
     const transaction = new Transaction();
 
     // 1. Derive PDAs
-    const [campaignPDA] = getCampaignPDA(creatorPublicKey);
+    const [campaignPDA] = getCampaignPDA(creatorPublicKey, campaignId);
     const [platformConfigPDA] = getPlatformConfigPDA();
 
     // 2. Get ATAs
@@ -277,14 +283,15 @@ export async function createWithdrawTransaction(
 export async function createInitializeCampaignTransaction(
     connection: Connection,
     creatorPublicKey: PublicKey,
+    campaignId: number,
     goal: number,
     deadline: number,
     milestones: { title: string; amount: number }[]
 ): Promise<Transaction> {
     const transaction = new Transaction();
 
-    // 1. Derive Campaign PDA
-    const [campaignPDA] = getCampaignPDA(creatorPublicKey);
+    // 1. Derive Campaign PDA with campaign_id
+    const [campaignPDA] = getCampaignPDA(creatorPublicKey, campaignId);
 
     // 2. Derive Campaign Vault (ATA)
     // Note: We use the ATA of the campaign PDA as the vault
@@ -326,8 +333,12 @@ export async function createInitializeCampaignTransaction(
         }
     }
 
-    // 4. Prepare Initialize instruction data
+    // 4. Get platform config PDA
+    const [platformConfigPDA] = getPlatformConfigPDA();
+
+    // 5. Prepare Initialize instruction data
     const args = {
+        campaign_id: new BN(campaignId),
         goal: new BN(goal * 1_000_000), // Convert to smallest unit
         deadline: new BN(deadline),
         milestones: milestones.map(m => ({
@@ -340,22 +351,59 @@ export async function createInitializeCampaignTransaction(
     const len = initializeLayout.encode(args, buffer);
     const data = Buffer.concat([INITIALIZE_DISCRIMINATOR, buffer.slice(0, len)]);
 
-    // 5. Add Initialize instruction
+    // 6. Add Initialize instruction
     transaction.add(new TransactionInstruction({
         keys: [
             { pubkey: campaignPDA, isSigner: false, isWritable: true },
             { pubkey: creatorPublicKey, isSigner: true, isWritable: true },
+            { pubkey: platformConfigPDA, isSigner: false, isWritable: true },
             { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
         ],
         programId: ODV_ESCROW_PROGRAM_ID,
         data: data
     }));
 
-    // 6. Set blockhash and fee payer
+    // 7. Set blockhash and fee payer
     const { blockhash } = await connection.getLatestBlockhash();
     transaction.recentBlockhash = blockhash;
     transaction.feePayer = creatorPublicKey;
 
     return transaction;
 }
+
+/**
+ * Create transaction to close a campaign and reclaim rent
+ */
+export async function createCloseCampaignTransaction(
+    connection: Connection,
+    creatorPublicKey: PublicKey,
+    campaignId: number
+): Promise<Transaction> {
+    const transaction = new Transaction();
+
+    const [campaignPDA] = getCampaignPDA(creatorPublicKey, campaignId);
+
+    // Encode campaign_id as u64
+    const campaignIdBuffer = Buffer.alloc(8);
+    campaignIdBuffer.writeBigUInt64LE(BigInt(campaignId), 0);
+    const data = Buffer.concat([CLOSE_CAMPAIGN_DISCRIMINATOR, campaignIdBuffer]);
+
+    const closeCampaignInstruction = new TransactionInstruction({
+        keys: [
+            { pubkey: campaignPDA, isSigner: false, isWritable: true },
+            { pubkey: creatorPublicKey, isSigner: true, isWritable: true },
+        ],
+        programId: ODV_ESCROW_PROGRAM_ID,
+        data: data,
+    });
+
+    transaction.add(closeCampaignInstruction);
+
+    const { blockhash } = await connection.getLatestBlockhash();
+    transaction.recentBlockhash = blockhash;
+    transaction.feePayer = creatorPublicKey;
+
+    return transaction;
+}
+
 

@@ -16,6 +16,7 @@ pub mod odv_escrow {
         platform_config.fixed_backing_amount = fixed_backing_amount;
         platform_config.total_campaigns = 0;
         platform_config.total_backers = 0;
+        platform_config.next_campaign_id = 0;
         platform_config.paused = false;
         platform_config.bump = ctx.bumps.platform_config;
         Ok(())
@@ -50,13 +51,15 @@ pub mod odv_escrow {
     }
 
     pub fn initialize(
-        ctx: Context<Initialize>, 
+        ctx: Context<Initialize>,
+        campaign_id: u64,
         goal: u64, 
         deadline: i64,
         milestones: Vec<MilestoneInput>
     ) -> Result<()> {
         let campaign = &mut ctx.accounts.campaign;
         campaign.creator = ctx.accounts.creator.key();
+        campaign.campaign_id = campaign_id;
         campaign.goal = goal;
         campaign.deadline = deadline;
         campaign.raised = 0;
@@ -83,12 +86,18 @@ pub mod odv_escrow {
         }
         campaign.milestones = campaign_milestones;
 
+        // Increment platform campaign counter
+        let platform_config = &mut ctx.accounts.platform_config;
+        platform_config.total_campaigns += 1;
+        platform_config.next_campaign_id += 1;
+
         Ok(())
     }
 
     /// Creator submits proof for current active milestone
     pub fn submit_milestone_proof(
         ctx: Context<SubmitMilestoneProof>,
+        campaign_id: u64,
         proof_url: String, // IPFS CID or URL to proof
     ) -> Result<()> {
         let campaign = &mut ctx.accounts.campaign;
@@ -117,6 +126,7 @@ pub mod odv_escrow {
     /// Admin approves milestone after reviewing proof
     pub fn approve_milestone(
         ctx: Context<ApproveMilestone>,
+        campaign_id: u64,
     ) -> Result<()> {
         let campaign = &mut ctx.accounts.campaign;
         let platform_config = &ctx.accounts.platform_config;
@@ -144,6 +154,7 @@ pub mod odv_escrow {
     /// Admin rejects milestone and requires resubmission
     pub fn reject_milestone(
         ctx: Context<RejectMilestone>,
+        campaign_id: u64,
     ) -> Result<()> {
         let campaign = &mut ctx.accounts.campaign;
         let platform_config = &ctx.accounts.platform_config;
@@ -168,7 +179,7 @@ pub mod odv_escrow {
         Ok(())
     }
 
-    pub fn fund(ctx: Context<Fund>) -> Result<()> {
+    pub fn fund(ctx: Context<Fund>, campaign_id: u64) -> Result<()> {
         let campaign = &mut ctx.accounts.campaign;
         let platform_config = &ctx.accounts.platform_config;
         
@@ -192,7 +203,7 @@ pub mod odv_escrow {
         Ok(())
     }
 
-    pub fn release_milestone(ctx: Context<ReleaseMilestone>) -> Result<()> {
+    pub fn release_milestone(ctx: Context<ReleaseMilestone>, campaign_id: u64) -> Result<()> {
         let platform_config = &ctx.accounts.platform_config;
         
         // Security: Platform must not be paused
@@ -221,12 +232,14 @@ pub mod odv_escrow {
 
         let amount = ctx.accounts.campaign.milestones[index].amount;
         let creator_key = ctx.accounts.campaign.creator;
+        let campaign_id_val = ctx.accounts.campaign.campaign_id;
         let bump = ctx.accounts.campaign.bump;
 
         // Transfer funds to creator
         let seeds = &[
             b"campaign".as_ref(),
             creator_key.as_ref(),
+            &campaign_id_val.to_le_bytes(),
             &[bump],
         ];
         let signer = &[&seeds[..]];
@@ -256,9 +269,30 @@ pub mod odv_escrow {
         Ok(())
     }
 
+    /// Close a campaign and reclaim rent
+    pub fn close_campaign(ctx: Context<CloseCampaign>) -> Result<()> {
+        let campaign = &ctx.accounts.campaign;
+        let clock = Clock::get()?;
+        
+        // Only allow closing if:
+        // 1. No backers yet (pre-launch cancellation)
+        // 2. Failed to reach goal and deadline passed (refund scenario)
+        // 3. All milestones completed (successful completion)
+        
+        require!(
+            campaign.backer_count == 0 || 
+            (campaign.raised < campaign.goal && clock.unix_timestamp > campaign.deadline) ||
+            (campaign.current_milestone_index as usize >= campaign.milestones.len()),
+            ErrorCode::CannotCloseCampaign
+        );
+        
+        Ok(())
+    }
+
     /// Refund all backers if campaign fails to reach goal by deadline
     pub fn refund_campaign(
         ctx: Context<RefundCampaign>,
+        campaign_id: u64,
     ) -> Result<()> {
         let campaign = &ctx.accounts.campaign;
         let clock = Clock::get()?;
@@ -277,12 +311,14 @@ pub mod odv_escrow {
         
         let amount = ctx.accounts.platform_config.fixed_backing_amount;
         let creator_key = campaign.creator;
+        let campaign_id_val = campaign.campaign_id;
         let bump = campaign.bump;
         
         // Transfer refund to backer
         let seeds = &[
             b"campaign".as_ref(),
             creator_key.as_ref(),
+            &campaign_id_val.to_le_bytes(),
             &[bump],
         ];
         let signer = &[&seeds[..]];
@@ -307,7 +343,7 @@ pub struct InitializePlatform<'info> {
     #[account(
         init,
         payer = admin,
-        space = 8 + 32 + 8 + 8 + 8 + 1 + 1,
+        space = 8 + 32 + 8 + 8 + 8 + 8 + 1 + 1,
         seeds = [b"platform_config"],
         bump
     )]
@@ -330,25 +366,33 @@ pub struct UpdatePlatformConfig<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(campaign_id: u64)]
 pub struct Initialize<'info> {
     #[account(
         init, 
         payer = creator, 
-        space = 8 + 32 + 8 + 8 + 8 + 8 + 1 + 1 + (4 + 50 * 100), // Approximate space
-        seeds = [b"campaign", creator.key().as_ref()],
+        space = 8 + 32 + 8 + 8 + 8 + 8 + 8 + 1 + 1 + (4 + 50 * 100), // Added 8 for campaign_id
+        seeds = [b"campaign", creator.key().as_ref(), &campaign_id.to_le_bytes()],
         bump
     )]
     pub campaign: Account<'info, Campaign>,
     #[account(mut)]
     pub creator: Signer<'info>,
+    #[account(
+        mut,
+        seeds = [b"platform_config"],
+        bump = platform_config.bump,
+    )]
+    pub platform_config: Account<'info, PlatformConfig>,
     pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
+#[instruction(campaign_id: u64)]
 pub struct SubmitMilestoneProof<'info> {
     #[account(
         mut,
-        seeds = [b"campaign", creator.key().as_ref()],
+        seeds = [b"campaign", creator.key().as_ref(), &campaign_id.to_le_bytes()],
         bump = campaign.bump,
         has_one = creator,
     )]
@@ -362,6 +406,7 @@ pub struct SubmitMilestoneProof<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(campaign_id: u64)]
 pub struct ApproveMilestone<'info> {
     #[account(mut)]
     pub campaign: Account<'info, Campaign>,
@@ -374,6 +419,7 @@ pub struct ApproveMilestone<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(campaign_id: u64)]
 pub struct RejectMilestone<'info> {
     #[account(mut)]
     pub campaign: Account<'info, Campaign>,
@@ -386,6 +432,7 @@ pub struct RejectMilestone<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(campaign_id: u64)]
 pub struct Fund<'info> {
     #[account(mut)]
     pub campaign: Account<'info, Campaign>,
@@ -404,6 +451,7 @@ pub struct Fund<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(campaign_id: u64)]
 pub struct ReleaseMilestone<'info> {
     #[account(mut, has_one = creator)]
     pub campaign: Account<'info, Campaign>,
@@ -422,6 +470,7 @@ pub struct ReleaseMilestone<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(campaign_id: u64)]
 pub struct RefundCampaign<'info> {
     #[account(mut)]
     pub campaign: Account<'info, Campaign>,
@@ -439,12 +488,28 @@ pub struct RefundCampaign<'info> {
     pub token_program: Program<'info, anchor_spl::token::Token>,
 }
 
+#[derive(Accounts)]
+#[instruction(campaign_id: u64)]
+pub struct CloseCampaign<'info> {
+    #[account(
+        mut,
+        close = creator,
+        seeds = [b"campaign", creator.key().as_ref(), &campaign_id.to_le_bytes()],
+        bump = campaign.bump,
+        has_one = creator,
+    )]
+    pub campaign: Account<'info, Campaign>,
+    #[account(mut)]
+    pub creator: Signer<'info>,
+}
+
 #[account]
 pub struct PlatformConfig {
     pub admin: Pubkey,                    // Platform admin who can update settings
     pub fixed_backing_amount: u64,        // Fixed amount per backing (e.g., 1_000_000 = $1 USDC)
     pub total_campaigns: u64,             // Total campaigns created
     pub total_backers: u64,               // Total unique backers
+    pub next_campaign_id: u64,            // Next campaign ID to assign
     pub paused: bool,                     // Emergency pause flag
     pub bump: u8,
 }
@@ -452,6 +517,7 @@ pub struct PlatformConfig {
 #[account]
 pub struct Campaign {
     pub creator: Pubkey,
+    pub campaign_id: u64,                 // Unique campaign ID
     pub goal: u64,
     pub raised: u64,
     pub deadline: i64,
@@ -510,4 +576,6 @@ pub enum ErrorCode {
     DeadlineNotReached,
     #[msg("Goal already reached: Cannot refund successful campaign")]
     GoalAlreadyReached,
+    #[msg("Cannot close campaign: Has active backers or goal reached")]
+    CannotCloseCampaign,
 }

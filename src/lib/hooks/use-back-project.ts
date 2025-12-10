@@ -56,7 +56,8 @@ export function useBackProject() {
 
   const backProject = useCallback(async (
     projectId: string, 
-    creatorWallet: string, 
+    creatorWallet: string,
+    campaignId: number,
     amount: number = 1
   ): Promise<BackProjectResult> => {
     // Pre-flight checks
@@ -86,6 +87,7 @@ export function useBackProject() {
         connection,
         publicKey,
         creatorPublicKey,
+        campaignId,
         amount
       )
       console.log('[useBackProject] Transaction created successfully')

@@ -285,6 +285,8 @@ export async function POST(request: NextRequest) {
       goal,
       deadline,
       creator_wallet,
+      campaign_id,
+      campaign_pda,
       image_url,
       video_url,
       milestones
@@ -316,6 +318,8 @@ export async function POST(request: NextRequest) {
         goal,
         deadline,
         creator_wallet,
+        campaign_id: campaign_id || null,
+        campaign_pda: campaign_pda || null,
         image_url,
         video_url,
         status: 'queue', // New projects go to queue for admin approval

@@ -5,7 +5,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import { useRouter } from "next/navigation"
 import { createInitializeCampaignTransaction } from "@/lib/solana/transaction"
 import { parseBlockchainError } from "@/lib/solana/error-handling"
-import { getCampaignPDA } from "@/lib/solana/program"
+import { getCampaignPDA, getNextCampaignId } from "@/lib/solana/program"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -145,22 +145,28 @@ export default function SubmitPage() {
         wallet: publicKey.toString().slice(0, 8) + '...'
       })
       
-      // Check if campaign already exists
-      const [campaignPDA] = getCampaignPDA(publicKey)
-      console.log('[Submit] Checking if campaign exists:', campaignPDA.toString())
+      // Get next campaign ID from platform config
+      console.log('[Submit] Fetching next campaign ID...')
+      const campaignId = await getNextCampaignId(connection)
+      console.log('[Submit] Next campaign ID:', campaignId)
+      
+      // Check if THIS campaign ID already exists (race condition check)
+      const [campaignPDA] = getCampaignPDA(publicKey, campaignId)
+      console.log('[Submit] Checking if campaign PDA exists:', campaignPDA.toString())
       
       const accountInfo = await connection.getAccountInfo(campaignPDA)
       if (accountInfo !== null) {
-        console.error('[Submit] Campaign already exists for this wallet')
-        throw new Error('You already have an active campaign. Please use a different wallet or close your existing campaign first.')
+        console.error('[Submit] Campaign ID already taken (race condition)')
+        throw new Error('Campaign ID conflict. Please try again.')
       }
       
-      console.log('[Submit] Campaign does not exist, proceeding with initialization')
+      console.log('[Submit] Campaign ID available, proceeding with initialization')
       toast.info("Initializing campaign on blockchain...")
       
       const transaction = await createInitializeCampaignTransaction(
           connection,
           publicKey,
+          campaignId,
           goalAmount,
           deadlineTimestamp,
           formData.milestones.map(m => ({
@@ -217,6 +223,8 @@ export default function SubmitPage() {
           video_url: formData.videoUrl || null,
           image_url: formData.imageUrl || null,
           creator_wallet: publicKey.toString(),
+          campaign_id: campaignId,
+          campaign_pda: campaignPDA.toString(),
           milestones: formData.milestones.map(m => ({
             title: m.title,
             percentage: m.percentage,
