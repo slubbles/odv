@@ -47,7 +47,7 @@ export default function WalletPage() {
             <div className="h-16 w-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <Wallet className="h-8 w-8 text-accent" />
             </div>
-            <h1 className="text-2xl font-bold mb-2">Connect Your Wallet</h1>
+            <h1 className="text-2xl font-bold mb-2">Connect Wallet</h1>
             <p className="text-muted-foreground mb-6">
               Connect your Solana wallet to view your balance and manage your assets.
             </p>

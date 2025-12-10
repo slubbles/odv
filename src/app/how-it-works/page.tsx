@@ -63,7 +63,7 @@ export default function HowItWorksPage() {
                 </div>
                 <h3 className="font-bold text-lg mb-2">Find Something Cool</h3>
                 <p className="text-sm text-muted-foreground">
-                  Browse projects from real builders. Tech, art, games - whatever moves you.
+                  See what's building from real builders. Tech, art, games - whatever moves you.
                 </p>
               </CardContent>
             </Card>

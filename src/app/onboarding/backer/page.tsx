@@ -128,7 +128,7 @@ export default function BackerOnboardingPage() {
             {step === 3 && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="font-sans text-2xl font-semibold mb-4">Connect Your Wallet</h2>
+                  <h2 className="font-sans text-2xl font-semibold mb-4">Connect Wallet</h2>
                   <p className="text-muted-foreground mb-6">Back projects. Collect NFTs. Own your rewards.</p>
                 </div>
                 <div className="space-y-3">

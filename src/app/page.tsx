@@ -209,7 +209,7 @@ export default function Home() {
 
             <div className="text-center mt-12">
               <Button size="lg" variant="outline" className="bg-transparent" asChild>
-                <Link href="/how-it-works">Learn More</Link>
+                <Link href="/how-it-works">See How It Works</Link>
               </Button>
             </div>
           </div>
@@ -248,7 +248,7 @@ export default function Home() {
                     </Link>
                   </Button>
                   <Button size="lg" variant="outline" className="bg-transparent w-full sm:w-auto" asChild>
-                    <Link href="/discover">Browse Projects</Link>
+                    <Link href="/discover">See what's building</Link>
                   </Button>
                 </div>
               </CardContent>

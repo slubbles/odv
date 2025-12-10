@@ -27,7 +27,7 @@ const faqCategories = [
     questions: [
       {
         q: "How does funding work?",
-        a: "Browse projects, click 'Fund for $1', confirm the transaction with your wallet.",
+        a: "See projects, click 'Fund for $1', confirm the transaction with your wallet.",
       },
       { q: "What do I get for funding?", a: "You receive a unique NFT badge and can vote on project milestones." },
       { q: "Can I fund multiple projects?", a: "Yes! Fund as many projects as you want, $1 each." },
@@ -36,7 +36,7 @@ const faqCategories = [
   {
     title: "Creating Projects",
     questions: [
-      { q: "How do I submit a project?", a: "Click 'Submit Project' in the nav and fill out the 4-step form." },
+      { q: "How do I submit a project?", a: "Click 'I built something' in the nav and fill out the 4-step form." },
       { q: "Is there a submission fee?", a: "Yes, there's a $1 queue fee to prevent spam submissions." },
       { q: "How long does approval take?", a: "Community voting + admin review typically takes 3-7 days." },
     ],
