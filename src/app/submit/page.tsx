@@ -388,7 +388,7 @@ export default function SubmitPage() {
                 {submissionError.txSignature && (
                   <div className="pl-6 text-xs">
                     <a 
-                      href={`https://explorer.solana.com/tx/${submissionError.txSignature}?cluster=custom&customUrl=${encodeURIComponent('https://rpc.testnet.soo.network/rpc')}`}
+                      href={`https://explorer.testnet.soo.network/tx/${submissionError.txSignature}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:underline flex items-center gap-1 break-all"

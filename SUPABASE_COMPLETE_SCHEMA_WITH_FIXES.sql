@@ -97,6 +97,9 @@ CREATE TABLE public.projects (
   flagged boolean DEFAULT false,
   rejection_reason text,
   admin_notes text,
+  campaign_id integer,
+  campaign_pda text,
+  initialize_tx text,
   CONSTRAINT projects_pkey PRIMARY KEY (id)
 );
 
