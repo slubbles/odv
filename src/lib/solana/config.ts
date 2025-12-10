@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 
-// SOON Testnet Configuration (Deployed December 1, 2025)
-export const PROGRAM_ID = new PublicKey('4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA');
+// SOON Testnet Configuration (Deployed December 10, 2025 - with campaign_id support)
+export const PROGRAM_ID = new PublicKey('2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC');
 export const NETWORK = 'soon-testnet';
 export const RPC_ENDPOINT = 'https://rpc.testnet.soo.network/rpc';
 
