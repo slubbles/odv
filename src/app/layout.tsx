@@ -78,7 +78,28 @@ export const metadata: Metadata = {
     shortcut: "/odv logo - favicon 512x512.png",
   },
   
-  manifest: '/site.webmanifest',
+  // Manifest inline to avoid Vercel 401 issues
+  manifest: {
+    name: "OneDollarVentures",
+    short_name: "ODV",
+    description: "Back projects for just $1. Join the micro-investment revolution.",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#000000",
+    theme_color: "#000000",
+    icons: [
+      {
+        src: "/odv logo - favicon 512x512.png",
+        sizes: "512x512",
+        type: "image/png"
+      },
+      {
+        src: "/odv logo - favicon 512x512.png",
+        sizes: "192x192",
+        type: "image/png"
+      }
+    ]
+  },
 }
 
 export default function RootLayout({
