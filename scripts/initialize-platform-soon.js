@@ -27,7 +27,7 @@ const path = require("path");
 const readline = require("readline");
 
 // SOON Testnet Configuration
-const PROGRAM_ID = new PublicKey("4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA");
+const PROGRAM_ID = new PublicKey("2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC");
 const RPC_ENDPOINT = "https://rpc.testnet.soo.network/rpc";
 const EXPLORER_URL = "https://explorer.testnet.soo.network";
 const EXPECTED_ADMIN = "4GCC5vqQ6R8MWnVW3tFE5iS6p66agk4XCaeZ8V9wFxRw";

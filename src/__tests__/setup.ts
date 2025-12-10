@@ -5,7 +5,7 @@ import { vi } from 'vitest'
 process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co'
 process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key'
 process.env.NEXT_PUBLIC_SOLANA_RPC_URL = 'https://rpc.testnet.soo.network/rpc'
-process.env.NEXT_PUBLIC_PROGRAM_ID = '4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA'
+process.env.NEXT_PUBLIC_PROGRAM_ID = '2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC'
 process.env.SUPABASE_URL = 'https://test.supabase.co'
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-key'
 

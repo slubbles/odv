@@ -1,6 +1,6 @@
 const { PublicKey } = require("@solana/web3.js");
 
-const programId = new PublicKey("4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA");
+const programId = new PublicKey("2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC");
 const [platformConfigPDA, bump] = PublicKey.findProgramAddressSync(
   [Buffer.from("platform_config")],
   programId

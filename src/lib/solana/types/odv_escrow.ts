@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/odv_escrow.json`.
  */
 export type OdvEscrow = {
-  "address": "4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA",
+  "address": "2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC",
   "metadata": {
     "name": "odvEscrow",
     "version": "0.1.0",

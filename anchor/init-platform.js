@@ -6,7 +6,7 @@ async function main() {
   anchor.setProvider(provider);
   
   const idl = require("./target/idl/odv_escrow.json");
-  const programId = new PublicKey("4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA");
+  const programId = new PublicKey("2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC");
   const program = new anchor.Program(idl, programId, provider);
   
   const [platformConfigPDA] = PublicKey.findProgramAddressSync(
