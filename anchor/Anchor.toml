@@ -1,11 +1,14 @@
 [toolchain]
 
 [features]
-seeds = false
+resolution = true
 skip-lint = false
 
 [programs.devnet]
-odv_escrow = "4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA"
+odv_escrow = "2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC"
+
+[programs.testnet]
+odv_escrow = "2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC"
 
 [registry]
 url = "https://api.apr.dev"

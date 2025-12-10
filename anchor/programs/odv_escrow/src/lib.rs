@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA");
+declare_id!("2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC");
 
 #[program]
 pub mod odv_escrow {

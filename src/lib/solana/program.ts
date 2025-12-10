@@ -1,8 +1,8 @@
 import { PublicKey } from '@solana/web3.js';
 
-// SOON Testnet Program ID (Deployed December 1, 2025)
+// SOON Testnet Program ID (Deployed December 10, 2025 - with campaign_id support)
 export const ODV_ESCROW_PROGRAM_ID = new PublicKey(
-    '4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA'
+    '2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC'
 );
 
 // Seeds for PDA derivation
