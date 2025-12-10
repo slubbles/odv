@@ -7,6 +7,7 @@ const RPC_URL = 'https://rpc.testnet.soo.network/rpc'
 
 export async function POST(req: NextRequest) {
   console.log('[Verify Transaction] Request received')
+  console.log('[Verify Transaction] Supabase admin client available:', !!supabaseAdmin)
   
   try {
     const body = await req.json()
@@ -97,6 +98,7 @@ export async function POST(req: NextRequest) {
 
     // 3. Record in Supabase (Atomic-ish operations)
     console.log('[Verify Transaction] Recording backing in database...')
+    console.log('[Verify Transaction] Insert data:', { projectId, backerWallet: backerWallet?.slice(0, 8), amount, signature: signature?.slice(0, 8) })
     
     // A. Insert Backer Record
     const { data: backerData, error: backerError } = await supabaseAdmin
@@ -132,15 +134,17 @@ export async function POST(req: NextRequest) {
       }, { status: 500 })
     }
 
-    console.log('[Verify Transaction] Backer record created:', backerData?.id)
+    console.log('[Verify Transaction] ✅ Backer record created:', backerData?.id)
 
     // B. Update Project Stats (using the RPC function)
-    console.log('[Verify Transaction] Updating project stats...')
+    console.log('[Verify Transaction] Calling increment_backers RPC function...')
+    console.log('[Verify Transaction] RPC params:', { project_id: projectId, amount_to_add: amount })
     const { data: rpcData, error: rpcError } = await supabaseAdmin
       .rpc('increment_backers', {
         project_id: projectId,
         amount_to_add: amount
       })
+    console.log('[Verify Transaction] RPC result:', { data: rpcData, error: rpcError })
 
     if (rpcError) {
       console.error('[Verify Transaction] RPC increment error:', {
