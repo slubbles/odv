@@ -141,16 +141,27 @@ export function useBackProject() {
 
       try {
         // Use the new secure verification API
-        await verifyMutation.mutateAsync({
+        console.log('[useBackProject] 🔵 CALLING /api/verify-transaction', {
+          signature: signature.slice(0, 10) + '...',
+          projectId,
+          amount,
+          backerWallet: publicKey.toString().slice(0, 10) + '...'
+        })
+        
+        const result = await verifyMutation.mutateAsync({
           signature,
           projectId,
           amount,
           backerWallet: publicKey.toString()
         })
-        console.log('[useBackProject] ✅ Database recording successful!')
+        console.log('[useBackProject] ✅ Database recording successful!', result)
         // If successful, we don't strictly need the backing object for the UI right now
       } catch (dbError: any) {
-        console.error('Verification/Recording error:', dbError)
+        console.error('[useBackProject] ❌ DATABASE RECORDING FAILED:', {
+          name: dbError.name,
+          message: dbError.message,
+          cause: dbError.cause
+        })
         
         // If verification fails, try fallback to old endpoint
         // This ensures we don't lose successful blockchain transactions
@@ -169,9 +180,13 @@ export function useBackProject() {
             backingData = data.backing
           }
         } catch (fallbackError) {
-          console.error('Fallback also failed:', fallbackError)
+          console.error('[useBackProject] ❌ Fallback also failed:', fallbackError)
           // Still show success since blockchain tx succeeded
         }
+        
+        console.warn('[useBackProject] ⚠️ WARNING: Blockchain transaction succeeded but database recording failed!')
+        console.warn('[useBackProject] ⚠️ Transaction signature:', signature)
+        console.warn('[useBackProject] ⚠️ You may need to manually record this backing in the database')
       }
 
       // Success!
