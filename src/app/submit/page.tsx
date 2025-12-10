@@ -37,6 +37,12 @@ export default function SubmitPage() {
   const [step, setStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submittedProject, setSubmittedProject] = useState<SubmittedProject | null>(null)
+  const [submissionError, setSubmissionError] = useState<{
+    stage: 'blockchain' | 'database' | 'unknown'
+    message: string
+    txSignature?: string
+    details?: string
+  } | null>(null)
   const { connection } = useConnection()
   const { publicKey, connected, sendTransaction } = useWallet()
   const router = useRouter()
@@ -127,6 +133,7 @@ export default function SubmitPage() {
     }
 
     setIsSubmitting(true)
+    setSubmissionError(null) // Clear any previous errors
 
     try {
       // Calculate campaign deadline from duration
@@ -238,7 +245,15 @@ export default function SubmitPage() {
 
       if (!response.ok) {
         console.error('[Submit] Database save failed:', data)
-        throw new Error(data.error || 'Failed to create project')
+        // Set detailed error state for database failures
+        setSubmissionError({
+          stage: 'database',
+          message: data.error || 'Failed to save project to database',
+          details: data.details || 'The transaction was successful on-chain, but we could not save your project details.',
+          txSignature: signature
+        })
+        toast.error(`Database error: ${data.error || 'Failed to save project'}`)
+        return // Don't throw, just return so user sees error state
       }
 
       console.log('[Submit] Project created successfully:', data.project?.id)
@@ -263,8 +278,16 @@ export default function SubmitPage() {
       // Handle user rejection specially - don't show an error, just a neutral message
       if (parsed.type === 'USER_REJECTED') {
         toast.info("Transaction cancelled. Click 'Submit for Review' again when you're ready to proceed.")
+        setIsSubmitting(false)
         return
       }
+      
+      // Set error state for blockchain failures
+      setSubmissionError({
+        stage: 'blockchain',
+        message: parsed.userMessage,
+        details: parsed.suggestion || 'The blockchain transaction could not be completed. Please try again.'
+      })
       
       // Display the error with the suggestion
       const errorMessage = parsed.suggestion 
@@ -329,6 +352,112 @@ export default function SubmitPage() {
     }
 
     setStep(prev => Math.min(prev + 1, 4))
+  }
+
+  // Error screen after failed submission
+  if (submissionError) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <div className="flex-1 container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-2xl flex items-center justify-center">
+          <Card className="w-full p-8">
+            <div className="mb-6 text-center">
+              <div className="h-16 w-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertCircle className="h-8 w-8 text-red-500" />
+              </div>
+              <h1 className="text-2xl font-bold mb-2">Submission {submissionError.stage === 'blockchain' ? 'Failed' : 'Partially Complete'}</h1>
+              <p className="text-muted-foreground">{submissionError.message}</p>
+            </div>
+
+            <div className="bg-muted/50 rounded-lg p-6 mb-6 space-y-4">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm">
+                  {submissionError.stage === 'blockchain' ? (
+                    <AlertCircle className="h-4 w-4 text-red-500" />
+                  ) : (
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  )}
+                  <span className="font-medium">Blockchain Transaction</span>
+                  <span className="text-muted-foreground ml-auto">
+                    {submissionError.stage === 'blockchain' ? 'Failed' : 'Completed'}
+                  </span>
+                </div>
+                
+                {submissionError.txSignature && (
+                  <div className="pl-6 text-xs">
+                    <a 
+                      href={`https://explorer.solana.com/tx/${submissionError.txSignature}?cluster=custom&customUrl=${encodeURIComponent('https://rpc.testnet.soo.network/rpc')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline flex items-center gap-1"
+                    >
+                      View transaction <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 text-sm">
+                  {submissionError.stage === 'database' ? (
+                    <AlertCircle className="h-4 w-4 text-red-500" />
+                  ) : (
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                  )}
+                  <span className="font-medium">Database Storage</span>
+                  <span className="text-muted-foreground ml-auto">
+                    {submissionError.stage === 'database' ? 'Failed' : 'Not Started'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <p className="text-sm text-muted-foreground">
+                  {submissionError.details}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {submissionError.stage === 'database' && submissionError.txSignature && (
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-sm">
+                  <p className="font-medium text-blue-600 dark:text-blue-400 mb-2">📧 Need Help?</p>
+                  <p className="text-muted-foreground mb-2">
+                    Your campaign was created on-chain successfully. Please contact support with your transaction signature so we can manually add your project.
+                  </p>
+                  <code className="block bg-black/20 p-2 rounded text-xs break-all">
+                    {submissionError.txSignature}
+                  </code>
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => {
+                    setSubmissionError(null)
+                    setStep(1)
+                  }}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Start Over
+                </Button>
+                {submissionError.stage === 'blockchain' && (
+                  <Button
+                    onClick={() => {
+                      setSubmissionError(null)
+                      handleSubmit()
+                    }}
+                    className="flex-1"
+                  >
+                    Try Again
+                  </Button>
+                )}
+              </div>
+            </div>
+          </Card>
+        </div>
+        <Footer />
+      </div>
+    )
   }
 
   // Success screen after submission

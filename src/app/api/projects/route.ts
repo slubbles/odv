@@ -301,11 +301,17 @@ export async function POST(request: NextRequest) {
     }
 
     if (!supabase) {
+      console.error('[API] Supabase client not available - check environment variables')
       return NextResponse.json(
-        { error: 'Database connection failed' },
+        { 
+          error: 'Database connection failed',
+          details: 'Supabase environment variables are not configured. Please check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.'
+        },
         { status: 500 }
       )
     }
+
+    console.log('[API] Creating project:', { title, creator_wallet, campaign_id })
 
     // Insert project
     const { data: project, error: projectError } = await supabase
@@ -330,15 +336,21 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (projectError) {
-      console.error('Failed to create project:', projectError)
+      console.error('[API] Failed to create project:', projectError)
       return NextResponse.json(
-        { error: 'Failed to create project', details: projectError.message },
+        { 
+          error: 'Failed to create project',
+          details: projectError.message,
+          hint: projectError.hint,
+          code: projectError.code
+        },
         { status: 500 }
       )
     }
 
     // Insert milestones if provided
     if (milestones && milestones.length > 0) {
+      console.log('[API] Creating milestones:', milestones.length)
       const milestonesWithProjectId = milestones.map((m: any) => ({
         ...m,
         project_id: project.id,
@@ -350,21 +362,28 @@ export async function POST(request: NextRequest) {
         .insert(milestonesWithProjectId)
 
       if (milestonesError) {
-        console.error('Failed to create milestones:', milestonesError)
+        console.error('[API] Failed to create milestones:', milestonesError)
         // Don't fail the request, just log it
+      } else {
+        console.log('[API] Milestones created successfully')
       }
     }
 
+    console.log('[API] Project created successfully:', project.id)
     return NextResponse.json({
       success: true,
       project,
       message: 'Project created successfully! It will be reviewed by admins.'
     }, { status: 201 })
 
-  } catch (error) {
-    console.error('API error:', error)
+  } catch (error: any) {
+    console.error('[API] Unexpected error:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: error.message || 'An unexpected error occurred',
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      },
       { status: 500 }
     )
   }
