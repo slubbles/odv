@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import { useRouter } from "next/navigation"
 import { createInitializeCampaignTransaction } from "@/lib/solana/transaction"
+import { parseBlockchainError } from "@/lib/solana/error-handling"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -205,32 +206,21 @@ export default function SubmitPage() {
     } catch (error: any) {
       console.error('Failed to create project:', error)
       
-      // Handle specific errors with detailed messages
-      const errorMessage = error.message || error.toString()
+      // Use the blockchain error parser for consistent error handling
+      const parsed = parseBlockchainError(error)
       
-      if (errorMessage.includes("NFT status")) {
-         toast.error("Wallet Error: Please disconnect and reconnect your wallet, then try again.")
-      } else if (errorMessage.includes("0x0")) {
-         toast.error("Campaign already exists for this wallet. Each wallet can only create one campaign.")
-      } else if (errorMessage.includes("0x1")) {
-         toast.error("Insufficient SOL balance. You need ~0.01 SOL to cover transaction fees and account rent.")
-      } else if (errorMessage.includes("blockhash not found")) {
-         toast.error("Network timeout. Please try again in a few seconds.")
-      } else if (errorMessage.includes("Failed to verify campaign vault")) {
-         toast.error("Network error while checking campaign vault. Please check your connection and try again.")
-      } else if (errorMessage.includes("Transaction simulation failed")) {
-         toast.error("Transaction simulation failed. This usually means insufficient SOL or the campaign already exists.")
-      } else if (errorMessage.includes("Transaction failed")) {
-         // Extract the actual error from the JSON
-         const match = errorMessage.match(/InstructionError.*?}/)
-         if (match) {
-            toast.error(`Transaction execution failed: ${match[0]}. Please try again or contact support.`)
-         } else {
-            toast.error(`Transaction execution unsuccessful: ${errorMessage}`)
-         }
-      } else {
-         toast.error(errorMessage || 'Failed to create project. Please try again.')
+      // Handle user rejection specially - don't show an error, just a neutral message
+      if (parsed.type === 'USER_REJECTED') {
+        toast.info("Transaction cancelled. Click 'Submit for Review' again when you're ready to proceed.")
+        return
       }
+      
+      // Display the error with the suggestion
+      const errorMessage = parsed.suggestion 
+        ? `${parsed.userMessage}. ${parsed.suggestion}`
+        : parsed.userMessage
+      
+      toast.error(errorMessage)
     } finally {
       setIsSubmitting(false)
     }

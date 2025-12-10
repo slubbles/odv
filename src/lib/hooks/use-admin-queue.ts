@@ -5,6 +5,7 @@ import { useWallet, useConnection } from "@solana/wallet-adapter-react"
 import { useToast } from "@/components/ui/use-toast"
 import { PublicKey } from "@solana/web3.js"
 import { createInitializeCampaignTransaction, getCampaignAddress } from "@/lib/solana/admin-operations"
+import { parseBlockchainError } from "@/lib/solana/error-handling"
 
 export type ProjectStatus = "pending" | "approved" | "rejected"
 export type SortOption = "newest" | "oldest" | "most_voted" | "least_voted"
@@ -195,9 +196,22 @@ export function useAdminQueue() {
       await fetchProjects()
     } catch (error: any) {
       console.error('Approve project error:', error)
+      
+      // Use the blockchain error parser for consistent error handling
+      const parsed = parseBlockchainError(error)
+      
+      // Handle user rejection specially
+      if (parsed.type === 'USER_REJECTED') {
+        toast({
+          title: "Transaction Cancelled",
+          description: "You cancelled the transaction. Try again when ready.",
+        })
+        return
+      }
+      
       toast({
         title: "Error",
-        description: error.message || "Failed to approve project",
+        description: parsed.suggestion ? `${parsed.userMessage}. ${parsed.suggestion}` : parsed.userMessage,
         variant: "destructive",
       })
     }
