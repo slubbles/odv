@@ -197,7 +197,10 @@ export function useBackProject() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          signedTransaction: signedTx.serialize().toString('base64')
+          signedTransaction: signedTx.serialize({
+            requireAllSignatures: false,
+            verifySignatures: false
+          }).toString('base64')
         })
       })
 
