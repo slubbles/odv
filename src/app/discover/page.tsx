@@ -32,7 +32,7 @@ export default function DiscoverPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const debouncedSearch = useDebounce(searchQuery, 300) // 300ms debounce
   const [sortBy, setSortBy] = useState("trending")
-  const [status, setStatus] = useState("active")
+  const [status, setStatus] = useState("all") // Show all projects including 'live' status
   const [page, setPage] = useState(1)
   const [now, setNow] = useState<number | null>(null)
 
@@ -54,7 +54,7 @@ export default function DiscoverPage() {
     setSelectedCategory("all")
     setSearchQuery("")
     setSortBy("trending")
-    setStatus("active")
+    setStatus("all")
     setPage(1)
   }
 
@@ -102,10 +102,11 @@ export default function DiscoverPage() {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="coming_soon">Coming Soon</SelectItem>
                 <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="live">Live</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="funded">Funded</SelectItem>
+                <SelectItem value="shipped">Shipped</SelectItem>
               </SelectContent>
             </Select>
 
