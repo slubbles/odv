@@ -185,10 +185,15 @@ export async function POST(req: NextRequest) {
     transaction.lastValidBlockHeight = lastValidBlockHeight
     transaction.feePayer = relayerKeypair.publicKey
 
-    // Serialize transaction for frontend to sign
+    // CRITICAL: Relayer signs FIRST (as fee payer)
+    // This way user's wallet knows they don't need to pay gas
+    transaction.partialSign(relayerKeypair)
+    console.log('[Relay] ✅ Relayer signed as fee payer')
+
+    // Serialize partially-signed transaction for user to add their signature
     const serializedTx = transaction.serialize({
-      requireAllSignatures: false,
-      verifySignatures: false
+      requireAllSignatures: false, // User hasn't signed yet
+      verifySignatures: false // Don't verify yet
     }).toString('base64')
 
     console.log('[Relay] ✅ Transaction created, awaiting backer signature')
