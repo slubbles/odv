@@ -14,7 +14,7 @@ odv_escrow = "2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
+cluster = "https://rpc.testnet.soo.network/rpc"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

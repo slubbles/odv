@@ -183,6 +183,12 @@ pub mod odv_escrow {
         let campaign = &mut ctx.accounts.campaign;
         let platform_config = &ctx.accounts.platform_config;
         
+        // Security: Creators cannot back their own projects
+        require!(
+            ctx.accounts.backer.key() != campaign.creator,
+            ErrorCode::CannotBackOwnProject
+        );
+        
         // Enforce fixed backing amount (e.g., $1 USDC = 1_000_000 smallest units)
         let amount = platform_config.fixed_backing_amount;
         
@@ -582,4 +588,6 @@ pub enum ErrorCode {
     GoalAlreadyReached,
     #[msg("Cannot close campaign: Has active backers or goal reached")]
     CannotCloseCampaign,
+    #[msg("Cannot back own project: Creators are not allowed to back their own projects")]
+    CannotBackOwnProject,
 }
