@@ -14,6 +14,13 @@ export function getCampaignPDA(creatorPublicKey: PublicKey, campaignId: number):
     const campaignIdBuffer = Buffer.alloc(8);
     campaignIdBuffer.writeBigUInt64LE(BigInt(campaignId), 0);
     
+    console.log('[getCampaignPDA] 🧮 Computing PDA with seeds:', {
+        seed: CAMPAIGN_SEED,
+        creator: creatorPublicKey.toString().slice(0, 8) + '...',
+        campaignId,
+        campaignIdBuffer: campaignIdBuffer.toString('hex')
+    });
+    
     const [pda, bump] = PublicKey.findProgramAddressSync(
         [
             Buffer.from(CAMPAIGN_SEED),
@@ -22,6 +29,12 @@ export function getCampaignPDA(creatorPublicKey: PublicKey, campaignId: number):
         ],
         ODV_ESCROW_PROGRAM_ID
     );
+    
+    console.log('[getCampaignPDA] ✅ PDA computed:', {
+        pda: pda.toString(),
+        bump
+    });
+    
     return [pda, bump];
 }
 

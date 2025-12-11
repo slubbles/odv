@@ -76,11 +76,43 @@ export async function createFundCampaignTransaction(
     campaignId: number,
     amount: number = 1
 ): Promise<Transaction> {
+    console.log('[createFundCampaignTransaction] Parameters:', {
+        backer: backerPublicKey.toString(),
+        creator: creatorPublicKey.toString(),
+        campaignId,
+        amount
+    });
+
+    // Validate campaignId
+    if (campaignId === null || campaignId === undefined || campaignId < 0) {
+        throw new Error(`Invalid campaign_id: ${campaignId}. Campaign may not be initialized on blockchain.`);
+    }
+
     const transaction = new Transaction();
 
     // 1. Derive PDAs
     const [campaignPDA] = getCampaignPDA(creatorPublicKey, campaignId);
     const [platformConfigPDA] = getPlatformConfigPDA();
+    
+    console.log('[createFundCampaignTransaction] Derived PDAs:', {
+        campaignPDA: campaignPDA.toString(),
+        platformConfigPDA: platformConfigPDA.toString()
+    });
+
+    // Verify campaign exists on-chain
+    try {
+        const campaignInfo = await connection.getAccountInfo(campaignPDA);
+        if (!campaignInfo) {
+            console.error('[createFundCampaignTransaction] ❌ Campaign account not found on blockchain!');
+            console.error('[createFundCampaignTransaction] Expected PDA:', campaignPDA.toString());
+            console.error('[createFundCampaignTransaction] Campaign ID used:', campaignId);
+            throw new Error(`Campaign not found on blockchain. The campaign may not be initialized or campaign_id is incorrect.`);
+        }
+        console.log('[createFundCampaignTransaction] ✅ Campaign exists on-chain');
+    } catch (error: any) {
+        console.error('[createFundCampaignTransaction] Campaign verification failed:', error.message);
+        throw error;
+    }
 
     // 2. Get ATAs
     const backerAta = await getAssociatedTokenAddress(

@@ -395,10 +395,10 @@ export default function ProjectDetailPage() {
                     </div>
                   </div>
 
-                  <BackProjectButton
+                    <BackProjectButton
                     projectId={project.id}
                     creatorWallet={project.creator_wallet}
-                    campaignId={project.campaign_id || 0}
+                    campaignId={project.campaign_id ?? 0}
                     projectStatus={project.status}
                     size="lg"
                     className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 text-lg shadow-md"

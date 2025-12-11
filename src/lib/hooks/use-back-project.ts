@@ -60,6 +60,14 @@ export function useBackProject() {
     campaignId: number,
     amount: number = 1
   ): Promise<BackProjectResult> => {
+    console.log('[useBackProject] ⚡ STARTING BACK PROJECT', {
+      projectId,
+      creatorWallet: creatorWallet.slice(0, 8) + '...',
+      campaignId,
+      amount,
+      campaignIdType: typeof campaignId
+    });
+
     // Pre-flight checks
     if (!connected || !publicKey) {
       return { success: false, error: "Wallet not connected", errorType: 'WALLET_NOT_CONNECTED', recoverable: true }
@@ -67,6 +75,17 @@ export function useBackProject() {
 
     if (!sendTransaction) {
       return { success: false, error: "Wallet cannot send transactions", errorType: 'WALLET_NOT_CONNECTED', recoverable: true }
+    }
+
+    // Validate campaign ID
+    if (campaignId === null || campaignId === undefined || campaignId < 0) {
+      console.error('[useBackProject] ❌ INVALID CAMPAIGN ID:', campaignId);
+      return { 
+        success: false, 
+        error: "Campaign not initialized on blockchain. Please contact the creator.", 
+        errorType: 'INVALID_CAMPAIGN_ID',
+        recoverable: false 
+      }
     }
 
     // Validate creator wallet

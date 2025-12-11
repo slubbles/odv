@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { Button } from "@/components/ui/button"
-import { Loader2, Heart, CheckCircle2, Clock, XCircle } from "lucide-react"
+import { Loader2, Heart, CheckCircle2, Clock, XCircle, AlertCircle } from "lucide-react"
 import { useBackProject } from "@/lib/hooks/use-back-project"
 import { TransactionProgressModal } from "@/components/transaction-progress-modal"
 import { useToast } from "@/components/ui/use-toast"
@@ -42,10 +42,13 @@ export function BackProjectButton({
   const [txSignature, setTxSignature] = useState<string>("")
   const [explorerUrl, setExplorerUrl] = useState<string>("")
   const [txError, setTxError] = useState<string>("") 
-  const [finalStep, setFinalStep] = useState<'success' | 'error' | null>(null)  // Check if project can be backed
-  const canBeBacked = projectStatus === "active"
+  const [finalStep, setFinalStep] = useState<'success' | 'error' | null>(null)
+  
+  // Check if project can be backed
+  const canBeBacked = projectStatus === "active" && campaignId !== null && campaignId !== undefined
   const isInQueue = projectStatus === "queue" || projectStatus === "pending"
   const isEnded = projectStatus === "completed" || projectStatus === "funded" || projectStatus === "withdrawn"
+  const isNotInitialized = projectStatus === "active" && (campaignId === null || campaignId === undefined)
 
   useEffect(() => {
     let mounted = true
@@ -81,6 +84,25 @@ export function BackProjectButton({
     if (isModalLocked || showProgressModal) {
       console.log('[BackProjectButton] Transaction already in progress, ignoring click')
       return
+    }
+
+    console.log('[BackProjectButton] ⚡ Starting backing flow with params:', {
+      projectId,
+      creatorWallet: creatorWallet.slice(0, 8) + '...',
+      campaignId,
+      campaignIdType: typeof campaignId,
+      campaignIdValue: campaignId
+    });
+
+    // Final validation before proceeding
+    if (campaignId === null || campaignId === undefined) {
+      toast({
+        variant: "destructive",
+        title: "Campaign Not Initialized",
+        description: "This project hasn't been initialized on the blockchain yet. Please contact the creator.",
+        duration: 5000,
+      });
+      return;
     }
 
     console.log('[BackProjectButton] Starting backing flow...')
@@ -139,6 +161,21 @@ export function BackProjectButton({
         }, 10000) // 10 seconds
       }
     }
+  }
+
+  // Project not initialized on blockchain
+  if (isNotInitialized) {
+    return (
+      <Button
+        variant="outline"
+        size={size}
+        className={className}
+        disabled
+      >
+        <AlertCircle className="mr-2 h-4 w-4 text-orange-500" />
+        Campaign Not Initialized
+      </Button>
+    )
   }
 
   // Project in queue - show waiting status
