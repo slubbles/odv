@@ -23,7 +23,7 @@ export interface BackProjectResult {
 export function useBackProject() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [status, setStatus] = useState<BackingStatus>('idle')
-  const { publicKey, sendTransaction, connected } = useWallet()
+  const { publicKey, sendTransaction, signTransaction, connected } = useWallet()
   const { connection } = useConnection()
 
   const verifyMutation = useMutation({
@@ -166,21 +166,28 @@ export function useBackProject() {
       }
 
       // Step 4: User signs transaction (wallet popup)
+      console.log('[useBackProject] Transaction feePayer:', transaction.feePayer?.toString())
+      console.log('[useBackProject] User publicKey:', publicKey.toString())
+      
       if (!publicKey.equals(transaction.feePayer!)) {
         console.log('[useBackProject] 🎉 Gas will be sponsored by platform!')
+      } else {
+        console.warn('[useBackProject] ⚠️ WARNING: feePayer equals user - gas NOT sponsored!')
       }
       
       // Use wallet adapter's signTransaction method
-      const wallet = (window as any).solana || (window as any).okxwallet?.solana
-      if (!wallet?.signTransaction) {
+      // The wallet should recognize that feePayer != signer and not charge gas
+      if (!signTransaction) {
         throw new Error('Wallet does not support transaction signing')
       }
       
-      const signedTx = await wallet.signTransaction(transaction)
+      console.log('[useBackProject] Calling signTransaction from wallet adapter...')
+      const signedTx = await signTransaction(transaction)
       if (!signedTx) {
         throw new Error('Failed to sign transaction')
       }
       console.log('[useBackProject] ✅ Transaction signed by user')
+      console.log('[useBackProject] Signed tx feePayer:', signedTx.feePayer?.toString())
       
       // Step 5: Submit to relay for final signature + submission
       console.log('[useBackProject] Step 3: Submitting to relay...')
