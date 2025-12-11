@@ -52,14 +52,6 @@ function HeaderContent() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-[240px] p-2">
                 <DropdownMenuItem asChild className="p-2 cursor-pointer">
-                  <Link href="/discover" className="flex flex-col items-start gap-1">
-                    <div className="font-medium leading-none">Discover Projects</div>
-                    <div className="text-xs text-muted-foreground line-clamp-2">
-                      Browse all active campaigns
-                    </div>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="p-2 cursor-pointer">
                   <Link href="/creators" className="flex flex-col items-start gap-1">
                     <div className="font-medium leading-none">Creators</div>
                     <div className="text-xs text-muted-foreground line-clamp-2">
@@ -86,7 +78,7 @@ function HeaderContent() {
               <DropdownMenuContent align="start" className="w-[240px] p-2">
                 <DropdownMenuItem asChild className="p-2 cursor-pointer">
                   <Link href="/dashboard/creator" className="flex flex-col items-start gap-1">
-                    <div className="font-medium leading-none">Creator Dashboard</div>
+                    <div className="font-medium leading-none">Your Projects</div>
                     <div className="text-xs text-muted-foreground line-clamp-2">
                       Manage your campaigns
                     </div>

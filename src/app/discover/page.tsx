@@ -145,43 +145,6 @@ export default function DiscoverPage() {
           ))}
         </div>
 
-        {/* Stats Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
-          <Card className="border-accent/30">
-            <CardContent className="p-4 sm:p-6 flex items-center gap-3 sm:gap-4">
-              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
-                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
-              </div>
-              <div>
-                <p className="text-xl sm:text-2xl font-bold">1,247</p>
-                <p className="text-xs sm:text-sm text-muted-foreground">projects currently building</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-accent/30">
-            <CardContent className="p-4 sm:p-6 flex items-center gap-3 sm:gap-4">
-              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
-                <Star className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
-              </div>
-              <div>
-                <p className="text-xl sm:text-2xl font-bold">892</p>
-                <p className="text-xs sm:text-sm text-muted-foreground">made it</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-accent/30">
-            <CardContent className="p-4 sm:p-6 flex items-center gap-3 sm:gap-4">
-              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
-                <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
-              </div>
-              <div>
-                <p className="text-xl sm:text-2xl font-bold">156</p>
-                <p className="text-xs sm:text-sm text-muted-foreground">almost there (hours left)</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
         {/* Projects Grid */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4 sm:mb-6">
