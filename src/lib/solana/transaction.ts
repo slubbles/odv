@@ -144,8 +144,19 @@ export async function createFundCampaignTransaction(
         }
     }
 
-    // 4. Create fund instruction using proper discriminator
-    // The fund instruction takes no args - amount comes from PlatformConfig
+    // 4. Create fund instruction with campaign_id argument
+    // The fund instruction expects: discriminator (8 bytes) + campaign_id (8 bytes u64 LE)
+    const campaignIdBuffer = Buffer.alloc(8);
+    campaignIdBuffer.writeBigUInt64LE(BigInt(campaignId), 0);
+    const instructionData = Buffer.concat([FUND_DISCRIMINATOR, campaignIdBuffer]);
+    
+    console.log('[createFundCampaignTransaction] Instruction data:', {
+        discriminator: FUND_DISCRIMINATOR.toString('hex'),
+        campaignId,
+        campaignIdBuffer: campaignIdBuffer.toString('hex'),
+        fullData: instructionData.toString('hex')
+    });
+    
     const fundInstruction = new TransactionInstruction({
         keys: [
             { pubkey: campaignPDA, isSigner: false, isWritable: true },
@@ -156,7 +167,7 @@ export async function createFundCampaignTransaction(
             { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
         ],
         programId: ODV_ESCROW_PROGRAM_ID,
-        data: FUND_DISCRIMINATOR, // Just the discriminator, no additional args
+        data: instructionData,
     });
 
     transaction.add(fundInstruction);
