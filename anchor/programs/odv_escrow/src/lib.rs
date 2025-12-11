@@ -434,7 +434,11 @@ pub struct RejectMilestone<'info> {
 #[derive(Accounts)]
 #[instruction(campaign_id: u64)]
 pub struct Fund<'info> {
-    #[account(mut)]
+    #[account(
+        mut,
+        seeds = [b"campaign", campaign.creator.as_ref(), &campaign_id.to_le_bytes()],
+        bump = campaign.bump,
+    )]
     pub campaign: Account<'info, Campaign>,
     #[account(mut)]
     pub campaign_vault: Account<'info, anchor_spl::token::TokenAccount>,
