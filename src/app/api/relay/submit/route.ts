@@ -42,31 +42,23 @@ export async function POST(req: NextRequest) {
       transaction.signatures.map(s => s.publicKey?.toString().slice(0, 8))
     )
 
-    // Verify transaction has both signatures now
-    const hasRelayerSignature = transaction.signatures.some(
-      sig => sig.signature !== null && sig.publicKey?.equals(relayerKeypair.publicKey)
-    )
+    // Verify transaction has backer's signature
     const hasBackerSignature = transaction.signatures.some(
       sig => sig.signature !== null && !sig.publicKey?.equals(relayerKeypair.publicKey)
     )
 
-    if (!hasRelayerSignature) {
-      console.error('[Relay Submit] Transaction missing relayer signature')
-      return NextResponse.json(
-        { error: 'Invalid transaction: missing relayer signature' },
-        { status: 400 }
-      )
-    }
-
     if (!hasBackerSignature) {
       console.error('[Relay Submit] Transaction not signed by backer')
       return NextResponse.json(
-        { error: 'Transaction must be signed by backer' },
+        { error: 'Transaction must be signed by backer first' },
         { status: 400 }
       )
     }
 
-    console.log('[Relay Submit] ✅ Transaction has both signatures (relayer + backer)')
+    // Add relayer signature (as fee payer)
+    console.log('[Relay Submit] Adding relayer signature as fee payer...')
+    transaction.partialSign(relayerKeypair)
+    console.log('[Relay Submit] ✅ Transaction now has both signatures')
 
     console.log('[Relay Submit] Transaction signatures after relayer sign:', 
       transaction.signatures.map(s => ({

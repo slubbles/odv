@@ -185,15 +185,15 @@ export async function POST(req: NextRequest) {
     transaction.lastValidBlockHeight = lastValidBlockHeight
     transaction.feePayer = relayerKeypair.publicKey
 
-    // CRITICAL: Relayer signs FIRST (as fee payer)
-    // This way user's wallet knows they don't need to pay gas
-    transaction.partialSign(relayerKeypair)
-    console.log('[Relay] ✅ Relayer signed as fee payer')
+    // Send UNSIGNED transaction to user
+    // User signs first, then we add relayer signature in submit endpoint
+    console.log('[Relay] Transaction ready for user signature (relayer will sign after)')
 
-    // Serialize partially-signed transaction for user to add their signature
+    // Serialize UNSIGNED transaction
+    // User's wallet will see relayer as fee payer but transaction needs user signature for USDC transfer
     const serializedTx = transaction.serialize({
-      requireAllSignatures: false, // User hasn't signed yet
-      verifySignatures: false // Don't verify yet
+      requireAllSignatures: false,
+      verifySignatures: false
     }).toString('base64')
 
     console.log('[Relay] ✅ Transaction created, awaiting backer signature')
