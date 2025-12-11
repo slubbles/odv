@@ -68,19 +68,24 @@ function getPlatformConfigPDA(): [PublicKey, number] {
  * @param creatorPublicKey - Public key of the project creator
  * @param campaignId - Campaign ID to fund
  * @param amount - Amount parameter (ignored - fixed $1 enforced by contract)
+ * @param feePayerOverride - Optional: Override fee payer (for gas sponsorship)
  */
 export async function createFundCampaignTransaction(
     connection: Connection,
     backerPublicKey: PublicKey,
     creatorPublicKey: PublicKey,
     campaignId: number,
-    amount: number = 1
+    amount: number = 1,
+    feePayerOverride?: PublicKey
 ): Promise<Transaction> {
+    const actualFeePayer = feePayerOverride || backerPublicKey
     console.log('[createFundCampaignTransaction] Parameters:', {
         backer: backerPublicKey.toString(),
         creator: creatorPublicKey.toString(),
         campaignId,
-        amount
+        amount,
+        feePayer: actualFeePayer.toString(),
+        gasSponsored: !!feePayerOverride
     });
 
     // Validate campaignId
@@ -175,7 +180,7 @@ export async function createFundCampaignTransaction(
     // 5. Set transaction metadata
     const { blockhash } = await connection.getLatestBlockhash();
     transaction.recentBlockhash = blockhash;
-    transaction.feePayer = backerPublicKey;
+    transaction.feePayer = actualFeePayer; // Use override if provided (for gas sponsorship)
 
     return transaction;
 }

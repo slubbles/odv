@@ -98,21 +98,50 @@ export function useBackProject() {
 
     setIsSubmitting(true)
     setStatus('creating')
-    console.log('[useBackProject] Step 1: Creating transaction...')
+    console.log('[useBackProject] Step 1: Requesting gas-sponsored transaction...')
 
     try {
-      // Step 1: Create transaction
-      const transaction = await createFundCampaignTransaction(
-        connection,
-        publicKey,
-        creatorPublicKey,
-        campaignId,
-        amount
-      )
-      console.log('[useBackProject] Transaction created successfully')
+      // NEW: Use relay endpoint for gas sponsorship
+      console.log('[useBackProject] 🚀 Using gas sponsorship relay')
+      
+      // Step 1: Request unsigned transaction from relay
+      const relayResponse = await fetch('/api/relay/back-project', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId,
+          creatorWallet,
+          campaignId,
+          backerWallet: publicKey.toString(),
+          amount
+        })
+      })
 
-      // Step 2: Simulate transaction
-      console.log('[useBackProject] Step 2: Simulating transaction...')
+      if (!relayResponse.ok) {
+        const errorData = await relayResponse.json().catch(() => ({ error: 'Unknown error' }))
+        
+        // If relay fails, fall back to direct method
+        if (relayResponse.status === 503 || relayResponse.status === 429) {
+          console.warn('[useBackProject] ⚠️ Relay unavailable, falling back to direct method')
+          return await backProjectDirect(projectId, creatorWallet, campaignId, amount)
+        }
+        
+        throw new Error(errorData.error || 'Failed to create gas-sponsored transaction')
+      }
+
+      const relayData = await relayResponse.json()
+      console.log('[useBackProject] ✅ Relay transaction created')
+      console.log('[useBackProject] Rate limit remaining:', relayData.rateLimit?.remaining)
+
+      // Step 2: Deserialize transaction
+      const { Transaction: TransactionClass } = await import('@solana/web3.js')
+      const transaction = TransactionClass.from(
+        Buffer.from(relayData.transaction, 'base64')
+      )
+      console.log('[useBackProject] Transaction deserialized')
+
+      // Step 3: Sign transaction with user's wallet
+      console.log('[useBackProject] Step 2: Waiting for wallet signature...')
       setStatus('signing')
       
       try {
@@ -133,26 +162,40 @@ export function useBackProject() {
         console.warn('[useBackProject] Simulation warning (continuing):', formatErrorForLogging(simError))
       }
 
-      // Step 3: Sign and send transaction (SOON-compatible approach)
-      console.log('[useBackProject] Step 3: Waiting for wallet signature...')
-      // Status stays 'signing' until user approves in wallet
-      
-      // Use sendTransaction which handles signing + broadcasting to SOON RPC
-      const signature = await sendTransaction(transaction, connection, {
-        skipPreflight: false,
-        preflightCommitment: 'confirmed',
-        maxRetries: 3,
-      })
-      console.log('[useBackProject] Transaction signed! Signature:', signature.slice(0, 8) + '...')
-      
-      // Step 4: Confirm transaction on blockchain
-      console.log('[useBackProject] Step 4: Confirming on blockchain...')
-      setStatus('confirming')
-      const confirmation = await connection.confirmTransaction(signature, 'confirmed')
-      if (confirmation.value.err) {
-        throw new Error(`Transaction failed on blockchain: ${JSON.stringify(confirmation.value.err)}`)
+      // Step 4: User signs transaction (wallet popup)
+      if (!publicKey.equals(transaction.feePayer!)) {
+        console.log('[useBackProject] 🎉 Gas will be sponsored by platform!')
       }
-      console.log('[useBackProject] ✅ Blockchain confirmation successful!')
+      
+      const signedTx = await (window as any).solana?.signTransaction(transaction)
+      if (!signedTx) {
+        throw new Error('Failed to sign transaction')
+      }
+      console.log('[useBackProject] ✅ Transaction signed by user')
+      
+      // Step 5: Submit to relay for final signature + submission
+      console.log('[useBackProject] Step 3: Submitting to relay...')
+      setStatus('confirming')
+      
+      const submitResponse = await fetch('/api/relay/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          signedTransaction: signedTx.serialize().toString('base64')
+        })
+      })
+
+      if (!submitResponse.ok) {
+        const errorData = await submitResponse.json().catch(() => ({ error: 'Unknown error' }))
+        throw new Error(errorData.error || 'Failed to submit transaction')
+      }
+
+      const submitData = await submitResponse.json()
+      const signature = submitData.signature
+      
+      console.log('[useBackProject] ✅ Transaction submitted! Signature:', signature.slice(0, 8))
+      console.log('[useBackProject] 💰 Gas cost: $' + submitData.gasCostUSD?.toFixed(4), '(sponsored by platform)')
+      console.log('[useBackProject] 🔋 Relayer balance:', submitData.relayerBalance, 'SOL')
 
       // Step 5: Record in database (ONLY after blockchain success)
       console.log('[useBackProject] Step 5: Recording in database...')
@@ -252,6 +295,75 @@ export function useBackProject() {
       // setTimeout(() => setStatus('idle'), 2000) // REMOVED to prevent modal loop
     }
   }, [connected, publicKey, sendTransaction, connection])
+
+  // Fallback: Direct transaction (user pays gas) - for when relay is unavailable
+  const backProjectDirect = useCallback(async (
+    projectId: string,
+    creatorWallet: string,
+    campaignId: number,
+    amount: number = 1
+  ): Promise<BackProjectResult> => {
+    console.log('[useBackProject] 🔄 FALLBACK: Using direct method (user pays gas)')
+    
+    if (!connected || !publicKey || !sendTransaction) {
+      return { success: false, error: "Wallet not connected", errorType: 'WALLET_NOT_CONNECTED', recoverable: true }
+    }
+
+    let creatorPublicKey: PublicKey
+    try {
+      creatorPublicKey = new PublicKey(creatorWallet)
+    } catch {
+      return { success: false, error: "Invalid creator wallet address", recoverable: false }
+    }
+
+    try {
+      // Create transaction (user as fee payer)
+      const transaction = await createFundCampaignTransaction(
+        connection,
+        publicKey,
+        creatorPublicKey,
+        campaignId,
+        amount
+      )
+      
+      // Sign and send
+      const signature = await sendTransaction(transaction, connection, {
+        skipPreflight: false,
+        preflightCommitment: 'confirmed',
+        maxRetries: 3,
+      })
+      
+      // Confirm
+      const confirmation = await connection.confirmTransaction(signature, 'confirmed')
+      if (confirmation.value.err) {
+        throw new Error(`Transaction failed: ${JSON.stringify(confirmation.value.err)}`)
+      }
+      
+      // Record in database
+      await verifyMutation.mutateAsync({
+        signature,
+        projectId,
+        amount,
+        backerWallet: publicKey.toString()
+      })
+      
+      const explorerUrl = getExplorerTransactionUrl(signature)
+      
+      return {
+        success: true,
+        signature,
+        explorerUrl
+      }
+    } catch (error) {
+      const parsed = parseBlockchainError(error)
+      return {
+        success: false,
+        error: parsed.userMessage,
+        errorType: parsed.type,
+        recoverable: parsed.recoverable
+      }
+    }
+  }, [connected, publicKey, sendTransaction, connection, verifyMutation])
 
   const checkBackingStatus = useCallback(async (
     projectId: string, 
