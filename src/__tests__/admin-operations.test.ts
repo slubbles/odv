@@ -5,7 +5,7 @@ describe('Admin Operations', () => {
   const testCreator = '4GCC5vqQ6R8MWnVW3tFE5iS6p66agk4XCaeZ8V9wFxRw'
   const testAdmin = '4GCC5vqQ6R8MWnVW3tFE5iS6p66agk4XCaeZ8V9wFxRw'
   const testProjectId = 'test-project-123'
-  const programId = '4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA'
+  const programId = '2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC'
 
   describe('PDA derivation logic', () => {
     it('should create valid PublicKey from program ID', () => {

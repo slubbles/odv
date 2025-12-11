@@ -137,7 +137,7 @@ describe('Back Project Hook Logic', () => {
 })
 
 describe('SDK Fund Campaign Logic', () => {
-  const programId = '4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA'
+  const programId = '2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC'
   const testCreator = '4GCC5vqQ6R8MWnVW3tFE5iS6p66agk4XCaeZ8V9wFxRw'
 
   describe('PDA derivation logic', () => {

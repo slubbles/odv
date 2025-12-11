@@ -4,7 +4,7 @@ const { Connection, Keypair, PublicKey, Transaction, TransactionInstruction, Sys
 const BN = require('bn.js');
 
 const SOON_RPC = 'https://rpc.testnet.soo.network/rpc';
-const PROGRAM_ID = new PublicKey('4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA');
+const PROGRAM_ID = new PublicKey('2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC');
 
 async function main() {
   console.log('🚀 Initializing Campaign on SOON Testnet...\n');

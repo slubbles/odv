@@ -6,7 +6,7 @@ echo "🚀 Initializing ODV Platform"
 echo "=============================================="
 echo ""
 
-PROGRAM_ID="4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA"
+PROGRAM_ID="2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC"
 PLATFORM_PDA="GhM5s7sdrVuZjVvXraxMAhGgQb9vTGNvom45DHHfV1H9"
 
 echo "Program ID: $PROGRAM_ID"
@@ -35,7 +35,7 @@ describe("initialize-platform", () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
 
-  const programId = new PublicKey("4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA");
+  const programId = new PublicKey("2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC");
   const program = anchor.workspace.OdvEscrow as Program;
 
   it("Initializes the platform", async () => {

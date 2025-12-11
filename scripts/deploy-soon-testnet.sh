@@ -91,7 +91,7 @@ echo "📋 Step 7: Verifying Program ID..."
 PROGRAM_ID=$(solana address -k target/deploy/odv_escrow-keypair.json)
 echo "Program ID: $PROGRAM_ID"
 
-EXPECTED_ID="4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA"
+EXPECTED_ID="2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC"
 if [ "$PROGRAM_ID" != "$EXPECTED_ID" ]; then
     echo -e "${YELLOW}⚠️  Program ID mismatch!${NC}"
     echo "Expected: $EXPECTED_ID"

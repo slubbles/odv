@@ -248,7 +248,7 @@ export default function ODVCampaignPage() {
                   </a>
                 </Button>
                 <Button variant="outline" asChild>
-                  <a href="https://explorer.testnet.soo.network/address/4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA" target="_blank" rel="noopener noreferrer">
+                  <a href="https://explorer.testnet.soo.network/address/2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC" target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="h-4 w-4 mr-2" />
                     Smart Contract
                   </a>

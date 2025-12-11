@@ -21,7 +21,7 @@ async function main() {
   const provider = new anchor.AnchorProvider(connection, wallet, { commitment: "confirmed" });
   
   // Program ID - SOON Testnet
-  const programId = new PublicKey("4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA");
+  const programId = new PublicKey("2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC");
   
   // Create program instance
   const program = new Program(idl, provider);

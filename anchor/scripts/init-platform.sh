@@ -18,7 +18,7 @@ if [ $(echo "$BALANCE < 0.01" | awk '{if ($1 < $3) print "yes"; else print "no"}
 fi
 
 echo ""
-echo "📍 Program ID: 4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA"
+echo "📍 Program ID: 2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC"
 echo "📍 Platform Config PDA: GhM5s7sdrVuZjVvXraxMAhGgQb9vTGNvom45DHHfV1H9"
 echo "📍 Fixed Backing: 1 USDC (1,000,000 units)"
 echo ""

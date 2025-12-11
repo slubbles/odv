@@ -6,7 +6,7 @@ describe("initialize-platform", () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
 
-  const programId = new PublicKey("4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA");
+  const programId = new PublicKey("2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC");
   const program = anchor.workspace.OdvEscrow as Program;
 
   it("Initializes the platform", async () => {

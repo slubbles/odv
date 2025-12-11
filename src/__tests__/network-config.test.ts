@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest'
 describe('Network Configuration', () => {
   const SOON_RPC_URL = 'https://rpc.testnet.soo.network/rpc'
   const SOON_EXPLORER_URL = 'https://explorer.testnet.soo.network'
-  const PROGRAM_ID = '4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA'
+  const PROGRAM_ID = '2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC'
   const USDC_MINT = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU'
 
   describe('RPC Configuration', () => {

@@ -20,7 +20,7 @@ async function initializePlatform() {
 
   // Load program
   const idl = JSON.parse(fs.readFileSync("./target/idl/odv_escrow.json", "utf8"));
-  const programId = new PublicKey("4TVVaLhxNsoW82qhRiA9Fmspg4RUq26QvcmczW1JqijA");
+  const programId = new PublicKey("2NZKEk8zk47UAc27f7DScFgxpqyy22VptWVwBUjFfQxC");
   const program = new anchor.Program(idl, programId, provider);
 
   console.log("📍 Program ID:", program.programId.toString());
