@@ -120,12 +120,15 @@ export function useBackProject() {
       if (!relayResponse.ok) {
         const errorData = await relayResponse.json().catch(() => ({ error: 'Unknown error' }))
         
-        // If relay fails, fall back to direct method
+        console.error('[useBackProject] ❌ Relay endpoint failed:', relayResponse.status, errorData)
+        
+        // If relay fails due to service unavailable or rate limit, fall back to direct method
         if (relayResponse.status === 503 || relayResponse.status === 429) {
           console.warn('[useBackProject] ⚠️ Relay unavailable, falling back to direct method')
           return await backProjectDirect(projectId, creatorWallet, campaignId, amount)
         }
         
+        // For other errors (400, etc), throw to show user the specific error
         throw new Error(errorData.error || 'Failed to create gas-sponsored transaction')
       }
 
@@ -167,7 +170,13 @@ export function useBackProject() {
         console.log('[useBackProject] 🎉 Gas will be sponsored by platform!')
       }
       
-      const signedTx = await (window as any).solana?.signTransaction(transaction)
+      // Use wallet adapter's signTransaction method
+      const wallet = (window as any).solana || (window as any).okxwallet?.solana
+      if (!wallet?.signTransaction) {
+        throw new Error('Wallet does not support transaction signing')
+      }
+      
+      const signedTx = await wallet.signTransaction(transaction)
       if (!signedTx) {
         throw new Error('Failed to sign transaction')
       }
