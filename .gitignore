@@ -64,3 +64,6 @@ test-ledger/
 !anchor/target/idl/*.json
 !anchor/target/types/*.ts
 
+
+# Relayer Wallet Backup (CONTAINS PRIVATE KEY)
+.relayer-backup.json
