@@ -44,7 +44,7 @@ export default function Home() {
               className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 text-balance leading-tight"
             >
               Build in public.{" "}
-              <span className="bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">
+              <span className="text-accent">
                 Get funded by the crowd.
               </span>
             </h1>
