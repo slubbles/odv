@@ -46,13 +46,15 @@ export default function CreatorDashboardPage() {
         <DashboardSidebar type="creator" />
         
         <div className="flex-1 px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pb-24 md:pb-12">
-          <div className="mb-8 sm:mb-12 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="mb-12 sm:mb-16 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
             <div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-4">What you're building</h1>
-              <p className="text-lg sm:text-xl text-muted-foreground">Your projects. Your people. All here.</p>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4">What you're building</h1>
+              <p className="text-xl sm:text-2xl text-muted-foreground">Your projects. Your people. All here.</p>
             </div>
-            <Button className="bg-accent text-accent-foreground hover:bg-accent/90 w-full sm:w-auto" asChild>
-              <Link href="/submit">+ Start Building</Link>
+            <Button className="bg-accent text-accent-foreground hover:bg-accent/90 hover:scale-105 transition-all duration-200 shadow-lg shadow-accent/20 w-full sm:w-auto px-8 py-6 text-lg" asChild>
+              <Link href="/submit">
+                <span className="text-xl">I built something</span>
+              </Link>
             </Button>
           </div>
 
@@ -72,57 +74,57 @@ export default function CreatorDashboardPage() {
         ) : (
           <>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-12">
-              <Card className="border-accent/30">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
-                      <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
+              <Card className="border-accent/30 hover:border-accent/60 hover:bg-card/60 transition-all duration-300 group">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="h-14 w-14 rounded-lg bg-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                      <TrendingUp className="h-7 w-7 text-accent" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xl sm:text-2xl font-bold">{stats.activeProjects}</p>
-                      <p className="text-xs sm:text-sm text-muted-foreground truncate">currently live</p>
+                      <p className="text-3xl font-bold mb-1">{stats.activeProjects}</p>
+                      <p className="text-sm text-muted-foreground truncate">getting funded</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-accent/30">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
-                      <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
+              <Card className="border-accent/30 hover:border-accent/60 hover:bg-card/60 transition-all duration-300 group">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="h-14 w-14 rounded-lg bg-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                      <DollarSign className="h-7 w-7 text-accent" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-lg sm:text-2xl font-bold">${stats.totalRaised.toLocaleString()}</p>
-                      <p className="text-xs sm:text-sm text-muted-foreground truncate">believed in you</p>
+                      <p className="text-3xl font-bold mb-1">${stats.totalRaised.toLocaleString()}</p>
+                      <p className="text-sm text-muted-foreground truncate">backed you</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-accent/30">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
-                      <Users className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
+              <Card className="border-accent/30 hover:border-accent/60 hover:bg-card/60 transition-all duration-300 group">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="h-14 w-14 rounded-lg bg-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                      <Users className="h-7 w-7 text-accent" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xl sm:text-2xl font-bold">{stats.totalBackers}</p>
-                      <p className="text-xs sm:text-sm text-muted-foreground truncate">backers total</p>
+                      <p className="text-3xl font-bold mb-1">{stats.totalBackers}</p>
+                      <p className="text-sm text-muted-foreground truncate">believers</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-accent/30">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
-                      <BarChart className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
+              <Card className="border-accent/30 hover:border-accent/60 hover:bg-card/60 transition-all duration-300 group">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="h-14 w-14 rounded-lg bg-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                      <BarChart className="h-7 w-7 text-accent" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xl sm:text-2xl font-bold">{stats.totalProjects}</p>
-                      <p className="text-xs sm:text-sm text-muted-foreground truncate">total projects</p>
+                      <p className="text-3xl font-bold mb-1">{stats.totalProjects}</p>
+                      <p className="text-sm text-muted-foreground truncate">things you built</p>
                     </div>
                   </div>
                 </CardContent>
@@ -140,10 +142,16 @@ export default function CreatorDashboardPage() {
 
               <TabsContent value="all" className="space-y-6">
                 {projects.length === 0 ? (
-                  <Card className="p-12 text-center">
-                    <p className="text-muted-foreground mb-4">You haven&apos;t created any projects yet</p>
-                    <Button className="bg-accent text-accent-foreground hover:bg-accent/90" asChild>
-                      <Link href="/submit">Start Building</Link>
+                  <Card className="p-12 text-center border-accent/20">
+                    <div className="h-16 w-16 rounded-lg bg-accent/10 flex items-center justify-center mx-auto mb-4">
+                      <TrendingUp className="h-8 w-8 text-accent" />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-3">Nothing here yet</h3>
+                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                      Stop planning. Start building. Launch your first project in under 10 minutes.
+                    </p>
+                    <Button className="bg-accent text-accent-foreground hover:bg-accent/90 hover:scale-105 transition-all duration-200 shadow-lg shadow-accent/20" asChild>
+                      <Link href="/submit">I built something</Link>
                     </Button>
                   </Card>
                 ) : (
@@ -160,35 +168,37 @@ export default function CreatorDashboardPage() {
                       const statusBadge = () => {
                         switch (project.status) {
                           case 'active':
-                            return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Live</Badge>
+                            return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">🔥 Getting Funded</Badge>
                           case 'queue':
                           case 'pending':
-                            return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">In Review</Badge>
+                            return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">⏳ Under Review</Badge>
                           case 'funded':
                           case 'completed':
-                            return <Badge className="bg-accent/20 text-accent border-accent/30">Shipped</Badge>
+                            return <Badge className="bg-accent/20 text-accent border-accent/30">✅ Shipped</Badge>
                           case 'draft':
-                            return <Badge variant="secondary">Draft</Badge>
+                            return <Badge variant="secondary">📝 Draft</Badge>
                           default:
                             return <Badge variant="secondary">{project.status}</Badge>
                         }
                       }
 
                       return (
-                        <Card key={project.id} className="hover:border-accent/50 transition-all">
-                          <div className="grid md:grid-cols-[200px_1fr] gap-6">
-                            <div className="aspect-video md:aspect-auto bg-muted rounded-lg overflow-hidden">
+                        <Card key={project.id} className="hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10 transition-all duration-300 group">
+                          <div className="grid md:grid-cols-[240px_1fr] gap-6">
+                            <div className="relative aspect-video md:aspect-auto bg-muted rounded-lg overflow-hidden">
                               <img
                                 src={project.image_url || "/placeholder.svg"}
                                 alt={project.title}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               />
+                              <div className="absolute top-3 right-3">
+                                {statusBadge()}
+                              </div>
                             </div>
                             <div className="p-6 flex flex-col justify-between">
                               <div>
-                                <div className="flex items-center gap-3 mb-3">
-                                  <h3 className="text-xl font-bold">{project.title}</h3>
-                                  {statusBadge()}
+                                <div className="mb-3">
+                                  <h3 className="text-2xl font-bold mb-2">{project.title}</h3>
                                 </div>
                                 <p className="text-muted-foreground line-clamp-2 mb-3">{project.tagline || project.description}</p>
                                 <div className="flex items-center gap-6 text-sm text-muted-foreground">
@@ -235,10 +245,11 @@ export default function CreatorDashboardPage() {
 
               <TabsContent value="active" className="space-y-6">
                 {projects.filter((p) => p.status === "active").length === 0 ? (
-                  <Card className="p-12 text-center">
-                    <p className="text-muted-foreground mb-4">No active projects yet</p>
-                    <Button className="bg-accent text-accent-foreground hover:bg-accent/90" asChild>
-                      <Link href="/submit">Start Building</Link>
+                  <Card className="p-12 text-center border-accent/20">
+                    <h3 className="text-xl font-bold mb-2">Nothing live. Yet.</h3>
+                    <p className="text-muted-foreground mb-4">Launch something. Get it in front of people.</p>
+                    <Button className="bg-accent text-accent-foreground hover:bg-accent/90 hover:scale-105 transition-all" asChild>
+                      <Link href="/submit">I built something</Link>
                     </Button>
                   </Card>
                 ) : (
@@ -318,7 +329,7 @@ export default function CreatorDashboardPage() {
               <TabsContent value="queue" className="space-y-6">
                 {projects.filter((p) => p.status === "queue" || p.status === "pending").length === 0 ? (
                   <Card className="p-12 text-center">
-                    <p className="text-muted-foreground">No projects in review</p>
+                    <p className="text-muted-foreground">Nothing pending. Build something.</p>
                   </Card>
                 ) : (
                   <div className="grid gap-6">
@@ -386,9 +397,9 @@ export default function CreatorDashboardPage() {
               <TabsContent value="draft">
                 {projects.filter((p) => p.status === "draft" || p.status === "pending").length === 0 ? (
                   <Card className="p-12 text-center">
-                    <p className="text-muted-foreground mb-4">No drafts. Got an idea?</p>
-                    <Button className="bg-accent text-accent-foreground hover:bg-accent/90" asChild>
-                      <Link href="/submit">Start Building</Link>
+                    <p className="text-muted-foreground mb-4">No drafts. Got an idea? Stop thinking, start building.</p>
+                    <Button className="bg-accent text-accent-foreground hover:bg-accent/90 hover:scale-105 transition-all" asChild>
+                      <Link href="/submit">I built something</Link>
                     </Button>
                   </Card>
                 ) : (
