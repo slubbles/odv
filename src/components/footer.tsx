@@ -82,11 +82,6 @@ export function Footer() {
                     Guidelines
                   </Link>
                 </li>
-                <li>
-                  <Link href="/stats" className="text-muted-foreground hover:text-accent transition-colors duration-200">
-                    Platform Stats
-                  </Link>
-                </li>
               </ul>
             </nav>
             <nav aria-label="Company links">
