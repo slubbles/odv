@@ -31,6 +31,7 @@ interface SubmittedProject {
   category: string
   goal: number
   status: string
+  txSignature: string
 }
 
 export default function SubmitPage() {
@@ -264,7 +265,8 @@ export default function SubmitPage() {
         title: formData.title,
         category: formData.category,
         goal: parseFloat(formData.goal),
-        status: 'queue'
+        status: 'queue',
+        txSignature: signature
       })
 
       toast.success("Project submitted for review!")
@@ -512,18 +514,35 @@ export default function SubmitPage() {
               Our team will review your project shortly. You&apos;ll be notified once it&apos;s approved and live.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-              <Button variant="outline" className="w-full sm:flex-1" size="default" asChild>
-                <Link href={`/project/${submittedProject.id}`}>
+            <div className="flex flex-col gap-2">
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                size="default" 
+                asChild
+              >
+                <a 
+                  href={`https://explorer.testnet.soo.network/tx/${submittedProject.txSignature}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <ExternalLink className="h-4 w-4 mr-2" />
-                  View Project
-                </Link>
+                  View Transaction on Explorer
+                </a>
               </Button>
-              <Button className="w-full sm:flex-1 bg-accent text-accent-foreground" size="default" asChild>
-                <Link href="/dashboard/creator">
-                  Go to Dashboard
-                </Link>
-              </Button>
+              
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                <Button variant="outline" className="w-full sm:flex-1" size="default" asChild>
+                  <Link href={`/project/${submittedProject.id}`}>
+                    View Project
+                  </Link>
+                </Button>
+                <Button className="w-full sm:flex-1 bg-accent text-accent-foreground" size="default" asChild>
+                  <Link href="/dashboard/creator">
+                    Go to Dashboard
+                  </Link>
+                </Button>
+              </div>
             </div>
           </Card>
         </div>
