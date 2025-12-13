@@ -149,13 +149,6 @@ export function WalletButton() {
               </p>
             </div>
             <DropdownMenuSeparator />
-            
-            <DropdownMenuItem asChild className="cursor-pointer">
-              <Link href="/portfolio">
-                <Heart className="mr-2 h-4 w-4" />
-                <span>Funded Projects</span>
-              </Link>
-            </DropdownMenuItem>
 
             <DropdownMenuItem asChild className="cursor-pointer">
               <Link href="/wallet">
@@ -293,13 +286,6 @@ export function WalletButton() {
               <p className="text-xs text-muted-foreground">Manage your profile</p>
             </div>
             <DropdownMenuSeparator />
-            
-            <DropdownMenuItem asChild className="cursor-pointer">
-              <Link href="/portfolio">
-                <Heart className="mr-2 h-4 w-4" />
-                <span>Funded Projects</span>
-              </Link>
-            </DropdownMenuItem>
 
             <DropdownMenuItem asChild className="cursor-pointer">
               <Link href="/wallet">

@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useWallet } from "@solana/wallet-adapter-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -14,13 +15,16 @@ import {
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CheckCircle2, XCircle, Clock, Users, Filter, TrendingUp } from "lucide-react"
+import { CheckCircle2, XCircle, Clock, Users, Filter, TrendingUp, Download } from "lucide-react"
 import { useAdminQueue } from "@/lib/hooks/use-admin-queue"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { RejectProjectDialog } from "@/components/reject-project-dialog"
+import { useToast } from "@/components/ui/use-toast"
 import { cn } from "@/lib/utils"
 
 export function QueueTab() {
+  const { publicKey } = useWallet()
+  const { toast } = useToast()
   const {
     projects,
     loading,
@@ -61,6 +65,69 @@ export function QueueTab() {
 
   const handleBulkReject = () => {
     setBulkRejectDialogOpen(true)
+  }
+
+  const handleExportBackers = async (projectId: string, format: 'csv' | 'json') => {
+    if (!publicKey) {
+      toast({
+        title: "Error",
+        description: "Wallet not connected",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/admin/backers/${projectId}?format=${format}`, {
+        headers: {
+          'x-wallet-address': publicKey.toString(),
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error('Export failed')
+      }
+
+      if (format === 'csv') {
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `backers-${projectId}-${Date.now()}.csv`
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+        
+        toast({
+          title: "Success",
+          description: "Backers exported to CSV",
+        })
+      } else {
+        const data = await response.json()
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `backers-${projectId}-${Date.now()}.json`
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+        
+        toast({
+          title: "Success",
+          description: "Backers exported to JSON",
+        })
+      }
+    } catch (error) {
+      console.error('Export error:', error)
+      toast({
+        title: "Export Failed",
+        description: "Failed to export backers list",
+        variant: "destructive",
+      })
+    }
   }
 
   const pendingCount = projects.filter((p) => p.status === "pending").length
@@ -226,7 +293,8 @@ export function QueueTab() {
         }}
         className="space-y-6"
       >
-        <TabsList className="grid w-full grid-cols-3 max-w-md">
+        <TabsList className="grid w-full grid-cols-4 max-w-2xl">
+          <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="pending">Pending</TabsTrigger>
           <TabsTrigger value="approved">Approved</TabsTrigger>
           <TabsTrigger value="rejected">Rejected</TabsTrigger>
@@ -322,7 +390,11 @@ export function QueueTab() {
 
                     {filters.status === "pending" && (
                       <div className="flex gap-3 pt-4 mt-4 border-t">
-                        <Button variant="outline" className="flex-1 bg-transparent">
+                        <Button 
+                          variant="outline" 
+                          className="flex-1 bg-transparent"
+                          onClick={() => window.open(`/project/${project.id}`, '_blank')}
+                        >
                           View Full Details
                         </Button>
                         <Button
@@ -339,6 +411,32 @@ export function QueueTab() {
                         >
                           <CheckCircle2 className="h-4 w-4 mr-2" />
                           Approve
+                        </Button>
+                      </div>
+                    )}
+
+                    {(filters.status === "approved" || filters.status === "all" as any) && project.status === "approved" && (
+                      <div className="flex gap-3 pt-4 mt-4 border-t">
+                        <Button 
+                          variant="outline" 
+                          className="flex-1 bg-transparent"
+                          onClick={() => window.open(`/project/${project.id}`, '_blank')}
+                        >
+                          View Project
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => handleExportBackers(project.id, 'csv')}
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          CSV
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => handleExportBackers(project.id, 'json')}
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          JSON
                         </Button>
                       </div>
                     )}

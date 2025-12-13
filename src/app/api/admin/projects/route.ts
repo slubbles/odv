@@ -18,13 +18,18 @@ export async function GET(request: Request) {
       pending: "queue",
       approved: "active",
       rejected: "rejected",
+      all: "all", // Special case: don't filter by status
     }
     const dbStatus = statusMap[statusParam] || statusParam
 
     let query = supabase
       .from("projects")
       .select("id, title, creator_wallet, category, backers_count, raised, status, goal, deadline, created_at, updated_at")
-      .eq("status", dbStatus)
+
+    // Only filter by status if not "all"
+    if (dbStatus !== "all") {
+      query = query.eq("status", dbStatus)
+    }
 
     if (category && category !== "all") {
       query = query.eq("category", category)

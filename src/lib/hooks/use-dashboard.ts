@@ -26,9 +26,10 @@ export function useCreatorDashboard() {
       setError(null)
 
       try {
-        // Fetch creator's projects
+        // Fetch creator's projects with cache busting for real-time updates
         const response = await fetch(
-          `/api/projects?creator=${publicKey.toString()}&status=all`
+          `/api/projects?creator=${publicKey.toString()}&status=all`,
+          { cache: 'no-store' }
         )
         
         if (!response.ok) {
@@ -91,7 +92,7 @@ export function useBackerDashboard() {
       try {
         // In a real app, this would be /api/backing/user endpoint
         // For now, we'll fetch all projects and check backing status
-        const response = await fetch('/api/projects?status=all')
+        const response = await fetch('/api/projects?status=all', { cache: 'no-store' })
         
         if (!response.ok) {
           throw new Error('Failed to fetch projects')

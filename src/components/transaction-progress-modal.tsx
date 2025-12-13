@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Loader2, CheckCircle2, AlertCircle, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -26,6 +27,17 @@ export function TransactionProgressModal({
   
   const stepIndex = ['approving', 'confirming', 'recording', 'success'].indexOf(step)
   const progress = stepIndex >= 0 ? ((stepIndex + 1) / 4) * 100 : 0
+
+  // Auto-close on success after 5 seconds
+  React.useEffect(() => {
+    if (step === 'success' && open && onClose) {
+      const timer = setTimeout(() => {
+        console.log('[TransactionProgressModal] Auto-closing after success')
+        onClose()
+      }, 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [step, open, onClose])
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => {
@@ -63,7 +75,7 @@ export function TransactionProgressModal({
             {step === 'confirming' && 'Confirming on blockchain... This usually takes a few seconds.'}
             {step === 'recording' && 'Recording your backing... Almost done.'}
             {step === 'success' && (
-              <span className="text-green-400">Backing successful! You can close this modal anytime.</span>
+              <span className="text-green-400">Backing successful! Closing in 5 seconds...</span>
             )}
             {step === 'error' && (
               <div className="space-y-2">

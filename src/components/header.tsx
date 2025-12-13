@@ -28,9 +28,21 @@ function HeaderContent() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto max-w-7xl flex h-16 items-center justify-between px-6">
+      <div className="container mx-auto max-w-7xl flex h-16 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0">
+          {/* Mobile: Show icon only */}
+          <Link href="/" className="md:hidden flex items-center">
+            <Image 
+              src="/icon.svg" 
+              alt="OneDollarVentures" 
+              width={36} 
+              height={36} 
+              className="h-9 w-9 object-contain"
+              priority
+            />
+          </Link>
+          {/* Desktop: Show full logo */}
+          <Link href="/" className="hidden md:flex items-center gap-2">
             <Image 
               src="/logo.svg" 
               alt="OneDollarVentures" 
@@ -42,9 +54,29 @@ function HeaderContent() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/discover" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Fund Projects
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:ring-0 focus-visible:outline-none">
+                Fund Projects <ChevronDown className="h-4 w-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-[240px] p-2">
+                <DropdownMenuItem asChild className="p-2 cursor-pointer">
+                  <Link href="/discover" className="flex flex-col items-start gap-1">
+                    <div className="font-medium leading-none">Discover Projects</div>
+                    <div className="text-xs text-muted-foreground line-clamp-2">
+                      Browse all active campaigns
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="p-2 cursor-pointer">
+                  <Link href="/portfolio" className="flex flex-col items-start gap-1">
+                    <div className="font-medium leading-none">Your Portfolio</div>
+                    <div className="text-xs text-muted-foreground line-clamp-2">
+                      View projects you've backed
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             
             <Link href="/docs" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Docs

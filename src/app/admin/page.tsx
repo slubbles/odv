@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Shield, BarChart3, CheckSquare, Users as UsersIcon, Activity, Calendar, Settings } from "lucide-react"
 import { Footer } from "@/components/footer"
-import { DashboardSidebar } from "@/components/dashboard-sidebar"
 import { AdminGuard } from "@/components/admin/admin-guard"
 import { QueueTab } from "@/components/admin/tabs/queue-tab"
 import { MilestonesTab } from "@/components/admin/tabs/milestones-tab"
@@ -18,9 +17,7 @@ function AdminPageContent() {
       <Header />
 
       <div className="flex flex-1">
-        <DashboardSidebar type="admin" />
-        
-        <div className="flex-1 px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pb-24 md:pb-12">
+        <div className="flex-1 container px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pb-24 md:pb-12 max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8 sm:mb-12">
             <div className="flex items-center gap-3 mb-4">

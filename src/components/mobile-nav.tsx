@@ -96,8 +96,8 @@ export function MobileNav() {
               <Image 
                 src="/logo.svg" 
                 alt="OneDollarVentures" 
-                width={160} 
-                height={40} 
+                width={140} 
+                height={36} 
                 className="h-10 w-auto object-contain"
               />
             </Link>
@@ -148,12 +148,20 @@ export function MobileNav() {
               <AccordionContent>
                 <div className="flex flex-col gap-1">
                   <Link
+                    href="/discover"
+                    className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="font-medium">Discover Projects</span>
+                    <span className="text-xs text-muted-foreground">Browse all active campaigns</span>
+                  </Link>
+                  <Link
                     href="/portfolio"
                     className="py-2.5 px-4 hover:bg-accent/10 rounded-md text-sm flex flex-col gap-0.5"
                     onClick={() => setOpen(false)}
                   >
-                    <span className="font-medium">Funded Projects</span>
-                    <span className="text-xs text-muted-foreground">View projects you have funded</span>
+                    <span className="font-medium">Your Portfolio</span>
+                    <span className="text-xs text-muted-foreground">View projects you've backed</span>
                   </Link>
 
                 </div>

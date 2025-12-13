@@ -14,6 +14,7 @@ interface BackProjectButtonProps {
   creatorWallet: string
   campaignId: number
   projectStatus?: string
+  daysLeft?: number
   amount?: number
   variant?: "default" | "outline" | "ghost"
   size?: "default" | "sm" | "lg"
@@ -26,6 +27,7 @@ export function BackProjectButton({
   creatorWallet,
   campaignId,
   projectStatus = "active",
+  daysLeft,
   amount = 1,
   variant = "default",
   size = "default",
@@ -45,8 +47,11 @@ export function BackProjectButton({
   const [txError, setTxError] = useState<string>("") 
   const [finalStep, setFinalStep] = useState<'success' | 'error' | null>(null)
   
+  // Check if campaign has expired
+  const isExpired = daysLeft !== undefined && daysLeft <= 0 && projectStatus === "active"
+  
   // Check if project can be backed
-  const canBeBacked = projectStatus === "active" && campaignId !== null && campaignId !== undefined
+  const canBeBacked = projectStatus === "active" && campaignId !== null && campaignId !== undefined && !isExpired
   const isInQueue = projectStatus === "queue" || projectStatus === "pending"
   const isEnded = projectStatus === "completed" || projectStatus === "funded" || projectStatus === "withdrawn"
   const isNotInitialized = projectStatus === "active" && (campaignId === null || campaignId === undefined)
@@ -194,6 +199,21 @@ export function BackProjectButton({
       >
         <Clock className="mr-2 h-4 w-4 text-yellow-500" />
         In Review Queue
+      </Button>
+    )
+  }
+
+  // Campaign expired (deadline passed)
+  if (isExpired) {
+    return (
+      <Button
+        variant="outline"
+        size={size}
+        className={className}
+        disabled
+      >
+        <XCircle className="mr-2 h-4 w-4 text-red-500" />
+        Campaign Ended
       </Button>
     )
   }

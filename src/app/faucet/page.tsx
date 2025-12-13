@@ -138,8 +138,9 @@ export default function FaucetPage() {
           open={showSuccessModal}
           onOpenChange={setShowSuccessModal}
           title="Tokens Sent Successfully!"
-          description="100 Test USDC has been sent to your wallet. You can now use these tokens to back projects."
+          description="10 Test USDC has been sent to your wallet. You can now use these tokens to back projects."
           txSignature={lastTx || undefined}
+          explorerUrl={lastTx ? `https://explorer.testnet.soo.network/tx/${lastTx}` : undefined}
           actionLabel="Check Wallet"
           onAction={() => window.location.href = "/wallet"}
         />

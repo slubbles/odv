@@ -56,45 +56,73 @@ export default function SubmitPage() {
     return tomorrow.toISOString().split('T')[0]
   }
 
-  // Form state - initialize with one empty milestone
-  const [formData, setFormData] = useState({
-    title: "",
-    category: "",
-    tagline: "",
-    imageUrl: "",
-    description: "",
-    problem: "",
-    solution: "",
-    videoUrl: "",
-    goal: "",
-    duration: "30",
-    milestones: [{ title: "", percentage: 0, deadline: "" }] as MilestoneInput[]
+  // Form state - initialize from localStorage if available
+  const [formData, setFormData] = useState(() => {
+    // Check localStorage for saved form data
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('odv-submit-form')
+      if (saved) {
+        try {
+          return JSON.parse(saved)
+        } catch (e) {
+          console.error('Failed to parse saved form data:', e)
+        }
+      }
+    }
+    // Default form data
+    return {
+      title: "",
+      category: "",
+      tagline: "",
+      imageUrl: "",
+      description: "",
+      problem: "",
+      solution: "",
+      videoUrl: "",
+      goal: "",
+      duration: "30",
+      milestones: [{ title: "", percentage: 0, deadline: "" }] as MilestoneInput[]
+    }
   })
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    setFormData((prev: typeof formData) => {
+      const updated = { ...prev, [field]: value }
+      // Save to localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('odv-submit-form', JSON.stringify(updated))
+      }
+      return updated
+    })
   }
 
   const addMilestone = () => {
-    setFormData(prev => ({
+    setFormData((prev: typeof formData) => ({
       ...prev,
       milestones: [...prev.milestones, { title: "", percentage: 0, deadline: "" }]
     }))
   }
 
   const updateMilestone = (index: number, field: keyof MilestoneInput, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      milestones: prev.milestones.map((m, i) =>
-        i === index ? { ...m, [field]: value } : m
-      )
-    }))
+    setFormData((prev: typeof formData) => {
+      const updated = {
+        ...prev,
+        milestones: prev.milestones.map((m: MilestoneInput, i: number) =>
+          i === index ? { ...m, [field]: value } : m
+        )
+      }
+      // Save to localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('odv-submit-form', JSON.stringify(updated))
+      }
+      return updated
+    })
   }
 
   const removeMilestone = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev: typeof formData) => ({
       ...prev,
-      milestones: prev.milestones.filter((_, i) => i !== index)
+      milestones: prev.milestones.filter((_: MilestoneInput, i: number) => i !== index)
     }))
   }
 
@@ -104,32 +132,47 @@ export default function SubmitPage() {
       return
     }
 
-    // Validation
+    // Validation with prominent error messages
     if (!formData.title || !formData.tagline || !formData.description || !formData.category || !formData.goal) {
-      toast.error("Please fill in all required fields")
+      toast.error("Please fill in all required fields", {
+        description: "Title, tagline, description, category, and goal are required",
+        duration: 5000,
+      })
       return
     }
 
     if (parseFloat(formData.goal) < 100) {
-      toast.error("Minimum funding goal is $100")
+      toast.error("Minimum funding goal is $100", {
+        description: "Please increase your funding goal to at least $100",
+        duration: 5000,
+      })
       return
     }
 
     if (formData.milestones.length === 0) {
-      toast.error("Please add at least one milestone")
+      toast.error("Please add at least one milestone", {
+        description: "Milestones help backers understand your project roadmap",
+        duration: 5000,
+      })
       return
     }
 
-    const totalPercentage = formData.milestones.reduce((sum, m) => sum + m.percentage, 0)
+    const totalPercentage = formData.milestones.reduce((sum: number, m: MilestoneInput) => sum + m.percentage, 0)
     if (totalPercentage !== 100) {
-      toast.error(`Milestone percentages must total 100% (currently ${totalPercentage}%)`)
+      toast.error(`Milestone percentages must total 100%`, {
+        description: `Currently at ${totalPercentage}%. Please adjust your milestones.`,
+        duration: 6000,
+      })
       return
     }
 
     // Validate milestone deadlines
     for (const m of formData.milestones) {
       if (!m.deadline) {
-        toast.error("All milestones must have a deadline")
+        toast.error("All milestones must have a deadline", {
+          description: "Please set a completion date for each milestone",
+          duration: 5000,
+        })
         return
       }
     }
@@ -154,6 +197,9 @@ export default function SubmitPage() {
         wallet: publicKey.toString().slice(0, 8) + '...'
       })
       
+      // Show loading modal with steps
+      toast.loading("Preparing transaction...", { id: "submit-loading" })
+      
       // Get next campaign ID from platform config
       console.log('[Submit] Fetching next campaign ID...')
       const campaignId = await getNextCampaignId(connection)
@@ -165,12 +211,17 @@ export default function SubmitPage() {
       
       const accountInfo = await connection.getAccountInfo(campaignPDA)
       if (accountInfo !== null) {
-        console.error('[Submit] Campaign ID already taken (race condition)')
-        throw new Error('Campaign ID conflict. Please try again.')
+        console.error('[Submit] Campaign ID already taken (race condition detected)')
+        toast.dismiss("submit-loading")
+        toast.error("Campaign ID conflict", {
+          description: "Another creator just used this ID. The platform will auto-increment. Please try submitting again.",
+          duration: 7000
+        })
+        throw new Error('Campaign ID conflict. The system will use the next available ID. Please try again.')
       }
       
       console.log('[Submit] Campaign ID available, proceeding with initialization')
-      toast.info("Initializing campaign on blockchain...")
+      toast.loading("Initializing campaign on blockchain...", { id: "submit-loading" })
       
       const transaction = await createInitializeCampaignTransaction(
           connection,
@@ -178,13 +229,14 @@ export default function SubmitPage() {
           campaignId,
           goalAmount,
           deadlineTimestamp,
-          formData.milestones.map(m => ({
+          formData.milestones.map((m: MilestoneInput) => ({
             title: m.title,
             amount: (goalAmount * m.percentage) / 100
           }))
       )
       
       console.log('[Submit] Transaction created, requesting signature...')
+      toast.loading("Approving transaction...", { id: "submit-loading" })
 
       let signature: string
       try {
@@ -195,10 +247,11 @@ export default function SubmitPage() {
         console.log('[Submit] Transaction signature:', signature)
       } catch (sendError: any) {
         console.error('[Submit] Send transaction error:', sendError)
+        toast.dismiss("submit-loading")
         throw sendError // Re-throw to be caught by outer catch
       }
       
-      toast.info("Transaction sent. Waiting for confirmation...")
+      toast.loading("Confirming on blockchain...", { id: "submit-loading" })
       
       try {
         const confirmation = await connection.confirmTransaction(signature, 'confirmed')
@@ -213,7 +266,7 @@ export default function SubmitPage() {
         throw confirmError
       }
 
-      toast.success("Campaign initialized on blockchain!")
+      toast.loading("Recording in database...", { id: "submit-loading" })
 
       // 2. Save metadata to database
       console.log('[Submit] Saving project metadata to database...')
@@ -234,7 +287,7 @@ export default function SubmitPage() {
           creator_wallet: publicKey.toString(),
           campaign_id: campaignId,
           campaign_pda: campaignPDA.toString(),
-          milestones: formData.milestones.map(m => ({
+          milestones: formData.milestones.map((m: MilestoneInput) => ({
             title: m.title,
             percentage: m.percentage,
             deadline: new Date(m.deadline).toISOString()
@@ -260,6 +313,14 @@ export default function SubmitPage() {
 
       console.log('[Submit] Project created successfully:', data.project?.id)
 
+      // Clear loading modal
+      toast.dismiss("submit-loading")
+      
+      // Clear localStorage form data on successful submission
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('odv-submit-form')
+      }
+
       // Show success state with project details
       setSubmittedProject({
         id: data.project?.id || data.id,
@@ -273,7 +334,10 @@ export default function SubmitPage() {
       // 🎉 Celebrate successful submission!
       celebrateProjectSubmission()
 
-      toast.success("Project submitted for review!")
+      toast.success("Project submitted for review!", {
+        description: "Your project is now in the admin queue",
+        duration: 5000,
+      })
 
     } catch (error: any) {
       console.error('Failed to create project:', error)
@@ -342,7 +406,7 @@ export default function SubmitPage() {
         return
       }
 
-      const totalPercentage = formData.milestones.reduce((sum, m) => sum + m.percentage, 0)
+      const totalPercentage = formData.milestones.reduce((sum: number, m: MilestoneInput) => sum + m.percentage, 0)
       if (totalPercentage !== 100) {
         toast.error(`Milestone percentages must total 100% (currently ${totalPercentage}%)`)
         return
@@ -781,13 +845,13 @@ export default function SubmitPage() {
                       <span>All milestone percentages must add up to exactly 100%</span>
                     </p>
                     <p className="text-xs text-muted-foreground mt-1 ml-6">
-                      Current total: <span className={`font-bold ${formData.milestones.reduce((sum, m) => sum + m.percentage, 0) === 100 ? 'text-green-500' : 'text-yellow-500'}`}>
-                        {formData.milestones.reduce((sum, m) => sum + m.percentage, 0)}%
+                      Current total: <span className={`font-bold ${formData.milestones.reduce((sum: number, m: MilestoneInput) => sum + m.percentage, 0) === 100 ? 'text-green-500' : 'text-yellow-500'}`}>
+                        {formData.milestones.reduce((sum: number, m: MilestoneInput) => sum + m.percentage, 0)}%
                       </span>
                     </p>
                   </div>
 
-                  {formData.milestones.map((milestone, index) => (
+                  {formData.milestones.map((milestone: MilestoneInput, index: number) => (
                     <Card key={index} className="bg-muted/50">
                       <CardContent className="p-3 sm:p-4 space-y-3 sm:space-y-4">
                         <div className="flex items-center justify-between">
@@ -854,7 +918,7 @@ export default function SubmitPage() {
 
                   {formData.milestones.length > 0 && (
                     <div className="text-sm text-muted-foreground">
-                      Total: {formData.milestones.reduce((sum, m) => sum + m.percentage, 0)}%
+                      Total: {formData.milestones.reduce((sum: number, m: MilestoneInput) => sum + m.percentage, 0)}%
                       (must equal 100%)
                     </div>
                   )}
@@ -942,11 +1006,24 @@ export default function SubmitPage() {
                       <div className="sm:col-span-2 space-y-1">
                         <p>{formData.milestones.length} milestones defined</p>
                         <ul className="list-disc list-inside text-xs text-muted-foreground">
-                          {formData.milestones.map((m, i) => (
+                          {formData.milestones.map((m: MilestoneInput, i: number) => (
                             <li key={i}>{m.title} ({m.percentage}%) - {m.deadline}</li>
                           ))}
                         </ul>
                       </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Immutability Warning - Always show in review step */}
+                <div className="p-4 bg-accent/10 border border-accent/30 rounded-lg">
+                  <div className="flex gap-2">
+                    <AlertCircle className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-semibold text-accent-foreground">⚠️ IMPORTANT: Blockchain Immutability</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Once submitted to the blockchain, project details <strong>cannot be edited</strong>. Double-check all information before submitting.
+                      </p>
                     </div>
                   </div>
                 </div>

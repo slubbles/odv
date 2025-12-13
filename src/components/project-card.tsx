@@ -50,6 +50,11 @@ export function ProjectCard({
   const progress = (raised / goal) * 100
 
   const getStatusBadge = () => {
+    // Check if campaign has expired (deadline passed but still marked active)
+    if (status === 'active' && daysLeft <= 0) {
+      return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Expired</Badge>
+    }
+    
     switch (status) {
       case 'active':
         return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Live</Badge>

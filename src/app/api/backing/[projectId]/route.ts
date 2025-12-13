@@ -5,6 +5,47 @@ import { createFundCampaignTransaction } from '@/lib/solana/transaction'
 import { notifyNewBacker, notifyProjectFunded } from '@/lib/notifications'
 import { RPC_ENDPOINT } from '@/lib/solana/config'
 
+// Retry utility with exponential backoff for database operations
+async function retryWithBackoff<T>(
+  operation: () => Promise<T>,
+  maxRetries = 3,
+  baseDelay = 100
+): Promise<T> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await operation()
+    } catch (error) {
+      if (attempt === maxRetries - 1) throw error
+      const delay = baseDelay * Math.pow(2, attempt)
+      console.log(`Retry attempt ${attempt + 1}/${maxRetries} after ${delay}ms`)
+      await new Promise(resolve => setTimeout(resolve, delay))
+    }
+  }
+  throw new Error('Max retries exceeded')
+}
+
+// Simple in-memory rate limiter (per wallet)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
+const RATE_LIMIT_WINDOW = 60000 // 1 minute
+const RATE_LIMIT_MAX = 10 // 10 requests per minute per wallet
+
+function checkRateLimit(walletAddress: string): boolean {
+  const now = Date.now()
+  const record = rateLimitMap.get(walletAddress)
+  
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(walletAddress, { count: 1, resetTime: now + RATE_LIMIT_WINDOW })
+    return true
+  }
+  
+  if (record.count >= RATE_LIMIT_MAX) {
+    return false
+  }
+  
+  record.count++
+  return true
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ projectId: string }> }
@@ -24,6 +65,14 @@ export async function POST(
       return NextResponse.json(
         { error: 'Missing wallet address or transaction signature' },
         { status: 400 }
+      )
+    }
+
+    // Rate limiting to prevent spam/abuse
+    if (!checkRateLimit(walletAddress)) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please wait a moment before trying again.' },
+        { status: 429 }
       )
     }
 
@@ -105,51 +154,65 @@ export async function POST(
       )
     }
 
-    // Insert backing record
-    const { data: backing, error: backingError } = await supabase
-      .from('backers')
-      .insert({
-        project_id: projectId,
-        wallet_address: walletAddress,
-        amount,
-        transaction_signature: transactionSignature
-      })
-      .select()
-      .single()
+    // Insert backing record with retry logic for reliability
+    const backing = await retryWithBackoff(async () => {
+      const { data, error } = await supabase
+        .from('backers')
+        .insert({
+          project_id: projectId,
+          wallet_address: walletAddress,
+          amount,
+          transaction_signature: transactionSignature
+        })
+        .select()
+        .single()
 
-    if (backingError) {
-      console.error('Failed to record backing:', backingError)
+      if (error) {
+        console.error('Failed to record backing (attempt):', error)
+        throw error
+      }
+      return data
+    }).catch(error => {
+      console.error('Failed to record backing after retries:', error)
+      return null
+    })
+
+    if (!backing) {
       return NextResponse.json(
-        { error: 'Failed to record backing', details: backingError.message },
+        { error: 'Failed to record backing after multiple attempts. Transaction is confirmed on-chain but database recording failed. Contact support with transaction signature: ' + transactionSignature },
         { status: 500 }
       )
     }
 
-    // Update project raised amount and backers count
-    const { error: updateError } = await supabase.rpc('increment_backers', {
-      project_id: projectId,
-      amount_to_add: amount
+    // Update project raised amount and backers count with retry
+    await retryWithBackoff(async () => {
+      const { error: updateError } = await supabase.rpc('increment_backers', {
+        project_id: projectId,
+        amount_to_add: amount
+      })
+
+      // Fallback if RPC doesn't exist - manual update
+      if (updateError) {
+        console.warn('RPC increment failed, using manual update:', updateError)
+        const { error: manualUpdateError } = await supabase
+          .from('projects')
+          .update({
+            raised: project.raised + amount
+          })
+          .eq('id', projectId)
+        
+        if (manualUpdateError) {
+          console.error('Manual update failed:', manualUpdateError)
+          throw manualUpdateError
+        }
+      }
+    }).catch(error => {
+      console.error('Failed to update project stats after retries:', error)
+      // Non-critical: backing is recorded, stats can be synced later
     })
 
-    // Fallback if RPC doesn't exist - manual update
-    if (updateError) {
-      console.warn('RPC increment failed, using manual update:', updateError)
-      const { error: manualUpdateError } = await supabase
-        .from('projects')
-        .update({
-          raised: project.raised + amount
-        })
-        .eq('id', projectId)
-      
-      if (manualUpdateError) {
-        console.error('Manual update also failed:', manualUpdateError)
-      }
-    }
-
-    if (updateError) {
-      console.error('Failed to update project stats:', updateError)
-      // Don't fail the request - backing is recorded
-    }
+    // Log successful backing
+    console.log(`✅ Backing recorded: ${walletAddress} backed project ${projectId} with ${amount} USDC (tx: ${transactionSignature})`)
 
     // Notify creator of new backer
     await notifyNewBacker(

@@ -90,7 +90,7 @@ export function useAdminQueue() {
   }, [filters, sortBy, toast, getAdminHeaders])
 
   const approveProject = useCallback(async (projectId: string) => {
-    if (!publicKey || !sendTransaction) {
+    if (!publicKey) {
       toast({
         title: "Error",
         description: "Please connect your wallet to approve projects",
@@ -100,92 +100,19 @@ export function useAdminQueue() {
     }
 
     try {
-      // Step 1: Get project details from API (this also validates admin access)
-      const detailsRes = await fetch(`/api/admin/projects/${projectId}`, {
-        headers: getAdminHeaders(),
-      })
-      
-      if (!detailsRes.ok) {
-        const data = await detailsRes.json()
-        throw new Error(data.error || "Failed to get project details")
-      }
-      
-      const { project } = await detailsRes.json()
-      
-      if (!project.creator_wallet) {
-        throw new Error("Project missing creator wallet address")
-      }
-
-      // Step 2: Create on-chain initialize transaction
+      // Admin approval is a database-only operation
+      // The campaign was already initialized on blockchain during project submission
       toast({
-        title: "Creating transaction...",
-        description: "Preparing on-chain campaign initialization",
+        title: "Approving project...",
+        description: "Updating project status to active",
       })
-
-      const creatorPublicKey = new PublicKey(project.creator_wallet)
-      
-      // Calculate deadline as Unix timestamp
-      const deadline = project.deadline 
-        ? Math.floor(new Date(project.deadline).getTime() / 1000)
-        : Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60) // 30 days from now
-      
-      // Format milestones for on-chain (convert percentage to amount based on goal)
-      const goal = project.goal || 100 // Default goal in USDC
-      const goalLamports = goal * 1_000_000 // Convert to USDC smallest units
-      
-      const milestones = (project.milestones || []).map((m: any) => ({
-        title: m.title || 'Milestone',
-        amount: Math.floor((m.percentage / 100) * goalLamports),
-      }))
-      
-      // If no milestones, create a single 100% milestone
-      if (milestones.length === 0) {
-        milestones.push({ title: 'Project Completion', amount: goalLamports })
-      }
-
-      // Get next campaign_id from on-chain platform config
-      const { getNextCampaignId } = await import('@/lib/solana/admin-operations')
-      const campaignId = await getNextCampaignId(connection)
-
-      const transaction = await createInitializeCampaignTransaction(
-        connection,
-        creatorPublicKey,
-        campaignId,
-        goalLamports,
-        deadline,
-        milestones
-      )
-
-      // Step 3: Admin signs and sends transaction (SOON-compatible)
-      toast({
-        title: "Please sign the transaction",
-        description: "Approve the campaign initialization in your wallet",
-      })
-
-      // Use sendTransaction which handles signing + broadcasting to SOON RPC
-      const signature = await sendTransaction(transaction, connection, {
-        skipPreflight: false,
-        preflightCommitment: 'confirmed'
-      })
-
-      // Step 4: Confirm transaction
-      toast({
-        title: "Confirming on SOON Testnet...",
-        description: "Waiting for blockchain confirmation",
-      })
-
-      await connection.confirmTransaction(signature, 'confirmed')
-
-      // Step 5: Update database with approval and PDA
-      const campaignPda = getCampaignAddress(project.creator_wallet, campaignId)
       
       const res = await fetch(`/api/admin/projects/${projectId}/approve`, {
         method: "POST",
         headers: getAdminHeaders(),
         body: JSON.stringify({
-          initializeTxSignature: signature,
-          campaignPda,
-          campaignId,
+          // No blockchain transaction needed - already done during submission
+          // Admin just changes status from 'queue' to 'active'
         }),
       })
       
@@ -195,8 +122,8 @@ export function useAdminQueue() {
       }
       
       toast({
-        title: "🎉 Project approved on-chain!",
-        description: `Campaign initialized. Tx: ${signature.slice(0, 8)}...`,
+        title: "✅ Project approved!",
+        description: "Project is now live and accepting backers",
       })
       
       await fetchProjects()
@@ -236,8 +163,9 @@ export function useAdminQueue() {
       }
       
       toast({
-        title: "Success",
-        description: "Project rejected",
+        title: "Project Rejected",
+        description: "View it in the 'Rejected' tab. Creator has been notified.",
+        duration: 5000,
       })
       
       await fetchProjects()
@@ -295,8 +223,9 @@ export function useAdminQueue() {
       }
       
       toast({
-        title: "Success",
-        description: `Rejected ${projectIds.length} project${projectIds.length > 1 ? "s" : ""}`,
+        title: `${projectIds.length} Project${projectIds.length > 1 ? "s" : ""} Rejected`,
+        description: "View them in the 'Rejected' tab. Creators have been notified.",
+        duration: 5000,
       })
       
       setSelectedIds(new Set())

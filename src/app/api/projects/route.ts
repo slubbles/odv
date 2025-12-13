@@ -1,6 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseClient } from '@/lib/supabase/api-client'
 
+// Retry utility with exponential backoff for database operations
+async function retryWithBackoff<T>(
+  operation: () => Promise<T>,
+  maxRetries = 3,
+  baseDelay = 100
+): Promise<T> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await operation()
+    } catch (error) {
+      if (attempt === maxRetries - 1) throw error
+      const delay = baseDelay * Math.pow(2, attempt)
+      console.log(`Retry attempt ${attempt + 1}/${maxRetries} after ${delay}ms`)
+      await new Promise(resolve => setTimeout(resolve, delay))
+    }
+  }
+  throw new Error('Max retries exceeded')
+}
+
 // GET /api/projects - List all projects with filters
 export async function GET(request: NextRequest) {
   try {
@@ -313,39 +332,49 @@ export async function POST(request: NextRequest) {
 
     console.log('[API] Creating project:', { title, creator_wallet, campaign_id })
 
-    // Insert project
-    const { data: project, error: projectError } = await supabase
-      .from('projects')
-      .insert({
-        title,
-        tagline: tagline || null,
-        description,
-        category,
-        goal,
-        deadline,
-        creator_wallet,
-        campaign_id: campaign_id || null,
-        campaign_pda: campaign_pda || null,
-        image_url,
-        video_url,
-        status: 'queue', // New projects go to queue for admin approval
-        raised: 0,
-        backers_count: 0
-      })
-      .select()
-      .single()
+    // Insert project with retry logic for reliability
+    const project = await retryWithBackoff(async () => {
+      const { data, error } = await supabase
+        .from('projects')
+        .insert({
+          title,
+          tagline: tagline || null,
+          description,
+          category,
+          goal,
+          deadline,
+          creator_wallet,
+          campaign_id: campaign_id || null,
+          campaign_pda: campaign_pda || null,
+          image_url,
+          video_url,
+          status: 'queue', // New projects go to queue for admin approval
+          raised: 0,
+          backers_count: 0
+        })
+        .select()
+        .single()
 
-    if (projectError) {
-      console.error('[API] Failed to create project:', projectError)
+      if (error) {
+        console.error('[API] Failed to create project (attempt):', error)
+        throw error
+      }
+      return data
+    }).catch(error => {
+      console.error('[API] Failed to create project after retries:', error)
       return NextResponse.json(
         { 
-          error: 'Failed to create project',
-          details: projectError.message,
-          hint: projectError.hint,
-          code: projectError.code
+          error: 'Failed to create project after multiple attempts',
+          details: error.message,
+          hint: error.hint,
+          code: error.code
         },
         { status: 500 }
       )
+    })
+
+    if (!project || project instanceof NextResponse) {
+      return project as NextResponse
     }
 
     // Insert milestones if provided

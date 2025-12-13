@@ -62,6 +62,7 @@ export default function PortfolioPage() {
     id: p.id,
     title: p.title,
     creator: p.creator_name || "Anonymous Creator",
+    category: p.category || "Uncategorized",
     thumbnail: p.image_url || "/placeholder.svg",
     investment: 1, // $1 per backing
     status: p.status === "active" ? "Active" : p.status === "funded" ? "Funded" : "Completed",
@@ -111,59 +112,59 @@ export default function PortfolioPage() {
           <p className="text-base sm:text-lg text-muted-foreground">Every dollar you risked. Every project you believed in.</p>
         </div>
 
-        {/* Stats Overview */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-12">
+        {/* Stats Overview - Compact Design */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
           <Card>
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
-                  <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-center gap-2">
+                <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
+                  <DollarSign className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-accent" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-lg sm:text-2xl font-bold">${stats.totalInvested}</p>
-                  <p className="text-xs sm:text-sm text-muted-foreground truncate">Dollars Bet</p>
+                  <p className="text-base sm:text-xl font-bold">${stats.totalInvested}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Dollars Bet</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
-                  <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-center gap-2">
+                <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
+                  <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-accent" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-lg sm:text-2xl font-bold">{stats.activeProjects}</p>
-                  <p className="text-xs sm:text-sm text-muted-foreground truncate">Still Building</p>
+                  <p className="text-base sm:text-xl font-bold">{stats.activeProjects}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Still Building</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
-                  <Award className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-center gap-2">
+                <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
+                  <Award className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-accent" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-lg sm:text-2xl font-bold">{stats.nftsOwned}</p>
-                  <p className="text-xs sm:text-sm text-muted-foreground truncate">Badges Earned</p>
+                  <p className="text-base sm:text-xl font-bold">{stats.nftsOwned}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Badges Earned</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
-                  <Vote className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-center gap-2">
+                <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
+                  <Vote className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-accent" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-lg sm:text-2xl font-bold">{stats.votingPower}</p>
-                  <p className="text-xs sm:text-sm text-muted-foreground truncate">Vote Power</p>
+                  <p className="text-base sm:text-xl font-bold">{stats.votingPower}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Vote Power</p>
                 </div>
               </div>
             </CardContent>
@@ -237,7 +238,10 @@ function ProjectPortfolioCard({ project }: { project: any }) {
           <div className="flex items-start justify-between gap-2 mb-3">
             <div className="flex-1 min-w-0">
               <h3 className="text-lg font-bold line-clamp-2 mb-1">{project.title}</h3>
-              <p className="text-sm text-muted-foreground">by {project.creator}</p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="text-sm text-muted-foreground">by {project.creator}</p>
+                <Badge variant="outline" className="text-[10px] px-1.5 py-0.5">{project.category}</Badge>
+              </div>
             </div>
             <Badge variant={project.status === "Active" ? "default" : "secondary"}>{project.status}</Badge>
           </div>
