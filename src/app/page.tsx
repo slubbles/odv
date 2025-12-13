@@ -43,14 +43,13 @@ export default function Home() {
               id="hero-heading"
               className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 text-balance leading-tight"
             >
-              Get funded by{" "}
+              Build in public.{" "}
               <span className="bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">
-                1,000 believers
+                Get funded by the crowd.
               </span>
-              {" "}for $1 each
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-6 sm:mb-8 text-balance max-w-3xl mx-auto">
-              Skip the VC circus. Launch your project, set milestones, get $1 backers. Ship what you promised, unlock your funds.
+              No BS. Launch your project, set milestones, get $1 backers. Ship what you promised, unlock your funds.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Button
