@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { createInitializeCampaignTransaction } from "@/lib/solana/transaction"
 import { parseBlockchainError } from "@/lib/solana/error-handling"
 import { getCampaignPDA, getNextCampaignId } from "@/lib/solana/program"
+import { celebrateProjectSubmission } from "@/lib/confetti"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -268,6 +269,9 @@ export default function SubmitPage() {
         status: 'queue',
         txSignature: signature
       })
+
+      // 🎉 Celebrate successful submission!
+      celebrateProjectSubmission()
 
       toast.success("Project submitted for review!")
 

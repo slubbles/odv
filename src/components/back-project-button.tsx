@@ -7,6 +7,7 @@ import { Loader2, Heart, CheckCircle2, Clock, XCircle, AlertCircle } from "lucid
 import { useBackProject } from "@/lib/hooks/use-back-project"
 import { TransactionProgressModal } from "@/components/transaction-progress-modal"
 import { useToast } from "@/components/ui/use-toast"
+import { celebrateFunding } from "@/lib/confetti"
 
 interface BackProjectButtonProps {
   projectId: string
@@ -124,6 +125,10 @@ export function BackProjectButton({
         setExplorerUrl(result.explorerUrl)
       }
       setFinalStep('success') // Lock modal on success
+      
+      // 🎉 Celebrate successful funding!
+      celebrateFunding()
+      
       // Modal stays on success step - user closes it manually
       // Modal lock will be released on close
     } else {

@@ -5,8 +5,7 @@ import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { TrendingUp, Users, DollarSign, ArrowRight } from "lucide-react"
-import { AnimatedCounter } from "@/components/animated-counter"
+import { ArrowRight } from "lucide-react"
 import { Footer } from "@/components/footer"
 import { FaqSection } from "@/components/faq-section"
 import dynamic from "next/dynamic"
@@ -38,19 +37,20 @@ export default function Home() {
 
           <div className="relative z-10 mx-auto max-w-4xl text-center">
             <Badge className="mb-4 sm:mb-6 bg-accent/20 text-accent-foreground border-accent/30 text-xs sm:text-sm">
-              47K+ builders and backers
+              Launch your project in 10 minutes
             </Badge>
             <h1
               id="hero-heading"
               className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 text-balance leading-tight"
             >
-              Shark Tank if{" "}
+              Get funded by{" "}
               <span className="bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">
-                sharks were $1
+                1,000 believers
               </span>
+              {" "}for $1 each
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-6 sm:mb-8 text-balance max-w-3xl mx-auto">
-              No VC meetings. No pitch decks to billionaires. Just your idea, their $1, and the internet.
+              Skip the VC circus. Launch your project, set milestones, get $1 backers. Ship what you promised, unlock your funds.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Button
@@ -64,44 +64,12 @@ export default function Home() {
                 </Link>
               </Button>
               <Button size="lg" variant="outline" className="w-full sm:w-auto bg-transparent" asChild>
-                <Link href="/submit">I built something</Link>
+                <Link href="/submit">Launch Your Project</Link>
               </Button>
             </div>
           </div>
 
-          <div
-            className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mt-12 sm:mt-16 max-w-4xl mx-auto px-4"
-            role="region"
-            aria-label="Platform statistics"
-          >
-            <Card className="text-center">
-              <CardContent className="p-4 sm:p-6">
-                <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-accent" aria-hidden="true" />
-                <p className="text-2xl sm:text-3xl font-bold mb-1" aria-label="1247 projects backed">
-                  <AnimatedCounter end={1247} />
-                </p>
-                <p className="text-xs sm:text-sm text-muted-foreground">projects backed (and counting)</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="p-4 sm:p-6">
-                <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-accent" aria-hidden="true" />
-                <p className="text-2xl sm:text-3xl font-bold mb-1" aria-label="2.3 million dollars in bets">
-                  $<AnimatedCounter end={2.3} decimals={1} />M
-                </p>
-                <p className="text-xs sm:text-sm text-muted-foreground">in $1 bets</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="p-4 sm:p-6">
-                <Users className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-accent" aria-hidden="true" />
-                <p className="text-2xl sm:text-3xl font-bold mb-1" aria-label="Over 47,000 builders and backers">
-                  <AnimatedCounter end={47000} suffix="+" />
-                </p>
-                <p className="text-xs sm:text-sm text-muted-foreground">builders and backers</p>
-              </CardContent>
-            </Card>
-          </div>
+
         </section>
 
         {/* How It Works Section */}

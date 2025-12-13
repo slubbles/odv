@@ -45,21 +45,16 @@ function HeaderContent() {
             <Link href="/discover" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Fund Projects
             </Link>
+            
+            <Link href="/docs" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Docs
+            </Link>
 
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:ring-0 focus-visible:outline-none">
                 Explore <ChevronDown className="h-4 w-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-[240px] p-2">
-                <DropdownMenuItem asChild className="p-2 cursor-pointer">
-                  <Link href="/creators" className="flex flex-col items-start gap-1">
-                    <div className="font-medium leading-none">Creators</div>
-                    <div className="text-xs text-muted-foreground line-clamp-2">
-                      Meet the people behind the projects
-                    </div>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
                 <DropdownMenuItem asChild className="p-2 cursor-pointer">
                   <Link href="/faucet" className="flex flex-col items-start gap-1">
                     <div className="font-medium leading-none">Test USDC Faucet</div>
@@ -105,42 +100,9 @@ function HeaderContent() {
                 <DropdownMenuContent align="start" className="w-[240px] p-2">
                   <DropdownMenuItem asChild className="p-2 cursor-pointer">
                     <Link href="/admin" className="flex flex-col items-start gap-1">
-                      <div className="font-medium leading-none">Queue Review</div>
+                      <div className="font-medium leading-none">Admin Dashboard</div>
                       <div className="text-xs text-muted-foreground line-clamp-2">
-                        Review pending project submissions
-                      </div>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="p-2 cursor-pointer">
-                    <Link href="/admin/milestones" className="flex flex-col items-start gap-1">
-                      <div className="font-medium leading-none">Milestones</div>
-                      <div className="text-xs text-muted-foreground line-clamp-2">
-                        Manage project milestones
-                      </div>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild className="p-2 cursor-pointer">
-                    <Link href="/admin/analytics" className="flex flex-col items-start gap-1">
-                      <div className="font-medium leading-none">Analytics</div>
-                      <div className="text-xs text-muted-foreground line-clamp-2">
-                        Platform-wide analytics
-                      </div>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="p-2 cursor-pointer">
-                    <Link href="/admin/users" className="flex flex-col items-start gap-1">
-                      <div className="font-medium leading-none">Users</div>
-                      <div className="text-xs text-muted-foreground line-clamp-2">
-                        Manage platform users
-                      </div>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="p-2 cursor-pointer">
-                    <Link href="/admin/initialize" className="flex flex-col items-start gap-1">
-                      <div className="font-medium leading-none">Initialize Platform</div>
-                      <div className="text-xs text-muted-foreground line-clamp-2">
-                        Setup platform configuration
+                        All admin controls in one place
                       </div>
                     </Link>
                   </DropdownMenuItem>
