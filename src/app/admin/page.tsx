@@ -8,6 +8,9 @@ import { Footer } from "@/components/footer"
 import { DashboardSidebar } from "@/components/dashboard-sidebar"
 import { AdminGuard } from "@/components/admin/admin-guard"
 import { QueueTab } from "@/components/admin/tabs/queue-tab"
+import { MilestonesTab } from "@/components/admin/tabs/milestones-tab"
+import { AnalyticsTab } from "@/components/admin/tabs/analytics-tab"
+import { UsersTab } from "@/components/admin/tabs/users-tab"
 
 function AdminPageContent() {
   return (
@@ -66,21 +69,15 @@ function AdminPageContent() {
             </TabsContent>
 
             <TabsContent value="analytics">
-              <div className="text-center py-12 text-muted-foreground">
-                Analytics tab - Coming soon
-              </div>
+              <AnalyticsTab />
             </TabsContent>
 
             <TabsContent value="milestones">
-              <div className="text-center py-12 text-muted-foreground">
-                Milestones tab - Coming soon
-              </div>
+              <MilestonesTab />
             </TabsContent>
 
             <TabsContent value="users">
-              <div className="text-center py-12 text-muted-foreground">
-                Users tab - Coming soon
-              </div>
+              <UsersTab />
             </TabsContent>
 
             <TabsContent value="activity">
