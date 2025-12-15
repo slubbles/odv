@@ -896,21 +896,11 @@ export default function SubmitPage() {
                             min={getMinDate()}
                             value={milestone.deadline}
                             onChange={(e) => updateMilestone(index, 'deadline', e.target.value)}
-                            className="cursor-pointer text-sm w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-100 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0"
-                            onClick={(e) => {
-                              // On mobile, ensure the date picker opens
-                              const input = e.currentTarget;
-                              if (input.showPicker) {
-                                try {
-                                  input.showPicker();
-                                } catch (err) {
-                                  // Fallback for browsers that don't support showPicker
-                                  console.log('showPicker not supported');
-                                }
-                              }
-                            }}
+                            className="cursor-pointer text-sm w-full"
+                            placeholder="YYYY-MM-DD"
+                            pattern="\d{4}-\d{2}-\d{2}"
                           />
-                          <p className="text-xs text-muted-foreground">Must be a future date</p>
+                          <p className="text-xs text-muted-foreground">Must be a future date (tap to select)</p>
                         </div>
                       </CardContent>
                     </Card>

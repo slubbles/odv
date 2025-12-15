@@ -17,9 +17,9 @@ export function TestnetBanner() {
           <AlertTriangle className="h-4 w-4 text-accent flex-shrink-0" />
           <span className="text-foreground/90">
             <strong>Testnet Mode:</strong> You are on SOON Testnet. All funds are simulated.{" "}
-            <Link href="/faucet" className="underline hover:text-accent inline-flex items-center gap-1">
-              Get Test USDC
-            </Link>
+            <span className="underline hover:text-accent inline-flex items-center gap-1 cursor-pointer">
+              Join Testnet
+            </span>
           </span>
         </div>
         <Button

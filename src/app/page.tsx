@@ -49,7 +49,7 @@ export default function Home() {
               </span>
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-6 sm:mb-8 text-balance max-w-3xl mx-auto">
-              No BS. Launch your project, set milestones, get $1 backers. Ship what you promised, unlock your funds.
+              No BS. Launch, get$1, ship, unlock.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Button
@@ -57,13 +57,13 @@ export default function Home() {
                 className="bg-accent text-accent-foreground hover:bg-accent/90 w-full sm:w-auto"
                 asChild
               >
-                <Link href="/discover">
-                  Find Projects
+                <Link href="/submit">
+                  Launch Your Project
                   <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" className="w-full sm:w-auto bg-transparent" asChild>
-                <Link href="/submit">Launch Your Project</Link>
+                <Link href="/discover">Find Projects</Link>
               </Button>
             </div>
           </div>
@@ -143,13 +143,13 @@ export default function Home() {
                   },
                   {
                     step: 2,
-                    title: "Pass the Vibe Check",
-                    desc: "Community votes on your project. If they like it, you're in."
+                    title: "Get Approved",
+                    desc: "We review your project. If it's legit, you go live."
                   },
                   {
                     step: 3,
-                    title: "Go Live 24hrs",
-                    desc: "The clock starts. You have 24 hours to hit your funding goal."
+                    title: "Raise Funds",
+                    desc: "Get $1 backers. Hit your funding goal."
                   },
                   {
                     step: 4,
@@ -198,10 +198,10 @@ export default function Home() {
               />
               <CardContent className="relative p-8 sm:p-12 text-center">
                 <h2 id="cta-heading" className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
-                  Stop shouting into the void
+                  Ready to launch?
                 </h2>
                 <p className="text-lg sm:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto">
-                  Show us what you built. Get seen. Get backed. No gatekeepers. No BS.
+                  Show us what you built. Get backed. No gatekeepers. No BS.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button
@@ -210,12 +210,12 @@ export default function Home() {
                     asChild
                   >
                     <Link href="/submit">
-                      I built something
+                      Launch Your Project
                       <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
                     </Link>
                   </Button>
                   <Button size="lg" variant="outline" className="bg-transparent w-full sm:w-auto" asChild>
-                    <Link href="/discover">See what's building</Link>
+                    <Link href="/discover">Explore Projects</Link>
                   </Button>
                 </div>
               </CardContent>

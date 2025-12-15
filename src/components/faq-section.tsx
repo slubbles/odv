@@ -48,10 +48,10 @@ export function FaqSection() {
           </AccordionItem>
 
           <AccordionItem value="item-4">
-            <AccordionTrigger className="text-left">Can I back a project more than once?</AccordionTrigger>
+            <AccordionTrigger className="text-left">Can I back multiple projects?</AccordionTrigger>
             <AccordionContent className="text-muted-foreground">
-              Currently, we limit backing to $1 per wallet per project. 
-              This democratizes funding and prevents "whales" from dominating the direction of a project. 
+              Yes! You can back as many projects as you want. 
+              However, each project is limited to $1 per wallet to democratize funding and prevent "whales" from dominating. 
               It's about community support, not buying influence.
             </AccordionContent>
           </AccordionItem>

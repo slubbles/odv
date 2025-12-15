@@ -30,10 +30,10 @@ function HeaderContent() {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto max-w-7xl flex h-16 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-8">
-          {/* Mobile: Show icon only */}
+          {/* Mobile: Show favicon logo */}
           <Link href="/" className="md:hidden flex items-center">
             <Image 
-              src="/icon.svg" 
+              src="/odv logo - favicon 512x512.svg" 
               alt="OneDollarVentures" 
               width={36} 
               height={36} 

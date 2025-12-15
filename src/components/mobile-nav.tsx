@@ -168,6 +168,17 @@ export function MobileNav() {
               </AccordionContent>
             </AccordionItem>
 
+            {/* Docs Link - Match desktop nav */}
+            <div className="py-3">
+              <Link
+                href="/docs"
+                className="text-sm font-medium hover:text-accent transition-colors"
+                onClick={() => setOpen(false)}
+              >
+                Docs
+              </Link>
+            </div>
+
             <AccordionItem value="launch-project" className="border-b-0">
               <AccordionTrigger className="hover:no-underline py-3">Launch a Project</AccordionTrigger>
               <AccordionContent>
@@ -267,14 +278,6 @@ export function MobileNav() {
               </AccordionItem>
             )}
           </Accordion>
-
-          <div className="mt-4">
-            <Link href="/submit" onClick={() => setOpen(false)}>
-              <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                I built something
-              </Button>
-            </Link>
-          </div>
         </div>
 
         {/* Wallet Section - Fixed at Bottom */}
