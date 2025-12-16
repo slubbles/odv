@@ -28,32 +28,76 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   title: {
-    default: "OneDollarVentures - Back Projects with $1",
+    default: "OneDollarVentures - $1 Crowdfunding on Solana | Back Projects, Ship Products",
     template: "%s | OneDollarVentures"
   },
-  description: "Support the next big thing with just $1. Get unique NFTs, early access, and join the journey on Solana.",
-  keywords: ['crowdfunding', 'solana', 'web3', 'nft', 'crypto', 'startup funding'],
-  authors: [{ name: 'OneDollarVentures' }],
+  description: "Decentralized crowdfunding where everyone backs with exactly $1. Milestone-based escrow protects backers. Launch your project on Solana. No VCs, no whales, just community.",
+  keywords: [
+    'crowdfunding',
+    'solana crowdfunding',
+    'web3 crowdfunding',
+    'decentralized funding',
+    'blockchain crowdfunding',
+    'micro funding',
+    '$1 backing',
+    'milestone escrow',
+    'crypto fundraising',
+    'solana projects',
+    'SOON network',
+    'kickstarter alternative',
+    'indiegogo alternative',
+    'startup funding',
+    'community funding',
+    'build in public',
+    'web3 startups'
+  ],
+  authors: [{ name: 'OneDollarVentures', url: 'https://onedollarventures.com' }],
   creator: 'OneDollarVentures',
   publisher: 'OneDollarVentures',
-  generator: "v0.app",
+  applicationName: 'OneDollarVentures',
+  category: 'Crowdfunding',
+  classification: 'Web3 Crowdfunding Platform',
+  
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  
+  alternates: {
+    canonical: 'https://onedollarventures.com',
+  },
   
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://onedollarventures.com',
     siteName: 'OneDollarVentures',
-    title: 'OneDollarVentures - Back Projects with $1',
-    description: 'Support the next big thing with just $1. Get unique NFTs, early access, and join the journey on Solana.',
-    images: ['/og-image.png'],
+    title: 'OneDollarVentures - $1 Crowdfunding on Solana',
+    description: 'Decentralized crowdfunding where everyone backs with exactly $1. Milestone-based escrow protects backers. Launch your project on Solana.',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'OneDollarVentures - $1 Crowdfunding Platform',
+      }
+    ],
   },
   
   twitter: {
     card: 'summary_large_image',
-    title: 'OneDollarVentures - Back Projects with $1',
-    description: 'Support the next big thing with just $1. Get unique NFTs, early access, and join the journey on Solana.',
-    images: ['/og-image.png'],
+    site: '@onedollarventures',
     creator: '@onedollarventures',
+    title: 'OneDollarVentures - $1 Crowdfunding on Solana',
+    description: 'Launch your project. Get $1 backers. Ship or die. Milestone-based escrow. Built on Solana.',
+    images: ['/og-image.png'],
   },
   
   icons: {

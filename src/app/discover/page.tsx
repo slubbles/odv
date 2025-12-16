@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
+import Head from "next/head"
 import { Header } from "@/components/header"
 import { ProjectCard } from "@/components/project-card"
 import { Button } from "@/components/ui/button"
@@ -36,6 +37,9 @@ export default function DiscoverPage() {
   const [page, setPage] = useState(1)
   const [now, setNow] = useState<number | null>(null)
 
+  const pageTitle = "Discover Projects - OneDollarVentures | Browse Solana Crowdfunding Campaigns"
+  const pageDescription = "Explore innovative projects on OneDollarVentures. Back creative ventures for $1 each with milestone-based escrow protection on Solana."
+
   useEffect(() => {
     setNow(Date.now())
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,10 +63,19 @@ export default function DiscoverPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
+    <>
+      <Head>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+      </Head>
+      <div className="flex flex-col min-h-screen">
+        <Header />
 
-      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 pb-24 md:pb-12">
+        <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 pb-24 md:pb-12">
         {/* Hero Section */}
         <div className="mb-8 sm:mb-12">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
@@ -258,9 +271,10 @@ export default function DiscoverPage() {
             </Button>
           </div>
         )}
-      </div>
+        </div>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </>
   )
 }

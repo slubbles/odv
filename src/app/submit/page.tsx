@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Head from "next/head"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import { useRouter } from "next/navigation"
 import { createInitializeCampaignTransaction } from "@/lib/solana/transaction"
@@ -48,6 +49,9 @@ export default function SubmitPage() {
   const { connection } = useConnection()
   const { publicKey, connected, sendTransaction } = useWallet()
   const router = useRouter()
+
+  const pageTitle = "Launch Your Project - OneDollarVentures | Start Crowdfunding on Solana"
+  const pageDescription = "Submit your project to OneDollarVentures. Get funded for $1 per backer with milestone-based escrow. No platform fees, just build and ship."
 
   // Get minimum date for milestone deadlines (tomorrow)
   const getMinDate = () => {
@@ -620,8 +624,17 @@ export default function SubmitPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <>
+      <Head>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+      </Head>
+      <div className="min-h-screen flex flex-col">
+        <Header />
 
       <div className="flex-1 container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-4xl pb-24 md:pb-12">
         <div className="mb-8 sm:mb-12 text-center">
@@ -1082,9 +1095,10 @@ export default function SubmitPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
+        </div>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </>
   )
 }

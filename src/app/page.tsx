@@ -16,8 +16,44 @@ const Hero3DScene = dynamic(() => import("@/components/hero-3d-scene").then((mod
 })
 
 export default function Home() {
+  // JSON-LD structured data for SEO
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "OneDollarVentures",
+    "url": "https://onedollarventures.com",
+    "description": "Decentralized crowdfunding platform where everyone backs with exactly $1",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://onedollarventures.com/search?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  };
+
+  const organizationData = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "OneDollarVentures",
+    "url": "https://onedollarventures.com",
+    "logo": "https://onedollarventures.com/logo.svg",
+    "description": "$1 crowdfunding platform built on Solana blockchain",
+    "sameAs": [
+      "https://twitter.com/onedollarventures",
+      "https://github.com/slubbles/odv"
+    ]
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
+      {/* Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationData) }}
+      />
       <Header />
 
       <main id="main-content" className="flex-1">
