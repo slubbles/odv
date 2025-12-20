@@ -3,6 +3,7 @@
 import { useWallet, useConnection } from "@solana/wallet-adapter-react"
 import { useWalletModal } from "@solana/wallet-adapter-react-ui"
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -41,8 +42,42 @@ export function WalletButton() {
   const { publicKey, wallet, disconnect, connecting, connected } = useWallet()
   const { connection } = useConnection()
   const { setVisible } = useWalletModal()
+  const router = useRouter()
   const [balance, setBalance] = useState<number | null>(null)
   const [copied, setCopied] = useState(false)
+  const [hasCheckedOnboarding, setHasCheckedOnboarding] = useState(false)
+
+  // Check for first-time user onboarding
+  useEffect(() => {
+    async function checkFirstTimeUser() {
+      if (!connected || !publicKey || hasCheckedOnboarding) return
+      
+      const onboardingShown = localStorage.getItem('odv_onboarding_shown')
+      if (onboardingShown) {
+        setHasCheckedOnboarding(true)
+        return
+      }
+
+      try {
+        // Check if user has any activity (backed projects)
+        const response = await fetch(`/api/backing?wallet=${publicKey.toString()}&limit=1`)
+        const data = await response.json()
+        
+        if (!data.backings || data.backings.length === 0) {
+          // First-time user - show onboarding next time they navigate
+          localStorage.setItem('odv_show_backer_onboarding', 'true')
+        }
+        
+        localStorage.setItem('odv_onboarding_shown', 'true')
+        setHasCheckedOnboarding(true)
+      } catch (error) {
+        console.error('Error checking first-time user:', error)
+        setHasCheckedOnboarding(true)
+      }
+    }
+
+    checkFirstTimeUser()
+  }, [connected, publicKey, hasCheckedOnboarding])
 
   // Fetch SOL balance
   useEffect(() => {

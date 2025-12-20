@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
+import { useWalletModal } from "@solana/wallet-adapter-react-ui"
 import { Button } from "@/components/ui/button"
 import { Loader2, Heart, CheckCircle2, Clock, XCircle, AlertCircle } from "lucide-react"
 import { useBackProject } from "@/lib/hooks/use-back-project"
@@ -233,13 +234,15 @@ export function BackProjectButton({
     )
   }
 
+  const { setVisible: openWalletModal } = useWalletModal()
+
   if (!connected) {
     return (
       <Button
         variant={variant}
         size={size}
         className={className}
-        disabled
+        onClick={() => openWalletModal(true)}
       >
         <Heart className="mr-2 h-4 w-4" />
         Connect Wallet to Fund

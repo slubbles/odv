@@ -2,9 +2,10 @@
 
 import React from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { Loader2, CheckCircle2, AlertCircle, ExternalLink } from "lucide-react"
+import { Loader2, CheckCircle2, AlertCircle, ExternalLink, Heart, LayoutDashboard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import Link from "next/link"
 
 interface TransactionProgressModalProps {
   open: boolean
@@ -121,6 +122,27 @@ export function TransactionProgressModal({
             <p className="text-sm text-destructive-foreground text-center">
               Transaction failed before reaching the blockchain. No funds were transferred.
             </p>
+          </div>
+        )}
+
+        {/* Next Steps CTAs on Success */}
+        {step === 'success' && (
+          <div className="border-t pt-4 mt-2 space-y-3">
+            <p className="text-sm font-medium text-center text-muted-foreground">What's next?</p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button asChild variant="outline" size="sm" className="flex-1">
+                <Link href="/portfolio">
+                  <LayoutDashboard className="mr-2 h-4 w-4" />
+                  View Portfolio
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="sm" className="flex-1">
+                <Link href="/discover">
+                  <Heart className="mr-2 h-4 w-4" />
+                  Back More
+                </Link>
+              </Button>
+            </div>
           </div>
         )}
       </DialogContent>

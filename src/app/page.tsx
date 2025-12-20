@@ -43,6 +43,36 @@ export default function Home() {
     ]
   };
 
+  // HowTo schema for crowdfunding process
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to Back a Project on OneDollarVentures",
+    "description": "Learn how to support crowdfunding projects with just $1 on OneDollarVentures",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "name": "Connect Wallet",
+        "text": "Connect your Solana wallet (Phantom, Backpack, or any Solana wallet)"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Browse Projects",
+        "text": "Discover projects in technology, gaming, art, and more"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Back with $1",
+        "text": "Support any project for exactly $1 USDC"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Vote on Milestones",
+        "text": "Hold creators accountable by voting on milestone completion"
+      }
+    ]
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Structured Data for SEO */}
@@ -53,6 +83,10 @@ export default function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
       />
       <Header />
 

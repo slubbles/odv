@@ -1,15 +1,25 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, Wallet, Heart, Sparkles, Zap } from "lucide-react"
+import Link from "next/link"
 
 export default function BackerOnboardingPage() {
+  const router = useRouter()
   const [step, setStep] = useState(1)
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
+
+  const handleComplete = () => {
+    // Mark onboarding as completed
+    localStorage.setItem('odv_backer_onboarding_completed', 'true')
+    localStorage.removeItem('odv_show_backer_onboarding')
+    router.push('/discover')
+  }
 
   const steps = [
     { number: 1, title: "Welcome", icon: Sparkles },
@@ -179,7 +189,7 @@ export default function BackerOnboardingPage() {
                 </div>
                 <h2 className="font-sans text-3xl font-semibold mb-4">Let's Go.</h2>
                 <p className="text-muted-foreground mb-8">Find something cool. Back it. Make it happen.</p>
-                <Button size="lg" className="bg-accent hover:bg-accent/90">
+                <Button size="lg" className="bg-accent hover:bg-accent/90" onClick={handleComplete}>
                   Explore Projects
                 </Button>
               </div>

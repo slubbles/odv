@@ -77,6 +77,10 @@ export default function CreatorOnboardingPage() {
       // In a real app, this would save to the backend
       // For now, just simulate a save and redirect
       await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Mark onboarding as completed
+      localStorage.setItem('odv_creator_onboarding_completed', 'true')
+      
       toast.success("Profile created successfully!")
       router.push("/submit")
     } catch (error) {

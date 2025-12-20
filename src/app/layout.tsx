@@ -103,6 +103,10 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
+        url: "/favicon.ico",
+        sizes: "any",
+      },
+      {
         url: "/odv logo - favicon 512x512.png",
         sizes: "512x512",
         type: "image/png",
@@ -118,8 +122,8 @@ export const metadata: Metadata = {
         type: "image/png",
       },
     ],
-    apple: "/odv logo - favicon 512x512.png",
-    shortcut: "/odv logo - favicon 512x512.png",
+    apple: "/apple-touch-icon.png",
+    shortcut: "/favicon.ico",
   },
   
   manifest: '/site.webmanifest',
